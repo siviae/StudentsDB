@@ -1,4 +1,9 @@
 $(document).ready(function () {
+    $('.selectpicker').selectpicker({
+        style: 'btn-default',
+        size: 2
+    });
+
     var input1 = $("#formInput1");
     var input2 = $("#formInput2");
     var input3 = $("#formInput3");

@@ -1,17 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
+<%@page pageEncoding="utf-8" %>
 <!DOCTYPE html>
-<html>
+<html ng-app="employeeApp">
 <head lang="en">
-    <meta charset="UTF-8">
-    <title>Product management</title>
-    <link rel="stylesheet" href="<s:url value="/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css" />">
-    <link rel="stylesheet" href="<s:url value="/plugins/bootstrap-3.3.5-dist/css/bootstrap-theme.min.css" />">
-    <script src="<s:url value="/plugins/jquery-2.1.4.min.js" />"></script>
-    <script src="<s:url value="/plugins/bootstrap-3.3.5-dist/js/bootstrap.min.js" />"></script>
-    <script src="<s:url value="/js/common.js" />"></script>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <title>База сотрудников</title>
+    <link rel="stylesheet" href="/res/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <script src="/res/plugins/angular.min.js"></script>
+    <script src="/res/plugins/ui-bootstrap-tpls-0.13.0.min.js"></script>
+    <script src="/res/js/common2.js"></script>
 </head>
-<body>
+<body ng-controller="employeeAppController">
+<h1>{{selectedDate}}{{selectedPosition}}</h1>
 
 <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel">
 
@@ -99,7 +100,7 @@
     <table class="table table-bordered table-hover">
         <thead>
         <tr>
-            <th>ProductID
+            <th>ID
                 <a href="#" onclick="changeOrder('productID','<?= $sort_by ?>','<?= $order ?>','');">
                 <%--<span style="color: grey" class="glyphicon
                     <?php if ($sort_by == "price"): ?>glyphicon-sort<?php endif; ?>
@@ -109,9 +110,10 @@
                     </span>--%>
                 </a>
             </th>
-            <th>Название</th>
-            <th>Описание</th>
-            <th>Цена
+            <th>Должность</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество
                 <a href="#" onclick="changeOrder('price','<?= $sort_by ?>','<?= $order ?>','');">
                 <%--<span style="color: grey" class="glyphicon
                     <?php if ($sort_by == "productID"): ?>glyphicon-sort<?php endif; ?>
@@ -121,18 +123,31 @@
                     </span>--%>
                 </a>
             </th>
-            <th>Изображение</th>
+            <th>Дата рождения</th>
             <th>Действия</th>
         </tr>
         </thead>
         <tbody>
-        <c:forEach var="employee" items="${employees}">
-            <tr class="editableRow">
-                <td style="width:10%" class="prodID">${employee.employeeID}</td>
-                <td class="prodName">${employee.surname}</td>
-                <td class="prodDescription">${employee.firstName}</td>
-                <td style="width:7%" class="prodPrice"></td>
-                <td class="prodImg"></td>
+        <tr>
+            <td><input type="search"  class="form-control" ng-model="selectedID"></td>
+            <td>
+                <select ng-model="selectedPosition">
+                        <option ng-repeat="position in positions" ng-value="position.positionID">{{position.title}}</option>
+                </select>
+            </td>
+            <td><input type="search"  class="form-control" ng-model="selectedSurname"></td>
+            <td><input type="search"  class="form-control" ng-model="selectedFirstName"></td>
+            <td><input type="search"  class="form-control" ng-model="selectedPatronymic"></td>
+            <td><input type="search"  class="form-control" data-provide="datepicker" ng-model="selectedDate"></td>
+            <td></td>
+        </tr>
+            <tr class="editableRow" ng-repeat="employee in employees">
+                <td class="employeeID">{{employee.employeeID}}</td>
+                <td class="position">{{employee.position.title}}</td>
+                <td class="surname">{{employee.surname}}</td>
+                <td class="firstName">{{employee.firstName}}</td>
+                <td class="patronymic">{{employee.patronymic}}</td>
+                <td class="dateOfBurth">{{employee.dateOfBirth}}</td>
                 <td class="prodButtons" style="width:100px;">
                     <button type="button" class="btn btn-default center-block" aria-label="Редактировать">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
@@ -142,7 +157,6 @@
                     </button>
                 </td>
             </tr>
-        </c:forEach>
         </tbody>
     </table>
 </div>

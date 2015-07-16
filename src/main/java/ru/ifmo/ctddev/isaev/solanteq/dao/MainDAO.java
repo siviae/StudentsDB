@@ -30,7 +30,7 @@ public class MainDAO {
                                           Integer positionID) {
         final HashMap<Integer, Position> positions = new HashMap<>();
         List<Object> params = new ArrayList<>();
-        StringBuilder queryString = new StringBuilder("SELECT * FROM employee JOIN position USING(employeeID) WHERE ");
+        StringBuilder queryString = new StringBuilder("SELECT * FROM employee JOIN position USING (positionID) WHERE ");
         if (employeeID != null) {
             queryString.append(" employeeID = ? AND ");
             params.add(employeeID);
