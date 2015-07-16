@@ -1,13 +1,14 @@
 package ru.ifmo.ctddev.isaev.solanteq.pojo;
 
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
  * Created by root on 7/14/15.
  */
-public class Employee implements Comparable<Employee>{
+public class Employee implements Comparable<Employee>, Serializable {
     private int employeeID;
     private String firstName;
     private String surname;
@@ -22,6 +23,8 @@ public class Employee implements Comparable<Employee>{
         this.patronymic = patronymic;
         this.dateOfBirth = dateOfBirth;
         this.position = position;
+    }
+    public Employee() {//do not remove, used for deserializing
     }
 
     public int getEmployeeID() {

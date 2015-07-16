@@ -13,7 +13,7 @@
     <script src="/res/js/common2.js"></script>
 </head>
 <body ng-controller="employeeAppController">
-<h1>{{selectedDate}}{{selectedPosition}}</h1>
+
 
 <script type="text/ng-template" id="editModalContent.html">
         <div class="modal-header">
@@ -76,7 +76,11 @@
     </form>
 </div>
 <div class="container">
-    <div id="globalAlert">
+    <div ng-controller="AlertController">
+        <alert ng-repeat="alert in alerts" type="{{alert.status}}" >{{alert.message}}
+            <button type="button" class="close" ng-click="closeAlert($index)" ><span
+                    aria-hidden="true">&times;</span></button>
+        </alert>
     </div>
     <div class="row" style="padding: 10px 0 10px 0;">
         <div class="col-xs-2">

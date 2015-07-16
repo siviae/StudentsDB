@@ -89,4 +89,31 @@ public class MainDAO {
         return getAllEmployeesAndPositions(null, null, null, null, null, null);
     }
 
+    public boolean updateEmployee(Employee employee) {
+        int modified = jdbcTemplate.update("UPDATE employee SET " +
+                "firstName=?, " +
+                "surname = ?, " +
+                "dateOfBirth = ?, " +
+                "positionID = ?, " +
+                "patronymic = ? WHERE employeeID=?",
+                employee.getFirstName(),employee.getSurname(),
+                employee.getDateOfBirth(), employee.getPosition().getPositionID(),
+                employee.getPatronymic(), employee.getEmployeeID());
+        return modified==1;
+    }
+
+    public boolean addEmployee(Employee employee) {
+        int modified = jdbcTemplate.update("INSERT INTO employee(firstName,surname,dateOfBirth,positionID,patronymic) " +
+                        "VALUES (?,?,?,?,?) ",
+                employee.getFirstName(),employee.getSurname(),
+                employee.getDateOfBirth(), employee.getPosition().getPositionID(),
+                employee.getPatronymic());
+        return modified==1;
+    }
+
+    public boolean deleteEmployee(int employeeID) {
+        int modified = jdbcTemplate.update("DELETE FROM employee WHERE employeeID=? " ,
+                employeeID);
+        return modified==1;
+    }
 }
