@@ -1,162 +1,148 @@
-$(document).ready(function () {
-    $('.selectpicker').selectpicker({
-        style: 'btn-default',
-        size: 2
+var app = angular.module('employeeApp', ['ui.bootstrap']);
+
+function reloadTable(http, scope){
+    http.get('/getAll').success(function (data) {
+        scope.employees.length = 0;
+        scope.positions.length = 0;
+        scope.employees.push.apply(scope.employees,data.employees);
+        scope.positions.push.apply(scope.positions,data.positions);
     });
+}
 
-    var input1 = $("#formInput1");
-    var input2 = $("#formInput2");
-    var input3 = $("#formInput3");
-    var input4 = $("#formInput4");
-    var input5 = $("#formInput5");
-    var formInputs = [input1, input2, input3, input4, input5];
-    var modal = $("#addProductModal");
-    var addButton = $("#productAddButton");
-    var deleteButton = $("#productDeleteButton");
-    var deleteModal = $("#maybeDeleteModal");
-    var modalAlertZone = $("#alertZone");
-    var globalAlertZone = $("#globalAlert");
-
-    function make_global_warning(msg) {
-        $("#addProductModal").modal("hide");
-        var cl;
-        if (msg.type == "success") cl = "alert-success";
-        if (msg.type == "error") cl = "alert-danger";
-        globalAlertZone.html('<div class="alert ' + cl + '" role="alert">' + msg.message + '</div>');
-        setTimeout(function () {
-            document.location.reload();
-        }, 1500);
+function pageAlert(data, scope, modalInstance){
+    if(data && data.success && data.message){
+        scope.alerts.push(data);
+    } else {
+        alert(data);
     }
+    modalInstance.close();
+}
 
-    function make_modal_warning(msg) {
-        modalAlertZone.html('<div class="alert alert-danger" role="alert">' + msg + '</div>');
-        setTimeout(function () {
-            modalAlertZone.html("");
-        }, 1500)
+app.controller('employeeAppController', function ($scope, $modal, $http, $log) {
+    reloadTable($http,$scope);
+    $scope.alerts = [];
+    $scope.employees = [];
+    $scope.positions = [];
+    $scope.editEmployee = function (employee) {
 
-    }
-
-    function showPreviewImage() {
-        input5.html("<img style='width:100%' src='" + input4.val() + "'/>");
-    }
-
-    input4.on('input', showPreviewImage);
-
-    function clearInputs() {
-        formInputs.forEach(function (item) {
-            item.val('');
+        var modalInstance = $modal.open({
+            templateUrl: 'editModalContent.html',
+            controller: 'editModalController',
+            scope: $scope,
+            resolve: {
+                employee: function () {
+                    return employee;
+                }
+            }
         });
-        input5.html('');
-    }
+    };
+    $scope.openAddModal = function (employee) {
 
-
-    function prepareForAdding() {
-        $("#addProductModalLabel").html("Добавление товара");
-        clearInputs();
-        addButton.unbind('click');
-        addButton.bind('click', addProduct);
-        modal.modal('show');
-    }
-
-    function prepareForEditing(id, name, description, cost, imgUrl) {
-        $("#addProductModalLabel").html("Редактирование товара с ID " + id);
-        clearInputs();
-        input1.val(name);
-        input2.val(description);
-        input3.val(cost);
-        input4.val(imgUrl);
-        showPreviewImage();
-        addButton.unbind('click');
-        addButton.bind('click', function () {
-            editProduct(id);
+        var modalInstance = $modal.open({
+            templateUrl: 'addModalContent.html',
+            controller: 'addModalController',
+            scope: $scope
         });
-        modal.modal('show');
-    }
-
-    function sendDataToServer(url, productID) {
-        var name = input1.val();
-        var description = input2.val();
-        var cost = input3.val();
-        var link = input4.val();
-        if (isNaN(parseInt(cost, 10))) {
-            make_modal_warning("Неверная цена");
-            return;
-        }
-        if (!name) {
-            make_modal_warning("Название не может быть пустым");
-            return;
-        }
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: {
-                name: name,
-                description: description,
-                cost: cost,
-                link: link,
-                productID: productID
-            },
-            success: function (msg) {
-                make_global_warning(JSON.parse(msg));
-            },
-            error: function (msg) {
-                alert("Сервер недоступен: " + JSON.stringify(msg));
+    };
+    $scope.openDeleteModal = function ($event,employee) {
+        $event.stopPropagation();
+        var modalInstance = $modal.open({
+            templateUrl: 'deleteModalContent.html',
+            controller: 'deleteModalController',
+            scope: $scope,
+            resolve:{
+                employee: function(){
+                    return employee;
+                }
             }
         });
     }
 
-    function editProduct(id) {
-        sendDataToServer("db/db_edit.php", id);
-    }
 
-    function addProduct() {
-        sendDataToServer("db/db_insert.php");
-    }
+});
 
-    function deleteProduct(id) {
-        $.ajax({
-            type: "POST",
-            url: "db/db_delete.php",
-            data: {
-                productID: id
-            },
-            success: function (msg) {
-                deleteModal.modal("hide");
-                make_global_warning(JSON.parse(msg));
-            },
-            error: function (msg) {
-                alert("Сервер недоступен: " + msg);
+app.controller('editModalController', function ($scope, $modalInstance, $http, employee) {
+    $scope.employee = employee;
+    $scope.oldEmployee = angular.copy($scope.employee);
+    $scope.saveData = function () {
+        $http({
+            method: 'POST',
+            url: '/editEmployee',
+            contentType: "application/json",
+            data: $scope.employee})
+            .success(function (data, status, headers, config) {
+                $scope.alerts.push(data);
+                if(data.status!="success"){
+                    angular.copy($scope.employee,  $scope.oldEmployee);
+                }
+                $modalInstance.close();
+            })
+            .error(function (data, status, headers, config) {
+                angular.copy($scope.employee,  $scope.oldEmployee);
+                pageAlert(data,$scope,$modalInstance);
+            });
+
+    };
+    $scope.closeModal = function () {
+        $scope.oldEmployee = angular.copy($scope.employee);
+        $modalInstance.dismiss('cancel');
+    };
+});
+
+app.controller('addModalController', function ($scope, $modalInstance, $http) {
+    $scope.employee = {firstName: "", surname: "", patronymic: "", positionID: "", dateOfBirth: ""};
+    $scope.addEmployee = function () {
+        $http({
+            method: 'POST',
+            url: '/addEmployee',
+            contentType: "application/json",
+            data: $scope.employee})
+            .success(function (data, status, headers, config) {
+                $scope.alerts.push(data);
+                if(data.status=="success"){
+                    reloadTable($http, $scope);
+                }
+                $modalInstance.close();
+            })
+            .error(function (data, status, headers, config) {
+                pageAlert(data,$scope,$modalInstance);
+            });
+
+    };
+    $scope.closeModal = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});
+
+app.controller('deleteModalController', function ($scope, $modalInstance, $http, employee) {
+    $scope.employee=employee;
+    $scope.deleteEmployee = function () {
+        $http({
+            method: 'POST',
+            url: '/deleteEmployee',
+            params: {
+                employeeID: employee.employeeID
             }
+        })
+        .success(function (data, status, headers, config) {
+            $scope.alerts.push(data);
+            if(data.status=="success"){
+                reloadTable($http, $scope);
+            }
+            $modalInstance.close();
+        })
+        .error(function (data, status, headers, config) {
+                pageAlert(data,$scope,$modalInstance);
         });
-    }
 
-    function askForDelete(id, name) {
-        $("#maybeDeleteModalLabel").html('Удалить товар "' + name + '" с productID ' + id + "?");
-        clearInputs();
-        deleteButton.unbind('click');
-        deleteButton.bind('click', function () {
-            deleteProduct(id)
-        });
-        deleteModal.modal('show');
-    }
+    };
+    $scope.closeModal = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});
 
-
-    $("#openModalButton").click(prepareForAdding);
-    $(".editableRow").each(function () {
-        var id = $(this).children(".prodID").html();
-        var name = $(this).children(".prodName").html();
-        var description = $(this).children(".prodDescription").html();
-        var cost = $(this).children(".prodPrice").html();
-        var link = $(this).children(".prodImg").children().prop('src');
-
-        var buttons = $(this).children(".prodButtons").children();
-        buttons.first()
-            .click(function () {
-                prepareForEditing(id, name, description, cost, link);
-            });
-        buttons.last()
-            .click(function () {
-                askForDelete(id, name);
-            });
-    })
+app.controller('AlertController', function ($scope) {
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
 });

@@ -7,7 +7,7 @@
     <script src="/res/plugins/angular.min.js"></script>--%>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
     <script src="/res/plugins/ui-bootstrap-tpls-0.13.0.min.js"></script>
-    <script src="/res/js/common2.js"></script>
+    <script src="/res/js/common.js"></script>
 </head>
 <body ng-controller="employeeAppController">
 

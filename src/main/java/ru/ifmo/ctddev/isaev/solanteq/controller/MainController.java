@@ -23,6 +23,13 @@ public class MainController {
     @Autowired
     MainDAO dao;
 
+    private static Map<String, String> getResponseObject(boolean ok, String goodMsg, String badMsg) {
+        Map<String, String> result = new HashMap<>();
+        result.put("status", ok ? "success" : "danger");
+        result.put("message", ok ? goodMsg : badMsg);
+        return result;
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getPage(HttpServletRequest request,
                                 HttpServletResponse response) {
@@ -52,11 +59,9 @@ public class MainController {
                                      HttpServletRequest request,
                                      HttpServletResponse response) {
         boolean ok = dao.updateEmployee(employee);
-        Map<String, String> result = new HashMap<>();
-        result.put("status", ok ? "success" : "danger");
-        String message = ok ? "Сотрудник с ID %s успешно изменён" : "Не удалось изменить сотрудника с ID %s";
-        result.put("message", String.format(message, employee.getEmployeeID()));
-        return result;
+        return getResponseObject(ok,
+                String.format("Сотрудник с ID %s успешно изменён", employee.getEmployeeID()),
+                String.format("Не удалось изменить сотрудника с ID %s", employee.getEmployeeID()));
     }
 
     @RequestMapping(value = "/addEmployee", method = RequestMethod.POST, consumes = "application/json")
@@ -66,19 +71,12 @@ public class MainController {
                                     HttpServletRequest request,
                                     HttpServletResponse response) {
         boolean ok = dao.addEmployee(employee);
-        Map<String, String> result = new HashMap<>();
-        result.put("status", ok ? "success" : "danger");
-        String message;
-        if (ok) {
-            message = String.format("Добавлен новый сотрудник: %s %s %s",
-                    employee.getSurname(),
-                    employee.getFirstName(),
-                    employee.getPatronymic());
-        } else {
-            message = "Не удалось добавить сотрудника";
-        }
-        result.put("message", message);
-        return result;
+        return getResponseObject(ok,
+                String.format("Добавлен новый сотрудник: %s %s %s",
+                        employee.getSurname(),
+                        employee.getFirstName(),
+                        employee.getPatronymic()),
+                "Не удалось добавить сотрудника");
     }
 
     @RequestMapping(value = "/deleteEmployee", method = RequestMethod.POST)
@@ -88,10 +86,8 @@ public class MainController {
                                        HttpServletRequest request,
                                        HttpServletResponse response) {
         boolean ok = dao.deleteEmployee(employeeID);
-        Map<String, String> result = new HashMap<>();
-        result.put("status", ok ? "success" : "danger");
-        String message = ok ? "Сотрудник с ID %s успешно удалён" : "Не удалось удалить сотрудника с ID %s";
-        result.put("message", String.format(message, employeeID));
-        return result;
+        return getResponseObject(ok,
+                String.format("Сотрудник с ID %s успешно удалён", employeeID),
+                String.format("Не удалось удалить сотрудника с ID %s", employeeID));
     }
 }
