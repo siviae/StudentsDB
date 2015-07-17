@@ -72,4 +72,12 @@ public class Employee implements Comparable<Employee>, Serializable {
     public int compareTo(Employee o) {
         return employeeID-o.employeeID;
     }
+
+    public boolean isValid(){
+        return employeeID!=0
+                && firstName!=null && !firstName.isEmpty()
+                && surname !=null && !surname.isEmpty()
+                && patronymic!=null && !patronymic.isEmpty()
+                && dateOfBirth!=null && position.isValid();
+    }
 }

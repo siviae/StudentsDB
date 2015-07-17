@@ -29,4 +29,8 @@ public class Position implements Comparable<Position>,Serializable {
     public int compareTo(Position o) {
         return positionID-o.positionID;
     }
+
+    public boolean isValid() {
+        return positionID!=0 && title!=null && !title.isEmpty();
+    }
 }

@@ -62,6 +62,7 @@ app.controller('employeeAppController', function ($scope, $modal, $http, $log,gl
                 }
             }
         });
+
     };
     $scope.openAddModal = function (employee) {
 
@@ -90,7 +91,7 @@ app.controller('employeeAppController', function ($scope, $modal, $http, $log,gl
 
 app.controller('editModalController', function ($scope, $modalInstance, $http, employee,global) {
     $scope.employee = employee;
-    $scope.oldEmployee = angular.copy($scope.employee);
+    $scope.oldEmployee = angular.copy(employee);
     $scope.saveData = function () {
         $http({
             method: 'POST',
@@ -99,21 +100,23 @@ app.controller('editModalController', function ($scope, $modalInstance, $http, e
             data: $scope.employee})
             .success(function (data, status, headers, config) {
                 $scope.alerts.push(data);
-                if (data.status != "success") {
-                    angular.copy($scope.employee, $scope.oldEmployee);
+                if (data.status == "success") {
+                    angular.copy($scope.employee,$scope.oldEmployee);
                 }
                 $modalInstance.close();
             })
             .error(function (data, status, headers, config) {
-                angular.copy($scope.employee, $scope.oldEmployee);
                 global.pageAlert(data, $scope, $modalInstance);
             });
 
     };
     $scope.closeModal = function () {
-        $scope.oldEmployee = angular.copy($scope.employee);
-        $modalInstance.dismiss('cancel');
+        $modalInstance.close();
     };
+
+    $scope.$on('modal.closing', function (event, data) {
+        angular.copy($scope.oldEmployee,$scope.employee);
+    });
     global.enableDatePickerForScope($scope);
 });
 

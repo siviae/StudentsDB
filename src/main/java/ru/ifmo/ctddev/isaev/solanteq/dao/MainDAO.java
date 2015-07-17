@@ -90,6 +90,7 @@ public class MainDAO {
     }
 
     public boolean updateEmployee(Employee employee) {
+        if(!employee.isValid()) return false;
         int modified = jdbcTemplate.update("UPDATE employee SET " +
                 "firstName=?, " +
                 "surname = ?, " +
@@ -103,6 +104,7 @@ public class MainDAO {
     }
 
     public boolean addEmployee(Employee employee) {
+        if(!employee.isValid()) return false;
         int modified = jdbcTemplate.update("INSERT INTO employee(firstName,surname,dateOfBirth,positionID,patronymic) " +
                         "VALUES (?,?,?,?,?) ",
                 employee.getFirstName(),employee.getSurname(),
@@ -112,6 +114,7 @@ public class MainDAO {
     }
 
     public boolean deleteEmployee(int employeeID) {
+        if(employeeID==0) return false;
         int modified = jdbcTemplate.update("DELETE FROM employee WHERE employeeID=? " ,
                 employeeID);
         return modified==1;
