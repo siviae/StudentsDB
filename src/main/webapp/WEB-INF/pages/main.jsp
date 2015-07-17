@@ -1,6 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
-<%@page pageEncoding="utf-8" %>
 <!DOCTYPE html>
 <html ng-app="employeeApp">
 <head lang="en">
@@ -14,67 +11,10 @@
 </head>
 <body ng-controller="employeeAppController">
 
+<%@include file="editModal.jsp"%>
+<%@include file="addModal.jsp"%>
+<%@include file="deleteModal.jsp"%>
 
-<script type="text/ng-template" id="editModalContent.html">
-        <div class="modal-header">
-            <button type="button" class="close" ng-click="closeModal()" ><span
-                    aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="addProductModalLabel">Сотрудник с ID {{employee.employeeID}}</h4>
-        </div>
-        <div class="modal-body">
-            <div class="form-group" id="alertZone">
-
-            </div>
-            <div class="form-group">
-                <label for="formInput1">Должность</label>
-                <input type="text" class="form-control" id="formInput1"
-                       placeholder="Должность" ng-model="employee.position.title">
-            </div>
-            <div class="form-group">
-                <label for="formInput2">Фамилия</label>
-                <input type="text" class="form-control" id="formInput2"
-                       placeholder="Фамилия" ng-model="employee.surname">
-            </div>
-            <div class="form-group">
-                <label for="formInput3">Имя</label>
-                <input type="text" class="form-control" id="formInput3"
-                       placeholder="Имя" ng-model="employee.firstName">
-            </div>
-            <div class="form-group">
-                <label for="formInput4">Отчество</label>
-                <input type="text" class="form-control" id="formInput4"
-                       placeholder="Отчество" ng-model="employee.patronymic">
-            </div>
-            <div class="form-group">
-                <label for="formInput5">Дата рождения</label>
-                <input type="text" class="form-control" id="formInput5"
-                       placeholder="" ng-model="employee.dateOfBirth">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default"  ng-click="closeModal()">Закрыть</button>
-            <button type="button" class="btn btn-primary"  ng-click="saveData()">Сохранить</button>
-        </div>
-</script>
-
-<div class="modal fade" id="maybeDeleteModal" tabindex="-1" role="dialog" aria-labelledby="maybeDeleteModalLabel">
-
-    <form>
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="maybeDeleteModalLabel"></h4>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
-                    <button id="productDeleteButton" type="button" class="btn btn-danger">Удалить</button>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
 <div class="container">
     <div ng-controller="AlertController">
         <alert ng-repeat="alert in alerts" type="{{alert.status}}" >{{alert.message}}
@@ -84,8 +24,8 @@
     </div>
     <div class="row" style="padding: 10px 0 10px 0;">
         <div class="col-xs-2">
-            <button type="button" id="openModalButton" class="btn btn-primary">
-                Добавить товар
+            <button type="button" id="openModalButton" class="btn btn-primary" ng-click="openAddModal()">
+                Добавить сотрудника
             </button>
         </div>
         <div class="col-xs-3">
@@ -100,7 +40,7 @@
     <table class="table table-bordered table-hover">
         <thead>
         <tr>
-            <th>ID</th>
+            <th style="width: 10%">ID</th>
             <th>Должность</th>
             <th>Фамилия</th>
             <th>Имя</th>
@@ -140,7 +80,8 @@
             <td class="patronymic">{{employee.patronymic}}</td>
             <td class="dateOfBurth">{{employee.dateOfBirth}}</td>
             <td class="prodButtons" style="width:100px;">
-                <button type="button" class="btn btn-default center-block" aria-label="Удалить" ng-click="">
+                <button type="button" class="btn btn-default center-block" aria-label="Удалить"
+                        ng-click="openDeleteModal($event,employee)">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                 </button>
             </td>
