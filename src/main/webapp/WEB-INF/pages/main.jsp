@@ -3,22 +3,24 @@
 <head lang="en">
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
     <title>База сотрудников</title>
-    <link rel="stylesheet" href="/res/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css"><%--
-    <script src="/res/plugins/angular.min.js"></script>--%>
+    <link rel="stylesheet" href="/res/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <%--
+        <script src="/res/plugins/angular.min.js"></script>--%>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
     <script src="/res/plugins/ui-bootstrap-tpls-0.13.0.min.js"></script>
     <script src="/res/js/common.js"></script>
+    <script src="/res/js/datepicker_config.js"></script>
 </head>
 <body ng-controller="employeeAppController">
 
-<%@include file="editModal.jsp"%>
-<%@include file="addModal.jsp"%>
-<%@include file="deleteModal.jsp"%>
+<%@include file="editModal.jsp" %>
+<%@include file="addModal.jsp" %>
+<%@include file="deleteModal.jsp" %>
 
-<div class="container">
+<div class="container" ng-controller="tableDateController">
     <div ng-controller="AlertController">
-        <alert ng-repeat="alert in alerts" type="{{alert.status}}" >{{alert.message}}
-            <button type="button" class="close" ng-click="closeAlert($index)" ><span
+        <alert ng-repeat="alert in alerts" type="{{alert.status}}">{{alert.message}}
+            <button type="button" class="close" ng-click="closeAlert($index)"><span
                     aria-hidden="true">&times;</span></button>
         </alert>
     </div>
@@ -54,7 +56,7 @@
                         </span>--%>
                 </a>
             </th>
-            <th>Дата рождения</th>
+            <th style="width: 20%">Дата рождения</th>
             <th>Действия</th>
         </tr>
         </thead>
@@ -69,7 +71,16 @@
             <td><input type="search" class="form-control" ng-model="selectedSurname"></td>
             <td><input type="search" class="form-control" ng-model="selectedFirstName"></td>
             <td><input type="search" class="form-control" ng-model="selectedPatronymic"></td>
-            <td><input type="search" class="form-control" data-provide="datepicker" ng-model="selectedDate"></td>
+            <td>
+                <p class="input-group">
+                    <input type="text" ng-model="selectedDate" datepicker-options="dateOptions" class="form-control" datepicker-popup="{{dateFormat}}"
+                           is-open="opened" ng-required="true"/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openDatePicker($event)"><i
+                                class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </p>
+            </td>
             <td></td>
         </tr>
         <tr class="editableRow" ng-repeat="employee in employees" ng-click="editEmployee(employee)">
@@ -78,7 +89,9 @@
             <td class="surname">{{employee.surname}}</td>
             <td class="firstName">{{employee.firstName}}</td>
             <td class="patronymic">{{employee.patronymic}}</td>
-            <td class="dateOfBurth">{{employee.dateOfBirth}}</td>
+            <td class="dateOfBurth">
+                <h4><span class="label label-info center-block">{{formatDate(employee.dateOfBirth)}}</span></h4>
+            </td>
             <td class="prodButtons" style="width:100px;">
                 <button type="button" class="btn btn-default center-block" aria-label="Удалить"
                         ng-click="openDeleteModal($event,employee)">

@@ -9,29 +9,36 @@
 
         </div>
         <div class="form-group">
-            <label for="formInput1">Должность</label>
-            <input type="text" class="form-control" id="formInput1"
+            <label for="addFormInput1">Должность</label>
+            <input type="text" class="form-control" id="addFormInput1"
                    placeholder="Должность" ng-model="employee.position.positionID">
         </div>
         <div class="form-group">
-            <label for="formInput2">Фамилия</label>
-            <input type="text" class="form-control" id="formInput2"
+            <label for="addFormInput2">Фамилия</label>
+            <input type="text" class="form-control" id="addFormInput2"
                    placeholder="Фамилия" ng-model="employee.surname">
         </div>
         <div class="form-group">
-            <label for="formInput3">Имя</label>
-            <input type="text" class="form-control" id="formInput3"
+            <label for="addFormInput3">Имя</label>
+            <input type="text" class="form-control" id="addFormInput3"
                    placeholder="Имя" ng-model="employee.firstName">
         </div>
         <div class="form-group">
-            <label for="formInput4">Отчество</label>
-            <input type="text" class="form-control" id="formInput4"
+            <label for="addFormInput4">Отчество</label>
+            <input type="text" class="form-control" id="addFormInput4"
                    placeholder="Отчество" ng-model="employee.patronymic">
         </div>
         <div class="form-group">
-            <label for="formInput5">Дата рождения</label>
-            <input type="text" class="form-control" id="formInput5"
-                   placeholder="" ng-model="employee.dateOfBirth">
+            <label for="addFormInput5">Дата рождения</label>
+            <p class="input-group">
+                <input type="text" ng-model="employee.dateOfBirth" datepicker-options="dateOptions" id="addFormInput5"
+                       class="form-control" datepicker-popup="{{dateFormat}}"
+                is-open="opened" ng-required="true"/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openDatePicker($event)"><i
+                                class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+            </p>
         </div>
     </div>
     <div class="modal-footer">
