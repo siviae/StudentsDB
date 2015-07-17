@@ -4,10 +4,13 @@
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
     <title>База сотрудников</title>
     <link rel="stylesheet" href="/res/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/res/plugins/ui-select/select.min.css">
     <%--
         <script src="/res/plugins/angular.min.js"></script>--%>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
+    <script src="//code.angularjs.org/1.2.20/angular-sanitize.min.js"></script>
     <script src="/res/plugins/ui-bootstrap-tpls-0.13.0.min.js"></script>
+    <script src="/res/plugins/ui-select/select.min.js"></script>
     <script src="/res/js/common.js"></script>
     <script src="/res/js/datepicker_config.js"></script>
 </head>
@@ -43,7 +46,7 @@
         <thead>
         <tr>
             <th style="width: 10%">ID</th>
-            <th>Должность</th>
+            <th style="width: 15%">Должность</th>
             <th>Фамилия</th>
             <th>Имя</th>
             <th>Отчество
@@ -64,9 +67,16 @@
         <tr>
             <td><input type="search" class="form-control" ng-model="selectedID"></td>
             <td>
-                <select ng-model="selectedPosition">
-                    <option ng-repeat="position in positions" ng-value="position.positionID">{{position.title}}</option>
-                </select>
+                <ui-select ng-model="selectedPosition"
+                           reset-search-input="false"
+                           theme="bootstrap">
+                    <ui-select-match placeholder="Не выбрана" allow-clear="true">
+                        {{$select.selected.title}}
+                    </ui-select-match>
+                    <ui-select-choices repeat="position in positions | filter: $select.search">
+                        <div ng-bind-html="position.title | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
             </td>
             <td><input type="search" class="form-control" ng-model="selectedSurname"></td>
             <td><input type="search" class="form-control" ng-model="selectedFirstName"></td>

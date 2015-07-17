@@ -10,8 +10,16 @@
         </div>
         <div class="form-group">
             <label for="editFormInput1">Должность</label>
-            <input type="text" class="form-control" id="editFormInput1"
-                   placeholder="Должность" ng-model="employee.position.title">
+            <ui-select ng-model="employee.position"
+                       reset-search-input="false"
+                       theme="bootstrap">
+                <ui-select-match placeholder="Не выбрана" allow-clear="true">
+                    {{$select.selected.title}}
+                </ui-select-match>
+                <ui-select-choices repeat="position in positions | filter: $select.search">
+                    <div ng-bind-html="position.title | highlight: $select.search"></div>
+                </ui-select-choices>
+            </ui-select>
         </div>
         <div class="form-group">
             <label for="editFormInput2">Фамилия</label>

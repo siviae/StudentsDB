@@ -1,4 +1,4 @@
-var app = angular.module('employeeApp', ['ui.bootstrap']);
+var app = angular.module('employeeApp', ['ui.bootstrap','ui.select','ngSanitize']);
 
 app.factory('global', function() {
     var result = {};
