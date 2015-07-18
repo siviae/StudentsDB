@@ -5,10 +5,8 @@
     <title>База сотрудников</title>
     <link rel="stylesheet" href="/res/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/res/plugins/ui-select/select.min.css">
-    <%--
-        <script src="/res/plugins/angular.min.js"></script>--%>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
-    <script src="//code.angularjs.org/1.2.20/angular-sanitize.min.js"></script>
+    <script src="/res/plugins/angular.min.js"></script>
+    <script src="/res/plugins/angular-sanitize.min.js"></script>
     <script src="/res/plugins/ui-bootstrap-tpls-0.13.0.min.js"></script>
     <script src="/res/plugins/ui-select/select.min.js"></script>
     <script src="/res/js/common.js"></script>

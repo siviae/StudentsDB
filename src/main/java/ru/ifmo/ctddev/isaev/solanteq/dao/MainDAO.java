@@ -8,7 +8,6 @@ import ru.ifmo.ctddev.isaev.solanteq.helpers.Pair;
 import ru.ifmo.ctddev.isaev.solanteq.pojo.Employee;
 import ru.ifmo.ctddev.isaev.solanteq.pojo.Position;
 
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -88,7 +87,7 @@ public class MainDAO {
     }
 
     public boolean updateEmployee(Employee employee) {
-        if (employee.getEmployeeID()==0 || !employee.isValid()) return false;
+        if (employee.getEmployeeID() == 0 || !employee.isValid()) return false;
         int modified = jdbcTemplate.update("UPDATE employee SET " +
                         "firstName=?, " +
                         "surname = ?, " +

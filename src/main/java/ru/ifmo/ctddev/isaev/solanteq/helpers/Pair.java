@@ -1,9 +1,6 @@
 package ru.ifmo.ctddev.isaev.solanteq.helpers;
 
-/**
- * Created by root on 7/14/15.
- */
-public class Pair<T,S> {
+public class Pair<T, S> {
     T first;
     S second;
 

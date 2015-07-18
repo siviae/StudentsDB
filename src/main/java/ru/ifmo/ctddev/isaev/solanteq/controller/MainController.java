@@ -4,14 +4,11 @@ package ru.ifmo.ctddev.isaev.solanteq.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import ru.ifmo.ctddev.isaev.solanteq.dao.MainDAO;
 import ru.ifmo.ctddev.isaev.solanteq.helpers.Pair;
 import ru.ifmo.ctddev.isaev.solanteq.pojo.Employee;
 import ru.ifmo.ctddev.isaev.solanteq.pojo.Position;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,13 +32,15 @@ public class MainController {
     }
 
 
-
     private boolean sortOk(String sort, String sortOrder) {
         boolean result = false;
-        for(String sorting : new String[]{"firstName","surname","patronymic","dateOfBirth"}){
-            if(sort.equals(sorting)) {result=true; break;}
+        for (String sorting : new String[]{"firstName", "surname", "patronymic", "dateOfBirth"}) {
+            if (sort.equals(sorting)) {
+                result = true;
+                break;
+            }
         }
-        result&= sortOrder.equals("asc") || sortOrder.equals("desc");
+        result &= sortOrder.equals("asc") || sortOrder.equals("desc");
         return result;
     }
 
@@ -58,13 +57,13 @@ public class MainController {
                                @RequestParam(value = "sortOrder", required = false) String sortOrder) {
         Map<String, Object> result = new HashMap<>();
         Date dateOfBirth = null;
-        if(sort!=null && sortOrder!=null && !sortOk(sort,sortOrder)) return result;
+        if (sort != null && sortOrder != null && !sortOk(sort, sortOrder)) return result;
         try {
             dateOfBirth = new SimpleDateFormat("dd.MM.yyyy").parse(date);
         } catch (ParseException ignored) {
         }
         Pair<List<Employee>, Collection<Position>> pair = dao.getAllEmployeesAndPositions(
-                employeeID, firstName, surname, patronymic, dateOfBirth, positionID, sort,sortOrder
+                employeeID, firstName, surname, patronymic, dateOfBirth, positionID, sort, sortOrder
         );
         result.put("employees", pair.getFirst());
         result.put("positions", pair.getSecond());

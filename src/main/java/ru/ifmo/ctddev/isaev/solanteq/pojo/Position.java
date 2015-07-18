@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * Created by root on 7/14/15.
  */
-public class Position implements Comparable<Position>,Serializable {
+public class Position implements Comparable<Position>, Serializable {
     private int positionID;
     private String title;
 
@@ -14,7 +14,12 @@ public class Position implements Comparable<Position>,Serializable {
         this.positionID = positionID;
         this.title = title;
     }
+
     public Position() {
+    }
+
+    public Position(int positionID) {
+        this.positionID = positionID;
     }
 
     public int getPositionID() {
@@ -27,10 +32,10 @@ public class Position implements Comparable<Position>,Serializable {
 
     @Override
     public int compareTo(Position o) {
-        return positionID-o.positionID;
+        return positionID - o.positionID;
     }
 
     public boolean isValid() {
-        return positionID!=0 && title!=null && !title.isEmpty();
+        return positionID != 0;
     }
 }
