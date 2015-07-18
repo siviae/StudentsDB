@@ -3,14 +3,14 @@
 <head lang="en">
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
     <title>База сотрудников</title>
-    <link rel="stylesheet" href="/res/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/res/plugins/ui-select/select.min.css">
-    <script src="/res/plugins/angular.min.js"></script>
-    <script src="/res/plugins/angular-sanitize.min.js"></script>
-    <script src="/res/plugins/ui-bootstrap-tpls-0.13.0.min.js"></script>
-    <script src="/res/plugins/ui-select/select.min.js"></script>
-    <script src="/res/js/common.js"></script>
-    <script src="/res/js/datepicker_config.js"></script>
+    <link rel="stylesheet" href="./res/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./res/plugins/ui-select/select.min.css">
+    <script src="./res/plugins/angular.min.js"></script>
+    <script src="./res/plugins/angular-sanitize.min.js"></script>
+    <script src="./res/plugins/ui-bootstrap-tpls-0.13.0.min.js"></script>
+    <script src="./res/plugins/ui-select/select.min.js"></script>
+    <script src="./res/js/common.js"></script>
+    <script src="./res/js/datepicker_config.js"></script>
     <style>
         .non-clickable {
             pointer-events: none;

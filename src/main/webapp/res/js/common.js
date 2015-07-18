@@ -23,7 +23,7 @@ app.factory('global', function ($filter) {
             if (scope.filter.dateOfBirth) dateOfBirth = $filter('date')(scope.filter.dateOfBirth, result.DATE_FORMAT());
             http({
                 method: 'GET',
-                url: '/getAll',
+                url: './getAll',
                 contentType: "application/json",
                 params: {
                     employeeID: scope.filter.employeeID,
@@ -164,7 +164,7 @@ app.controller('editModalController', function ($scope, $modalInstance, $http, e
         $scope.modalStatus.operationInProcess = true;
         $http({
             method: 'POST',
-            url: '/editEmployee',
+            url: './editEmployee',
             contentType: "application/json",
             data: $scope.employee})
             .success(function (data, status, headers, config) {
@@ -199,7 +199,7 @@ app.controller('addModalController', function ($scope, $modalInstance, $http, gl
         $scope.modalStatus.operationInProcess = true;
         $http({
             method: 'POST',
-            url: '/addEmployee',
+            url: './addEmployee',
             contentType: "application/json",
             data: $scope.employee})
             .success(function (data, status, headers, config) {
@@ -230,7 +230,7 @@ app.controller('deleteModalController', function ($scope, $modalInstance, $http,
         $scope.modalStatus.operationInProcess = true;
         $http({
             method: 'POST',
-            url: '/deleteEmployee',
+            url: './deleteEmployee',
             params: {
                 employeeID: employee.employeeID
             }
