@@ -65,10 +65,11 @@
         </thead>
         <tbody>
         <tr>
-            <td><input type="search" class="form-control" ng-model="selectedID"></td>
+            <td><input type="text" class="form-control" ng-model="filter.employeeID" ng-change="reloadTable()"></td>
             <td>
-                <ui-select ng-model="selectedPosition"
+                <ui-select ng-model="filter.position"
                            reset-search-input="false"
+                           ng-change="reloadTable()"
                            theme="bootstrap">
                     <ui-select-match placeholder="Не выбрана" allow-clear="true">
                         {{$select.selected.title}}
@@ -78,12 +79,17 @@
                     </ui-select-choices>
                 </ui-select>
             </td>
-            <td><input type="search" class="form-control" ng-model="selectedSurname"></td>
-            <td><input type="search" class="form-control" ng-model="selectedFirstName"></td>
-            <td><input type="search" class="form-control" ng-model="selectedPatronymic"></td>
+            <td><input type="text" class="form-control"
+                       ng-change="reloadTable()" ng-model="filter.surname"></td>
+            <td><input type="text" class="form-control"
+                       ng-change="reloadTable()" ng-model="filter.firstName"></td>
+            <td><input type="text" class="form-control"
+                       ng-change="reloadTable()" ng-model="filter.patronymic"></td>
             <td>
                 <p class="input-group">
-                    <input type="text" ng-model="selectedDate" datepicker-options="dateOptions" class="form-control" datepicker-popup="{{dateFormat}}"
+                    <input type="text" ng-model="filter.dateOfBirth"
+                           ng-change="reloadTable()"
+                           datepicker-options="dateOptions" class="form-control" datepicker-popup="{{dateFormat}}"
                            is-open="opened" ng-required="true"/>
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default" ng-click="openDatePicker($event)"><i
@@ -91,7 +97,12 @@
                     </span>
                 </p>
             </td>
-            <td></td>
+            <td>
+                <button type="button" class="btn btn-success center-block" aria-label="Обновить"
+                        ng-click="reloadTable()">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                </button>
+            </td>
         </tr>
         <tr class="editableRow" ng-repeat="employee in employees" ng-click="editEmployee(employee)">
             <td class="employeeID">{{employee.employeeID}}</td>

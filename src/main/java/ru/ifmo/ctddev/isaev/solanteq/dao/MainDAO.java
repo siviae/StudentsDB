@@ -28,24 +28,33 @@ public class MainDAO {
                                           String patronymic,
                                           Date dateOfBirth,
                                           Integer positionID) {
-        final HashMap<Integer, Position> positions = new HashMap<>();
+
+        final Map<Integer, Position> positions = new HashMap<>();
+        jdbcTemplate.query("SELECT * FROM position WHERE 1", new Object[]{}, new RowMapper<Position>() {
+            @Override
+            public Position mapRow(ResultSet rs, int i) throws SQLException {
+                Position pos = new Position(rs.getInt("positionID"),rs.getString("title"));
+                if(!positions.containsKey(pos.getPositionID())) positions.put(pos.getPositionID(), pos);
+                return pos;
+            }
+        });
         List<Object> params = new ArrayList<>();
-        StringBuilder queryString = new StringBuilder("SELECT * FROM employee JOIN position USING (positionID) WHERE ");
+        StringBuilder queryString = new StringBuilder("SELECT * FROM employee WHERE ");
         if (employeeID != null) {
             queryString.append(" employeeID = ? AND ");
             params.add(employeeID);
         }
         if (firstName != null) {
-            queryString.append(" firstName LIKE %?% AND ");
-            params.add(firstName);
+            queryString.append(" firstName LIKE ? AND ");
+            params.add(String.format("%%%s%%",firstName));
         }
         if (surname != null) {
-            queryString.append(" surname LIKE %?% AND ");
-            params.add(surname);
+            queryString.append(" surname LIKE ? AND ");
+            params.add(String.format("%%%s%%",surname));
         }
         if (patronymic != null) {
-            queryString.append(" patronymic LIKE %?% AND ");
-            params.add(patronymic);
+            queryString.append(" patronymic LIKE ? AND ");
+            params.add(String.format("%%%s%%",patronymic));
         }
         if (dateOfBirth != null) {
             queryString.append(" dateOfBirth = ? AND ");
@@ -58,22 +67,19 @@ public class MainDAO {
         queryString.append(" 1");
 
 
-        List<Employee> result =  jdbcTemplate.query(queryString.toString(), params.toArray(), new RowMapper<Employee>() {
+        List<Employee> employees =  jdbcTemplate.query(queryString.toString(), params.toArray(), new RowMapper<Employee>() {
             @Override
             public Employee mapRow(ResultSet rs, int i) throws SQLException {
-                Position pos = new Position(rs.getInt("positionID"), rs.getString("title"));
-                if(!positions.containsKey(pos.getPositionID())) positions.put(pos.getPositionID(), pos);
-                pos = positions.get(pos.getPositionID());
                 return new Employee(
                         rs.getInt("employeeID"),
                         rs.getString("firstName"),
                         rs.getString("surname"),
                         rs.getString("patronymic"),
                         rs.getDate("dateOfBirth"),
-                        pos);
+                        positions.get(rs.getInt("positionID")));
             }
         });
-        return new Pair<>(result, positions.values());
+        return new Pair<>(employees, positions.values());
     }
 
     public List<Employee> getAllEmployees(Integer employeeID,

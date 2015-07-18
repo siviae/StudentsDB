@@ -1,27 +1,48 @@
 var app = angular.module('employeeApp', ['ui.bootstrap','ui.select','ngSanitize']);
 
-app.factory('global', function() {
+app.factory('global', function($filter) {
     var result = {};
-    result.reloadTable =
-        function (http, scope) {
-            http.get('/getAll').success(function (data) {
-                scope.employees.length = 0;
-                scope.positions.length = 0;
-                scope.employees.push.apply(scope.employees, data.employees);
-                scope.positions.push.apply(scope.positions, data.positions);
-            });
-        };
-    result.pageAlert = function (data, scope, modalInstance, global) {
-            if (data && data.success && data.message) {
-                scope.alerts.push(data);
-            } else {
-                alert(data);
-            }
-            modalInstance.close();
-        };
+
+    result.pageAlert = function (data, scope) {
+        if (data && data.success && data.message) {
+            scope.alerts.push(data);
+        } else {
+            alert(data);
+        }
+    };
     result.DATE_FORMAT = function(){
         return 'dd.MM.yyyy';
     };
+
+    result.reloadTable =
+        function (http, scope) {
+            var positionID = "";
+            if(scope.filter.position) positionID = scope.filter.position.positionID;
+            var dateOfBirth = "";
+            if(scope.filter.dateOfBirth) dateOfBirth= $filter('date')(scope.filter.dateOfBirth, result.DATE_FORMAT());
+                http({
+                    method: 'GET',
+                    url: '/getAll',
+                    contentType: "application/json",
+                    params: {
+                        employeeID: scope.filter.employeeID,
+                        firstName: scope.filter.firstName,
+                        surname: scope.filter.surname,
+                        patronymic: scope.filter.patronymic,
+                        dateOfBirth: dateOfBirth,
+                        positionID: positionID
+                    }
+                })
+                .success(function (data, status, headers, config) {
+                    scope.employees.length = 0;
+                    scope.positions.length = 0;
+                    scope.employees.push.apply(scope.employees, data.employees);
+                    scope.positions.push.apply(scope.positions, data.positions);
+                })
+                .error(function (data, status, headers, config) {
+                    result.pageAlert({status: "danger", message: "Не удалось обновить список пользователей"}, scope);
+                });
+        };
     result.enableDatePickerForScope = function(scope){
 
         scope.clear = function () {
@@ -46,7 +67,11 @@ app.factory('global', function() {
 });
 
 app.controller('employeeAppController', function ($scope, $modal, $http, $log,global) {
+    $scope.filter = {};
     global.reloadTable($http, $scope);
+    $scope.reloadTable = function() {
+        global.reloadTable($http, $scope);
+    };
     $scope.alerts = [];
     $scope.employees = [];
     $scope.positions = [];
@@ -99,14 +124,15 @@ app.controller('editModalController', function ($scope, $modalInstance, $http, e
             contentType: "application/json",
             data: $scope.employee})
             .success(function (data, status, headers, config) {
-                $scope.alerts.push(data);
                 if (data.status == "success") {
                     angular.copy($scope.employee,$scope.oldEmployee);
                 }
+                global.pageAlert(data, $scope);
                 $modalInstance.close();
             })
             .error(function (data, status, headers, config) {
-                global.pageAlert(data, $scope, $modalInstance);
+                global.pageAlert(data, $scope);
+                $modalInstance.close();
             });
 
     };
@@ -129,14 +155,15 @@ app.controller('addModalController', function ($scope, $modalInstance, $http, gl
             contentType: "application/json",
             data: $scope.employee})
             .success(function (data, status, headers, config) {
-                $scope.alerts.push(data);
                 if (data.status == "success") {
                     global.reloadTable($http, $scope);
                 }
+                global.pageAlert(data, $scope);
                 $modalInstance.close();
             })
             .error(function (data, status, headers, config) {
-                global.pageAlert(data, $scope, $modalInstance);
+                global.pageAlert(data, $scope);
+                $modalInstance.close();
             });
 
     };
@@ -157,14 +184,15 @@ app.controller('deleteModalController', function ($scope, $modalInstance, $http,
             }
         })
             .success(function (data, status, headers, config) {
-                $scope.alerts.push(data);
                 if (data.status == "success") {
                     global.reloadTable($http, $scope);
                 }
+                global.pageAlert(data, $scope);
                 $modalInstance.close();
             })
             .error(function (data, status, headers, config) {
-                global.pageAlert(data, $scope, $modalInstance);
+                global.pageAlert(data, $scope);
+                $modalInstance.close();
             });
 
     };
