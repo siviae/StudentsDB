@@ -1,49 +1,54 @@
-var app = angular.module('employeeApp', ['ui.bootstrap','ui.select','ngSanitize']);
+var app = angular.module('employeeApp', ['ui.bootstrap', 'ui.select', 'ngSanitize']);
 
-app.factory('global', function($filter) {
+app.factory('global', function ($filter) {
     var result = {};
 
     result.pageAlert = function (data, scope) {
-        if (data && data.success && data.message) {
+        if (data && data.status && data.message) {
             scope.alerts.push(data);
         } else {
             alert(data);
         }
     };
-    result.DATE_FORMAT = function(){
+    result.DATE_FORMAT = function () {
         return 'dd.MM.yyyy';
     };
 
     result.reloadTable =
         function (http, scope) {
+            scope.tableStatus.block();
             var positionID = "";
-            if(scope.filter.position) positionID = scope.filter.position.positionID;
+            if (scope.filter.position) positionID = scope.filter.position.positionID;
             var dateOfBirth = "";
-            if(scope.filter.dateOfBirth) dateOfBirth= $filter('date')(scope.filter.dateOfBirth, result.DATE_FORMAT());
-                http({
-                    method: 'GET',
-                    url: '/getAll',
-                    contentType: "application/json",
-                    params: {
-                        employeeID: scope.filter.employeeID,
-                        firstName: scope.filter.firstName,
-                        surname: scope.filter.surname,
-                        patronymic: scope.filter.patronymic,
-                        dateOfBirth: dateOfBirth,
-                        positionID: positionID
-                    }
-                })
+            if (scope.filter.dateOfBirth) dateOfBirth = $filter('date')(scope.filter.dateOfBirth, result.DATE_FORMAT());
+            http({
+                method: 'GET',
+                url: '/getAll',
+                contentType: "application/json",
+                params: {
+                    employeeID: scope.filter.employeeID,
+                    firstName: scope.filter.firstName,
+                    surname: scope.filter.surname,
+                    patronymic: scope.filter.patronymic,
+                    dateOfBirth: dateOfBirth,
+                    positionID: positionID,
+                    sort: scope.pageSort.by,
+                    sortOrder: scope.pageSort.order
+                }
+            })
                 .success(function (data, status, headers, config) {
                     scope.employees.length = 0;
                     scope.positions.length = 0;
                     scope.employees.push.apply(scope.employees, data.employees);
                     scope.positions.push.apply(scope.positions, data.positions);
+                    scope.tableStatus.unblock();
                 })
                 .error(function (data, status, headers, config) {
                     result.pageAlert({status: "danger", message: "Не удалось обновить список пользователей"}, scope);
+                    scope.tableStatus.unblock();
                 });
         };
-    result.enableDatePickerForScope = function(scope){
+    result.enableDatePickerForScope = function (scope) {
 
         scope.clear = function () {
             scope.selectedDate = null;
@@ -66,15 +71,40 @@ app.factory('global', function($filter) {
     return result;
 });
 
-app.controller('employeeAppController', function ($scope, $modal, $http, $log,global) {
+app.controller('employeeAppController', function ($scope, $modal, $http, $log, global) {
     $scope.filter = {};
+    $scope.pageSort = {by: "surname", order: "asc"};
+    $scope.tableStatus = {
+        blocked: false,
+        block: function () {
+            this.blocked = true;
+        },
+        unblock: function () {
+            this.blocked = false;
+        }
+    };
     global.reloadTable($http, $scope);
-    $scope.reloadTable = function() {
+    $scope.reloadTable = function () {
         global.reloadTable($http, $scope);
     };
     $scope.alerts = [];
     $scope.employees = [];
     $scope.positions = [];
+
+    $scope.changeSorting = function (by) {
+        function opposite(order) {
+            return order == 'asc' ? 'desc' : 'asc';
+        }
+
+        if ($scope.pageSort.by == by) {
+            $scope.pageSort.order = opposite($scope.pageSort.order);
+        } else {
+            $scope.pageSort.by = by;
+            $scope.pageSort.order = 'asc';
+        }
+        $scope.reloadTable();
+    };
+
     $scope.editEmployee = function (employee) {
 
         var modalInstance = $modal.open({
@@ -114,10 +144,12 @@ app.controller('employeeAppController', function ($scope, $modal, $http, $log,gl
 
 });
 
-app.controller('editModalController', function ($scope, $modalInstance, $http, employee,global) {
+app.controller('editModalController', function ($scope, $modalInstance, $http, employee, global) {
     $scope.employee = employee;
     $scope.oldEmployee = angular.copy(employee);
+    $scope.modalStatus = {operationInProcess: false};
     $scope.saveData = function () {
+        $scope.modalStatus.operationInProcess = true;
         $http({
             method: 'POST',
             url: '/editEmployee',
@@ -125,13 +157,15 @@ app.controller('editModalController', function ($scope, $modalInstance, $http, e
             data: $scope.employee})
             .success(function (data, status, headers, config) {
                 if (data.status == "success") {
-                    angular.copy($scope.employee,$scope.oldEmployee);
+                    angular.copy($scope.employee, $scope.oldEmployee);
                 }
                 global.pageAlert(data, $scope);
+                $scope.modalStatus.operationInProcess = false;
                 $modalInstance.close();
             })
             .error(function (data, status, headers, config) {
                 global.pageAlert(data, $scope);
+                $scope.modalStatus.operationInProcess = false;
                 $modalInstance.close();
             });
 
@@ -141,14 +175,16 @@ app.controller('editModalController', function ($scope, $modalInstance, $http, e
     };
 
     $scope.$on('modal.closing', function (event, data) {
-        angular.copy($scope.oldEmployee,$scope.employee);
+        angular.copy($scope.oldEmployee, $scope.employee);
     });
     global.enableDatePickerForScope($scope);
 });
 
 app.controller('addModalController', function ($scope, $modalInstance, $http, global) {
     $scope.employee = {firstName: "", surname: "", patronymic: "", positionID: "", dateOfBirth: ""};
+    $scope.modalStatus = {operationInProcess: false};
     $scope.addEmployee = function () {
+        $scope.modalStatus.operationInProcess = true;
         $http({
             method: 'POST',
             url: '/addEmployee',
@@ -159,10 +195,12 @@ app.controller('addModalController', function ($scope, $modalInstance, $http, gl
                     global.reloadTable($http, $scope);
                 }
                 global.pageAlert(data, $scope);
+                $scope.modalStatus.operationInProcess = false;
                 $modalInstance.close();
             })
             .error(function (data, status, headers, config) {
                 global.pageAlert(data, $scope);
+                $scope.modalStatus.operationInProcess = false;
                 $modalInstance.close();
             });
 
@@ -175,7 +213,9 @@ app.controller('addModalController', function ($scope, $modalInstance, $http, gl
 
 app.controller('deleteModalController', function ($scope, $modalInstance, $http, employee, global) {
     $scope.employee = employee;
+    $scope.modalStatus = {operationInProcess: false};
     $scope.deleteEmployee = function () {
+        $scope.modalStatus.operationInProcess = true;
         $http({
             method: 'POST',
             url: '/deleteEmployee',
@@ -188,10 +228,12 @@ app.controller('deleteModalController', function ($scope, $modalInstance, $http,
                     global.reloadTable($http, $scope);
                 }
                 global.pageAlert(data, $scope);
+                $scope.modalStatus = {operationInProcess: false};
                 $modalInstance.close();
             })
             .error(function (data, status, headers, config) {
                 global.pageAlert(data, $scope);
+                $scope.modalStatus = {operationInProcess: false};
                 $modalInstance.close();
             });
 

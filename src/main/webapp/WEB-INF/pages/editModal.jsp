@@ -75,7 +75,7 @@
                     class="btn btn-default"
                     ng-click="closeModal()">Закрыть
             </button>
-            <button type="button" ng-disabled="editForm.$invalid" class="btn btn-primary" ng-click="saveData()">
+            <button type="button" ng-disabled="editForm.$invalid  || modalStatus.operationInProcess" class="btn btn-primary" ng-click="saveData()">
                 Сохранить
             </button>
         </div>

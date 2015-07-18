@@ -6,6 +6,6 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default"  ng-click="closeModal()">Закрыть</button>
-        <button type="button" class="btn btn-danger"  ng-click="deleteEmployee()">Удалить</button>
+        <button type="button" class="btn btn-danger" ng-disabled="modalStatus.operationInProcess" ng-click="deleteEmployee()">Удалить</button>
     </div>
 </script>

@@ -13,6 +13,12 @@
     <script src="/res/plugins/ui-select/select.min.js"></script>
     <script src="/res/js/common.js"></script>
     <script src="/res/js/datepicker_config.js"></script>
+    <style>
+        .non-clickable {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    </style>
 </head>
 <body ng-controller="employeeAppController">
 
@@ -21,45 +27,60 @@
 <%@include file="deleteModal.jsp" %>
 
 <div class="container" ng-controller="tableDateController">
-    <div ng-controller="AlertController">
+    <div ng-controller="AlertController" style="margin-top: 10px">
         <alert ng-repeat="alert in alerts" type="{{alert.status}}">{{alert.message}}
             <button type="button" class="close" ng-click="closeAlert($index)"><span
                     aria-hidden="true">&times;</span></button>
         </alert>
     </div>
-    <div class="row" style="padding: 10px 0 10px 0;">
+    <div class="row" style="padding: 0 0 10px 0;">
         <div class="col-xs-2">
             <button type="button" id="openModalButton" class="btn btn-primary" ng-click="openAddModal()">
                 Добавить сотрудника
             </button>
         </div>
-        <div class="col-xs-3">
-        </div>
-        <div class="col-xs-3">
-            <h4><%--<?= $recordsOnPage ?> записей на странице--%></h4>
-        </div>
-        <div class="col-xs-4">
-            <h4><%--Страница <?= $page + 1 ?> из <?= $maxPage + 1 ?>--%></h4>
-        </div>
     </div>
-    <table class="table table-bordered table-hover">
+    <table class="table table-bordered table-hover" ng-class="{'non-clickable': tableStatus.blocked}">
         <thead>
         <tr>
             <th style="width: 10%">ID</th>
             <th style="width: 15%">Должность</th>
-            <th>Фамилия</th>
-            <th>Имя</th>
-            <th>Отчество
-                <a href="#" onclick="changeOrder('price','<?= $sort_by ?>','<?= $order ?>','');">
-                    <%--<span style="color: grey" class="glyphicon
-                        <?php if ($sort_by == "productID"): ?>glyphicon-sort<?php endif; ?>
-                        <?php if ($sort_by == "price" && $order == "asc"): ?>glyphicon-sort-by-attributes<?php endif; ?>
-                        <?php if ($sort_by == "price" && $order == "desc"): ?>glyphicon-sort-by-attributes-alt<?php endif; ?>
-                        pull-right" aria-hidden="true">
-                        </span>--%>
-                </a>
+            <th>Фамилия
+                <span style="color: grey"
+                      ng-click="changeSorting('surname')"
+                      class="glyphicon glyphicon-sort pull-right"
+                      ng-class="{'glyphicon-sort-by-alphabet' : pageSort.by == 'surname' && pageSort.order == 'asc',
+                                 'glyphicon-sort-by-alphabet-alt' : pageSort.by == 'surname' && pageSort.order == 'desc'}"
+                      aria-hidden="true">
+                </span>
             </th>
-            <th style="width: 20%">Дата рождения</th>
+            <th>Имя
+                <span style="color: grey"
+                      ng-click="changeSorting('firstName')"
+                      class="glyphicon glyphicon-sort pull-right"
+                      ng-class="{'glyphicon-sort-by-alphabet' : pageSort.by == 'firstName' && pageSort.order == 'asc',
+                                 'glyphicon-sort-by-alphabet-alt' : pageSort.by == 'firstName' && pageSort.order == 'desc'}"
+                      aria-hidden="true">
+                </span>
+            </th>
+            <th>Отчество
+                    <span style="color: grey"
+                          ng-click="changeSorting('patronymic')"
+                          class="glyphicon glyphicon-sort pull-right"
+                          ng-class="{'glyphicon-sort-by-alphabet' : pageSort.by == 'patronymic' && pageSort.order == 'asc',
+                                     'glyphicon-sort-by-alphabet-alt' : pageSort.by == 'patronymic' && pageSort.order == 'desc'}"
+                          aria-hidden="true">
+                    </span>
+            </th>
+            <th style="width: 20%">Дата рождения
+                <span style="color: grey"
+                      ng-click="changeSorting('dateOfBirth')"
+                      class="glyphicon glyphicon-sort pull-right"
+                      ng-class="{'glyphicon-sort-by-attributes' : pageSort.by == 'dateOfBirth' && pageSort.order == 'asc',
+                                         'glyphicon-sort-by-attributes-alt' : pageSort.by == 'dateOfBirth' && pageSort.order == 'desc'}"
+                      aria-hidden="true">
+                </span>
+            </th>
             <th>Действия</th>
         </tr>
         </thead>

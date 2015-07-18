@@ -24,6 +24,7 @@ public class Employee implements Comparable<Employee>, Serializable {
         this.dateOfBirth = dateOfBirth;
         this.position = position;
     }
+
     public Employee() {//do not remove, used for deserializing
     }
 
@@ -70,14 +71,13 @@ public class Employee implements Comparable<Employee>, Serializable {
 
     @Override
     public int compareTo(Employee o) {
-        return employeeID-o.employeeID;
+        return employeeID - o.employeeID;
     }
 
-    public boolean isValid(){
-        return employeeID!=0
-                && firstName!=null && !firstName.isEmpty()
-                && surname !=null && !surname.isEmpty()
-                && patronymic!=null && !patronymic.isEmpty()
-                && dateOfBirth!=null && position.isValid();
+    public boolean isValid() {
+        return firstName != null && !firstName.isEmpty()
+                && surname != null && !surname.isEmpty()
+                && patronymic != null && !patronymic.isEmpty()
+                && dateOfBirth != null && position.isValid();
     }
 }

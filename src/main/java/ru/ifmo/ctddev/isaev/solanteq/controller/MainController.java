@@ -34,6 +34,17 @@ public class MainController {
         return "main.jsp";
     }
 
+
+
+    private boolean sortOk(String sort, String sortOrder) {
+        boolean result = false;
+        for(String sorting : new String[]{"firstName","surname","patronymic","dateOfBirth"}){
+            if(sort.equals(sorting)) {result=true; break;}
+        }
+        result&= sortOrder.equals("asc") || sortOrder.equals("desc");
+        return result;
+    }
+
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     public
     @ResponseBody
@@ -42,15 +53,18 @@ public class MainController {
                                @RequestParam(value = "surname", required = false) String surname,
                                @RequestParam(value = "patronymic", required = false) String patronymic,
                                @RequestParam(value = "dateOfBirth", required = false) String date,
-                               @RequestParam(value = "positionID", required = false) Integer positionID) {
+                               @RequestParam(value = "positionID", required = false) Integer positionID,
+                               @RequestParam(value = "sort", required = false) String sort,
+                               @RequestParam(value = "sortOrder", required = false) String sortOrder) {
         Map<String, Object> result = new HashMap<>();
         Date dateOfBirth = null;
+        if(sort!=null && sortOrder!=null && !sortOk(sort,sortOrder)) return result;
         try {
             dateOfBirth = new SimpleDateFormat("dd.MM.yyyy").parse(date);
         } catch (ParseException ignored) {
         }
         Pair<List<Employee>, Collection<Position>> pair = dao.getAllEmployeesAndPositions(
-                employeeID, firstName, surname, patronymic, dateOfBirth, positionID
+                employeeID, firstName, surname, patronymic, dateOfBirth, positionID, sort,sortOrder
         );
         result.put("employees", pair.getFirst());
         result.put("positions", pair.getSecond());

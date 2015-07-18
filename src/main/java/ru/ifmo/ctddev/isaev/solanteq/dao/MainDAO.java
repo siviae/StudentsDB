@@ -22,19 +22,21 @@ public class MainDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public Pair<List<Employee>,Collection<Position>> getAllEmployeesAndPositions(Integer employeeID,
-                                          String firstName,
-                                          String surname,
-                                          String patronymic,
-                                          Date dateOfBirth,
-                                          Integer positionID) {
+    public Pair<List<Employee>, Collection<Position>> getAllEmployeesAndPositions(Integer employeeID,
+                                                                                  String firstName,
+                                                                                  String surname,
+                                                                                  String patronymic,
+                                                                                  Date dateOfBirth,
+                                                                                  Integer positionID,
+                                                                                  String sort,
+                                                                                  String sortOrder) {
 
         final Map<Integer, Position> positions = new HashMap<>();
         jdbcTemplate.query("SELECT * FROM position WHERE 1", new Object[]{}, new RowMapper<Position>() {
             @Override
             public Position mapRow(ResultSet rs, int i) throws SQLException {
-                Position pos = new Position(rs.getInt("positionID"),rs.getString("title"));
-                if(!positions.containsKey(pos.getPositionID())) positions.put(pos.getPositionID(), pos);
+                Position pos = new Position(rs.getInt("positionID"), rs.getString("title"));
+                if (!positions.containsKey(pos.getPositionID())) positions.put(pos.getPositionID(), pos);
                 return pos;
             }
         });
@@ -46,15 +48,15 @@ public class MainDAO {
         }
         if (firstName != null) {
             queryString.append(" firstName LIKE ? AND ");
-            params.add(String.format("%%%s%%",firstName));
+            params.add(String.format("%%%s%%", firstName));
         }
         if (surname != null) {
             queryString.append(" surname LIKE ? AND ");
-            params.add(String.format("%%%s%%",surname));
+            params.add(String.format("%%%s%%", surname));
         }
         if (patronymic != null) {
             queryString.append(" patronymic LIKE ? AND ");
-            params.add(String.format("%%%s%%",patronymic));
+            params.add(String.format("%%%s%%", patronymic));
         }
         if (dateOfBirth != null) {
             queryString.append(" dateOfBirth = ? AND ");
@@ -64,10 +66,13 @@ public class MainDAO {
             queryString.append(" positionID = ? AND ");
             params.add(positionID);
         }
-        queryString.append(" 1");
+        queryString.append(" 1 ");
+        if (sort != null && sortOrder != null) {
+            queryString.append(String.format(" ORDER BY %s %s", sort, sortOrder));
+        }
 
 
-        List<Employee> employees =  jdbcTemplate.query(queryString.toString(), params.toArray(), new RowMapper<Employee>() {
+        List<Employee> employees = jdbcTemplate.query(queryString.toString(), params.toArray(), new RowMapper<Employee>() {
             @Override
             public Employee mapRow(ResultSet rs, int i) throws SQLException {
                 return new Employee(
@@ -82,47 +87,34 @@ public class MainDAO {
         return new Pair<>(employees, positions.values());
     }
 
-    public List<Employee> getAllEmployees(Integer employeeID,
-                                          String firstName,
-                                          String surname,
-                                          String patronymic,
-                                          Date dateOfBirth,
-                                          Integer positionID) {
-        return getAllEmployeesAndPositions(employeeID, firstName, surname, patronymic, dateOfBirth, positionID).getFirst();
-    }
-
-    public Pair<List<Employee>, Collection<Position>> getAllEmployeesAndPositions() {
-        return getAllEmployeesAndPositions(null, null, null, null, null, null);
-    }
-
     public boolean updateEmployee(Employee employee) {
-        if(!employee.isValid()) return false;
+        if (employee.getEmployeeID()==0 || !employee.isValid()) return false;
         int modified = jdbcTemplate.update("UPDATE employee SET " +
-                "firstName=?, " +
-                "surname = ?, " +
-                "dateOfBirth = ?, " +
-                "positionID = ?, " +
-                "patronymic = ? WHERE employeeID=?",
-                employee.getFirstName(),employee.getSurname(),
+                        "firstName=?, " +
+                        "surname = ?, " +
+                        "dateOfBirth = ?, " +
+                        "positionID = ?, " +
+                        "patronymic = ? WHERE employeeID=?",
+                employee.getFirstName(), employee.getSurname(),
                 employee.getDateOfBirth(), employee.getPosition().getPositionID(),
                 employee.getPatronymic(), employee.getEmployeeID());
-        return modified==1;
+        return modified == 1;
     }
 
     public boolean addEmployee(Employee employee) {
-        if(!employee.isValid()) return false;
+        if (!employee.isValid()) return false;
         int modified = jdbcTemplate.update("INSERT INTO employee(firstName,surname,dateOfBirth,positionID,patronymic) " +
                         "VALUES (?,?,?,?,?) ",
-                employee.getFirstName(),employee.getSurname(),
+                employee.getFirstName(), employee.getSurname(),
                 employee.getDateOfBirth(), employee.getPosition().getPositionID(),
                 employee.getPatronymic());
-        return modified==1;
+        return modified == 1;
     }
 
     public boolean deleteEmployee(int employeeID) {
-        if(employeeID==0) return false;
-        int modified = jdbcTemplate.update("DELETE FROM employee WHERE employeeID=? " ,
+        if (employeeID == 0) return false;
+        int modified = jdbcTemplate.update("DELETE FROM employee WHERE employeeID=? ",
                 employeeID);
-        return modified==1;
+        return modified == 1;
     }
 }

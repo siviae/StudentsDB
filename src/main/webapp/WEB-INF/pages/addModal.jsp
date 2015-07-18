@@ -74,7 +74,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" ng-click="closeModal()">Закрыть</button>
-            <button type="button" ng-disabled="addForm.$invalid" class="btn btn-primary" ng-click="addEmployee()">
+            <button type="button" ng-disabled="addForm.$invalid || modalStatus.operationInProcess" class="btn btn-primary" ng-click="addEmployee()">
                 Сохранить
             </button>
         </div>
