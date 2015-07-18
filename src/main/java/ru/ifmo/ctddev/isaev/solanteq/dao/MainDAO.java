@@ -28,7 +28,7 @@ public class MainDAO {
                                                                                   Date dateOfBirth,
                                                                                   Integer positionID,
                                                                                   String sort,
-                                                                                  String sortOrder) {
+                                                                                  String sortOrder, Integer limit) {
 
         final Map<Integer, Position> positions = new HashMap<>();
         jdbcTemplate.query("SELECT * FROM position WHERE 1", new Object[]{}, new RowMapper<Position>() {
@@ -67,7 +67,12 @@ public class MainDAO {
         }
         queryString.append(" 1 ");
         if (sort != null && sortOrder != null) {
-            queryString.append(String.format(" ORDER BY %s %s", sort, sortOrder));
+            queryString.append(String.format(" ORDER BY %s %s ", sort, sortOrder));
+        }
+
+        if (limit != null) {
+            queryString.append(" LIMIT 0, ? ");
+            params.add(limit);
         }
 
 

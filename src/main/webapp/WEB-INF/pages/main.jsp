@@ -123,7 +123,7 @@
                 </button>
             </td>
         </tr>
-        <tr class="editableRow" ng-repeat="employee in employees" ng-click="editEmployee(employee)">
+        <tr class="editableRow" ng-repeat="employee in employees  track by employee.employeeID" ng-click="editEmployee(employee)">
             <td class="employeeID">{{employee.employeeID}}</td>
             <td class="position">{{employee.position.title}}</td>
             <td class="surname">{{employee.surname}}</td>
@@ -141,6 +141,10 @@
         </tr>
         </tbody>
     </table>
+    <button type="button" id="showMoreButton" ng-show="needMore()"
+            style="width: 100%; opacity: 0.6; margin-bottom: 10px" class="btn btn-default" ng-click="showMore()">
+        Показать больше результатов
+    </button>
 </div>
 </body>
 </html>

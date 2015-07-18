@@ -33,7 +33,8 @@ app.factory('global', function ($filter) {
                     dateOfBirth: dateOfBirth,
                     positionID: positionID,
                     sort: scope.pageSort.by,
-                    sortOrder: scope.pageSort.order
+                    sortOrder: scope.pageSort.order,
+                    limit: scope.tableStatus.limit
                 }
             })
                 .success(function (data, status, headers, config) {
@@ -81,15 +82,26 @@ app.controller('employeeAppController', function ($scope, $modal, $http, $log, g
         },
         unblock: function () {
             this.blocked = false;
-        }
-    };
-    global.reloadTable($http, $scope);
-    $scope.reloadTable = function () {
-        global.reloadTable($http, $scope);
+        },
+        limit: 10
     };
     $scope.alerts = [];
     $scope.employees = [];
     $scope.positions = [];
+
+    $scope.needMore = function(){
+        return $scope.employees.length==$scope.tableStatus.limit;
+    };
+
+    global.reloadTable($http, $scope);
+    $scope.reloadTable = function () {
+        global.reloadTable($http, $scope);
+    };
+    $scope.showMore = function(){
+        $scope.tableStatus.limit+=20;
+        $scope.reloadTable();
+    };
+
 
     $scope.changeSorting = function (by) {
         function opposite(order) {

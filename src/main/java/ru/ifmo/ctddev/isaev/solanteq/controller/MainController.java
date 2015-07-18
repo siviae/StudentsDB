@@ -54,7 +54,8 @@ public class MainController {
                                @RequestParam(value = "dateOfBirth", required = false) String date,
                                @RequestParam(value = "positionID", required = false) Integer positionID,
                                @RequestParam(value = "sort", required = false) String sort,
-                               @RequestParam(value = "sortOrder", required = false) String sortOrder) {
+                               @RequestParam(value = "sortOrder", required = false) String sortOrder,
+                               @RequestParam(value = "limit", required = false) Integer limit) {
         Map<String, Object> result = new HashMap<>();
         Date dateOfBirth = null;
         if (sort != null && sortOrder != null && !sortOk(sort, sortOrder)) return result;
@@ -63,7 +64,7 @@ public class MainController {
         } catch (ParseException ignored) {
         }
         Pair<List<Employee>, Collection<Position>> pair = dao.getAllEmployeesAndPositions(
-                employeeID, firstName, surname, patronymic, dateOfBirth, positionID, sort, sortOrder
+                employeeID, firstName, surname, patronymic, dateOfBirth, positionID, sort, sortOrder, limit
         );
         result.put("employees", pair.getFirst());
         result.put("positions", pair.getSecond());
