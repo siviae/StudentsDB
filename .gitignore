@@ -1,3 +1,4 @@
 .idea/
 Solanteq_test_task.iml
 src/main/webapp/WEB-INF/securityContext.xml
+target/
