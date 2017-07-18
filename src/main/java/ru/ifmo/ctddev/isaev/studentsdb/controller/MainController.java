@@ -15,7 +15,6 @@ import java.util.*;
 
 
 @Controller
-@RequestMapping("/")
 public class MainController {
     private final MainDao dao;
 
@@ -31,7 +30,7 @@ public class MainController {
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/studentsDB", method = RequestMethod.GET)
     public String getPage() {
         return "main.jsp";
     }
