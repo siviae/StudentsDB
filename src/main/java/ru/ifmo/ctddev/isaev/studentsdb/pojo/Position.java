@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.isaev.solanteq.pojo;
+package ru.ifmo.ctddev.isaev.studentsdb.pojo;
 
 
 import java.io.Serializable;

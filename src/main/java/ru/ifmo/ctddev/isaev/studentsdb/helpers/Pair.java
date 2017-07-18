@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.isaev.solanteq.helpers;
+package ru.ifmo.ctddev.isaev.studentsdb.helpers;
 
 public class Pair<T, S> {
     T first;

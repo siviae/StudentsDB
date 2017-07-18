@@ -1,25 +1,24 @@
-package ru.ifmo.ctddev.isaev.solanteq.dao;
+package ru.ifmo.ctddev.isaev.studentsdb.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.ifmo.ctddev.isaev.solanteq.helpers.Pair;
-import ru.ifmo.ctddev.isaev.solanteq.pojo.Employee;
-import ru.ifmo.ctddev.isaev.solanteq.pojo.Position;
+import ru.ifmo.ctddev.isaev.studentsdb.helpers.Pair;
+import ru.ifmo.ctddev.isaev.studentsdb.pojo.Employee;
+import ru.ifmo.ctddev.isaev.studentsdb.pojo.Position;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
-/**
- * Created by root on 7/14/15.
- */
+
 @Repository
-public class MainDAO {
+public class MainDao {
+
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public MainDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Pair<List<Employee>, Collection<Position>> getAllEmployeesAndPositions(Integer employeeID,
                                                                                   String firstName,
@@ -31,13 +30,12 @@ public class MainDAO {
                                                                                   String sortOrder, Integer limit) {
 
         final Map<Integer, Position> positions = new HashMap<>();
-        jdbcTemplate.query("SELECT * FROM position WHERE 1", new Object[]{}, new RowMapper<Position>() {
-            @Override
-            public Position mapRow(ResultSet rs, int i) throws SQLException {
-                Position pos = new Position(rs.getInt("positionID"), rs.getString("title"));
-                if (!positions.containsKey(pos.getPositionID())) positions.put(pos.getPositionID(), pos);
-                return pos;
+        jdbcTemplate.query("SELECT * FROM position WHERE 1", new Object[] {}, (rs, i) -> {
+            Position pos = new Position(rs.getInt("positionID"), rs.getString("title"));
+            if (!positions.containsKey(pos.getPositionID())) {
+                positions.put(pos.getPositionID(), pos);
             }
+            return pos;
         });
         List<Object> params = new ArrayList<>();
         StringBuilder queryString = new StringBuilder("SELECT * FROM employee WHERE ");
@@ -76,23 +74,20 @@ public class MainDAO {
         }
 
 
-        List<Employee> employees = jdbcTemplate.query(queryString.toString(), params.toArray(), new RowMapper<Employee>() {
-            @Override
-            public Employee mapRow(ResultSet rs, int i) throws SQLException {
-                return new Employee(
-                        rs.getInt("employeeID"),
-                        rs.getString("firstName"),
-                        rs.getString("surname"),
-                        rs.getString("patronymic"),
-                        rs.getDate("dateOfBirth"),
-                        positions.get(rs.getInt("positionID")));
-            }
-        });
+        List<Employee> employees = jdbcTemplate.query(queryString.toString(), params.toArray(), (rs, i) -> new Employee(
+                rs.getInt("employeeID"),
+                rs.getString("firstName"),
+                rs.getString("surname"),
+                rs.getString("patronymic"),
+                rs.getDate("dateOfBirth"),
+                positions.get(rs.getInt("positionID"))));
         return new Pair<>(employees, positions.values());
     }
 
     public boolean updateEmployee(Employee employee) {
-        if (employee.getEmployeeID() == 0 || !employee.isValid()) return false;
+        if (employee.getEmployeeID() == 0 || !employee.isValid()) {
+            return false;
+        }
         int modified = jdbcTemplate.update("UPDATE employee SET " +
                         "firstName=?, " +
                         "surname = ?, " +
@@ -106,7 +101,9 @@ public class MainDAO {
     }
 
     public boolean addEmployee(Employee employee) {
-        if (!employee.isValid()) return false;
+        if (!employee.isValid()) {
+            return false;
+        }
         int modified = jdbcTemplate.update("INSERT INTO employee(firstName,surname,dateOfBirth,positionID,patronymic) " +
                         "VALUES (?,?,?,?,?) ",
                 employee.getFirstName(), employee.getSurname(),
@@ -116,7 +113,9 @@ public class MainDAO {
     }
 
     public boolean deleteEmployee(int employeeID) {
-        if (employeeID == 0) return false;
+        if (employeeID == 0) {
+            return false;
+        }
         int modified = jdbcTemplate.update("DELETE FROM employee WHERE employeeID=? ",
                 employeeID);
         return modified == 1;

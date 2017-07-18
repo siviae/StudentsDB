@@ -1,14 +1,10 @@
-package ru.ifmo.ctddev.isaev.solanteq.controller;
-
-/**
- * Created by root on //.
- */
+package ru.ifmo.ctddev.isaev.studentsdb.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import ru.ifmo.ctddev.isaev.solanteq.dao.MainDAO;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.MainDao;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -131,7 +127,7 @@ public class DatabaseFillController {
     };
     private static Random rand = new Random();
     @Autowired
-    MainDAO dao;
+    MainDao dao;
     private String[] patronymics = new String[]{
 
             "Аланович", "Альбертович", "Анатольевич", "Арнольдович", "Аронович", "Артурович", "Валерьевич", "Вениаминович", "Владленович", "Германович", "Денисович", "Дмитриевич", "Елизарович", "Игоревич", "Иосифович", "Леонидович", "Львович", "Маркович", "Наумович", "Николаевич", "Олегович", "Рудольфович", "Станиславович", "Степанович", "Феликсович", "Эммануилович",

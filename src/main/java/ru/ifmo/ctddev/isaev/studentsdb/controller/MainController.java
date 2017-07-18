@@ -1,23 +1,28 @@
-package ru.ifmo.ctddev.isaev.solanteq.controller;
+package ru.ifmo.ctddev.isaev.studentsdb.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.ifmo.ctddev.isaev.solanteq.dao.MainDAO;
-import ru.ifmo.ctddev.isaev.solanteq.helpers.Pair;
-import ru.ifmo.ctddev.isaev.solanteq.pojo.Employee;
-import ru.ifmo.ctddev.isaev.solanteq.pojo.Position;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.MainDao;
+import ru.ifmo.ctddev.isaev.studentsdb.helpers.Pair;
+import ru.ifmo.ctddev.isaev.studentsdb.pojo.Employee;
+import ru.ifmo.ctddev.isaev.studentsdb.pojo.Position;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
 @Controller
 @RequestMapping("/")
 public class MainController {
+    private final MainDao dao;
+
     @Autowired
-    MainDAO dao;
+    public MainController(MainDao dao) {
+        this.dao = dao;
+    }
 
     private static Map<String, String> getResponseObject(boolean ok, String goodMsg, String badMsg) {
         Map<String, String> result = new HashMap<>();
@@ -34,7 +39,7 @@ public class MainController {
 
     private boolean sortOk(String sort, String sortOrder) {
         boolean result = false;
-        for (String sorting : new String[]{"firstName", "surname", "patronymic", "dateOfBirth"}) {
+        for (String sorting : new String[] {"firstName", "surname", "patronymic", "dateOfBirth"}) {
             if (sort.equals(sorting)) {
                 result = true;
                 break;
@@ -58,7 +63,9 @@ public class MainController {
                                @RequestParam(value = "limit", required = false) Integer limit) {
         Map<String, Object> result = new HashMap<>();
         Date dateOfBirth = null;
-        if (sort != null && sortOrder != null && !sortOk(sort, sortOrder)) return result;
+        if (sort != null && sortOrder != null && !sortOk(sort, sortOrder)) {
+            return result;
+        }
         try {
             dateOfBirth = new SimpleDateFormat("dd.MM.yyyy").parse(date);
         } catch (ParseException ignored) {
