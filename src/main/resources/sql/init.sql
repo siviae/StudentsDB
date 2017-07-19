@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS students (
+CREATE TABLE IF NOT EXISTS student (
   id              NUMERIC(18) PRIMARY KEY,
   surname         VARCHAR(256) NOT NULL,
   name            VARCHAR(256) NOT NULL,

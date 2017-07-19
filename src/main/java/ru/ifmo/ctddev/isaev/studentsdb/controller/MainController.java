@@ -4,22 +4,23 @@ package ru.ifmo.ctddev.isaev.studentsdb.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.ifmo.ctddev.isaev.studentsdb.dao.MainDao;
-import ru.ifmo.ctddev.isaev.studentsdb.helpers.Pair;
-import ru.ifmo.ctddev.isaev.studentsdb.pojo.Employee;
-import ru.ifmo.ctddev.isaev.studentsdb.pojo.Position;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
+import ru.ifmo.ctddev.isaev.studentsdb.pojo.Student;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
 public class MainController {
-    private final MainDao dao;
+    private final StudentsDao dao;
 
     @Autowired
-    public MainController(MainDao dao) {
+    public MainController(StudentsDao dao) {
         this.dao = dao;
     }
 
@@ -51,7 +52,7 @@ public class MainController {
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     public
     @ResponseBody
-    Map<String, Object> getAll(@RequestParam(value = "employeeID", required = false) Integer employeeID,
+    Map<String, Object> getAll(@RequestParam(value = "employeeID", required = false) Long id,
                                @RequestParam(value = "firstName", required = false) String firstName,
                                @RequestParam(value = "surname", required = false) String surname,
                                @RequestParam(value = "patronymic", required = false) String patronymic,
@@ -69,34 +70,33 @@ public class MainController {
             dateOfBirth = new SimpleDateFormat("dd.MM.yyyy").parse(date);
         } catch (ParseException ignored) {
         }
-        Pair<List<Employee>, Collection<Position>> pair = dao.getAllEmployeesAndPositions(
-                employeeID, firstName, surname, patronymic, dateOfBirth, positionID, sort, sortOrder, limit
+        List<Student> students = dao.find(
+                id, firstName, surname, patronymic, dateOfBirth, sort, sortOrder, limit
         );
-        result.put("employees", pair.getFirst());
-        result.put("positions", pair.getSecond());
+        result.put("employees", students);
         return result;
     }
 
     @RequestMapping(value = "/editEmployee", method = RequestMethod.POST, consumes = "application/json")
     public
     @ResponseBody
-    Map<String, String> editEmployee(@RequestBody Employee employee) {
-        boolean ok = dao.updateEmployee(employee);
+    Map<String, String> editEmployee(@RequestBody Student student) {
+        boolean ok = dao.updateEmployee(student);
         return getResponseObject(ok,
-                String.format("Сотрудник с ID %s успешно изменён", employee.getEmployeeID()),
-                String.format("Не удалось изменить сотрудника с ID %s", employee.getEmployeeID()));
+                String.format("Сотрудник с ID %s успешно изменён", student.getId()),
+                String.format("Не удалось изменить сотрудника с ID %s", student.getId()));
     }
 
     @RequestMapping(value = "/addEmployee", method = RequestMethod.POST, consumes = "application/json")
     public
     @ResponseBody
-    Map<String, String> addEmployee(@RequestBody Employee employee) {
-        boolean ok = dao.addEmployee(employee);
+    Map<String, String> addEmployee(@RequestBody Student student) {
+        boolean ok = dao.addEmployee(student);
         return getResponseObject(ok,
                 String.format("Добавлен новый сотрудник: %s %s %s",
-                        employee.getSurname(),
-                        employee.getFirstName(),
-                        employee.getPatronymic()),
+                        student.getSurname(),
+                        student.getFirstName(),
+                        student.getPatronymic()),
                 "Не удалось добавить сотрудника");
     }
 

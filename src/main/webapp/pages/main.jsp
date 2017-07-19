@@ -123,18 +123,18 @@
                 </button>
             </td>
         </tr>
-        <tr class="editableRow" ng-repeat="employee in employees  track by employee.employeeID" ng-click="editEmployee(employee)">
-            <td class="employeeID">{{employee.employeeID}}</td>
-            <td class="position">{{employee.position.title}}</td>
-            <td class="surname">{{employee.surname}}</td>
-            <td class="firstName">{{employee.firstName}}</td>
-            <td class="patronymic">{{employee.patronymic}}</td>
+        <tr class="editableRow" ng-repeat="student in students  track by student.employeeID" ng-click="editEmployee(student)">
+            <td class="employeeID">{{student.employeeID}}</td>
+            <td class="position">{{student.position.title}}</td>
+            <td class="surname">{{student.surname}}</td>
+            <td class="firstName">{{student.firstName}}</td>
+            <td class="patronymic">{{student.patronymic}}</td>
             <td class="dateOfBurth">
-                <h4><span class="label label-info center-block">{{formatDate(employee.dateOfBirth)}}</span></h4>
+                <h4><span class="label label-info center-block">{{formatDate(student.dateOfBirth)}}</span></h4>
             </td>
             <td class="prodButtons" style="width:100px;">
                 <button type="button" class="btn btn-default center-block" aria-label="Удалить"
-                        ng-click="openDeleteModal($event,employee)">
+                        ng-click="openDeleteModal($event,student)">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                 </button>
             </td>

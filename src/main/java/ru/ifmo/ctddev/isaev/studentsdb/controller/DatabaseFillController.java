@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import ru.ifmo.ctddev.isaev.studentsdb.dao.MainDao;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -127,7 +127,7 @@ public class DatabaseFillController {
     };
     private static Random rand = new Random();
     @Autowired
-    MainDao dao;
+    StudentsDao dao;
     private String[] patronymics = new String[]{
 
             "Аланович", "Альбертович", "Анатольевич", "Арнольдович", "Аронович", "Артурович", "Валерьевич", "Вениаминович", "Владленович", "Германович", "Денисович", "Дмитриевич", "Елизарович", "Игоревич", "Иосифович", "Леонидович", "Львович", "Маркович", "Наумович", "Николаевич", "Олегович", "Рудольфович", "Станиславович", "Степанович", "Феликсович", "Эммануилович",
@@ -155,7 +155,7 @@ public class DatabaseFillController {
     @RequestMapping(method = RequestMethod.GET)
     public String getPage() {
         /*for(int i=0;i<200;++i){
-            Employee employee = new Employee(0,
+            Student employee = new Student(0,
                     names[rand.nextInt(names.length)],
                     surnames[rand.nextInt(surnames.length)],
                     patronymics[rand.nextInt(patronymics.length)],
