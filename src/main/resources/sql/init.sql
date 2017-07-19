@@ -1,3 +1,4 @@
+SET MODE PostgreSQL;
 CREATE TABLE IF NOT EXISTS student (
   id              NUMERIC(18) PRIMARY KEY,
   surname         VARCHAR(256) NOT NULL,
@@ -6,3 +7,5 @@ CREATE TABLE IF NOT EXISTS student (
   date_of_birth   DATE,
   additional_info TEXT
 );
+
+CREATE SEQUENCE seq_student START WITH 1;

@@ -5,16 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -39,18 +31,6 @@ public class Main {
                 System.out.println(beanName);
             }
         };
-    }
-
-    @Bean
-    public DataSource dataSource() throws IOException {
-        List<String> scripts = Files.list(Paths.get("src/main/resources/sql"))
-                .map(path -> "file:" + path.toAbsolutePath().toString())
-                .collect(Collectors.toList());
-        return new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .setName("students.db")
-                .addScripts(scripts.toArray(new String[0]))
-                .build();
     }
 
 }

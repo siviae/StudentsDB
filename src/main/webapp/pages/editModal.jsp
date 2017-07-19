@@ -37,10 +37,10 @@
             </div>
             <div class="form-group">
                 <label for="editFormInput3">Имя</label>
-                <input type="text" class="form-control" id="editFormInput3" name="firstName"
-                       placeholder="Имя" ng-model="student.firstName" required>
-                <span style="color:red" ng-show="editForm.firstName.$invalid">
-                    <span ng-show="editForm.firstName.$error.required">Поле не может быть пустым</span>
+                <input type="text" class="form-control" id="editFormInput3" name="name"
+                       placeholder="Имя" ng-model="student.name" required>
+                <span style="color:red" ng-show="editForm.name.$invalid">
+                    <span ng-show="editForm.name.$error.required">Поле не может быть пустым</span>
                 </span>
             </div>
             <div class="form-group">

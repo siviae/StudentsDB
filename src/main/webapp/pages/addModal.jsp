@@ -1,4 +1,4 @@
-<script type="text/ng-template" id="addModalContent.html">
+<script type="text/ng-template" id="addModalContent">
     <form name="addForm">
         <div class="modal-header">
             <button type="button" class="close" ng-click="closeModal()"><span
@@ -37,10 +37,10 @@
             </div>
             <div class="form-group">
                 <label for="addFormInput3">Имя</label>
-                <input type="text" class="form-control" id="addFormInput3" name="firstName"
-                       placeholder="Имя" ng-model="student.firstName" required>
+                <input type="text" class="form-control" id="addFormInput3" name="name"
+                       placeholder="Имя" ng-model="student.name" required>
                     <span style="color:red"
-                          ng-show="addForm.firstName.$dirty && addForm.firstName.$invalid">
+                          ng-show="addForm.name.$dirty && addForm.name.$invalid">
                     Поле не может быть пустым
                     </span>
             </div>

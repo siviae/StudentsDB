@@ -3,8 +3,11 @@ package ru.ifmo.ctddev.isaev.studentsdb.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.ifmo.ctddev.isaev.studentsdb.pojo.Student;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,10 +16,13 @@ import java.util.List;
 @Repository
 public class StudentsDao {
 
+    private final EntityManager entityManager;
+
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public StudentsDao(JdbcTemplate jdbcTemplate) {
+    public StudentsDao(EntityManager entityManager, JdbcTemplate jdbcTemplate) {
+        this.entityManager = entityManager;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -60,50 +66,25 @@ public class StudentsDao {
             params.add(limit);
         }
 
-
-        List<Student> students = jdbcTemplate.query(queryString.toString(), params.toArray(), (rs, i) -> new Student(
-                rs.getInt("id"),
+        return jdbcTemplate.query(queryString.toString(), params.toArray(), (rs, i) -> new Student(
+                rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("surname"),
                 rs.getString("patronymic"),
                 rs.getDate("date_of_birth")
         ));
-        return students;
     }
 
-    public boolean updateEmployee(Student student) {
-        if (student.getId() == null || !student.isValid()) {
-            return false;
-        }
-        int modified = jdbcTemplate.update("UPDATE student SET " +
-                        "name=?, " +
-                        "surname = ?, " +
-                        "date_of_birth = ?, " +
-                        "patronymic = ? WHERE id=?",
-                student.getFirstName(), student.getSurname(),
-                student.getDateOfBirth(),
-                student.getPatronymic(), student.getId());
-        return modified == 1;
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void save(Student student) {
+        entityManager.merge(student);
     }
 
-    public boolean addEmployee(Student student) {
-        if (!student.isValid()) {
+    public boolean deleteEmployee(int id) {
+        if (id == 0) {
             return false;
         }
-        int modified = jdbcTemplate.update("INSERT INTO student(name,surname,patronymic,date_of_birth) " +
-                        "VALUES (?,?,?,?,?) ",
-                student.getFirstName(), student.getSurname(),
-                student.getPatronymic(),
-                student.getDateOfBirth());
-        return modified == 1;
-    }
-
-    public boolean deleteEmployee(int employeeID) {
-        if (employeeID == 0) {
-            return false;
-        }
-        int modified = jdbcTemplate.update("DELETE FROM student WHERE id=? ",
-                employeeID);
-        return modified == 1;
+        entityManager.remove(id);
+        return true;
     }
 }

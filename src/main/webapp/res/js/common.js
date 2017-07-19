@@ -134,7 +134,7 @@ app.controller('employeeAppController', function ($scope, $modal, $http, $log, g
     $scope.openAddModal = function (employee) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'addModalContent.html',
+            templateUrl: 'addModalContent',
             controller: 'addModalController',
             scope: $scope
         });

@@ -3,7 +3,7 @@
 <head lang="en">
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
     <title>База сотрудников</title>
-    <link rel="stylesheet" href="./res/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./res/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./res/plugins/ui-select/select.min.css">
     <script src="./res/plugins/angular.min.js"></script>
     <script src="./res/plugins/angular-sanitize.min.js"></script>
@@ -54,10 +54,10 @@
             </th>
             <th>Имя
                 <span style="color: grey"
-                      ng-click="changeSorting('firstName')"
+                      ng-click="changeSorting('name')"
                       class="glyphicon glyphicon-sort pull-right"
-                      ng-class="{'glyphicon-sort-by-alphabet' : pageSort.by == 'firstName' && pageSort.order == 'asc',
-                                 'glyphicon-sort-by-alphabet-alt' : pageSort.by == 'firstName' && pageSort.order == 'desc'}"
+                      ng-class="{'glyphicon-sort-by-alphabet' : pageSort.by == 'name' && pageSort.order == 'asc',
+                                 'glyphicon-sort-by-alphabet-alt' : pageSort.by == 'name' && pageSort.order == 'desc'}"
                       aria-hidden="true">
                 </span>
             </th>
@@ -101,7 +101,7 @@
             <td><input type="text" class="form-control"
                        ng-change="reloadTable()" ng-model="filter.surname"></td>
             <td><input type="text" class="form-control"
-                       ng-change="reloadTable()" ng-model="filter.firstName"></td>
+                       ng-change="reloadTable()" ng-model="filter.name"></td>
             <td><input type="text" class="form-control"
                        ng-change="reloadTable()" ng-model="filter.patronymic"></td>
             <td>
@@ -128,7 +128,7 @@
             <td class="employeeID">{{student.employeeID}}</td>
             <td class="position">{{student.position.title}}</td>
             <td class="surname">{{student.surname}}</td>
-            <td class="firstName">{{student.firstName}}</td>
+            <td class="name">{{student.name}}</td>
             <td class="patronymic">{{student.patronymic}}</td>
             <td class="dateOfBurth">
                 <h4><span class="label label-info center-block">{{formatDate(student.dateOfBirth)}}</span></h4>

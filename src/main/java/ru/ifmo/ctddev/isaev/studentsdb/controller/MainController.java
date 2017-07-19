@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
-import ru.ifmo.ctddev.isaev.studentsdb.pojo.Student;
+import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -81,8 +81,8 @@ public class MainController {
     public
     @ResponseBody
     Map<String, String> editEmployee(@RequestBody Student student) {
-        boolean ok = dao.updateEmployee(student);
-        return getResponseObject(ok,
+        dao.save(student);
+        return getResponseObject(true,
                 String.format("Сотрудник с ID %s успешно изменён", student.getId()),
                 String.format("Не удалось изменить сотрудника с ID %s", student.getId()));
     }
@@ -91,11 +91,11 @@ public class MainController {
     public
     @ResponseBody
     Map<String, String> addEmployee(@RequestBody Student student) {
-        boolean ok = dao.addEmployee(student);
-        return getResponseObject(ok,
+        dao.save(student);
+        return getResponseObject(true,
                 String.format("Добавлен новый сотрудник: %s %s %s",
                         student.getSurname(),
-                        student.getFirstName(),
+                        student.getName(),
                         student.getPatronymic()),
                 "Не удалось добавить сотрудника");
     }

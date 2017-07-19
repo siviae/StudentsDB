@@ -5,16 +5,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
+import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+
 @Controller
 @RequestMapping("/dbFill")
 public class DatabaseFillController {
-    private static String[] surnames = new String[]{
+    private static String[] surnames = new String[] {
             "Иванов",
             "Васильев",
             "Петров",
@@ -73,7 +75,8 @@ public class DatabaseFillController {
             "Тихомиров",
             "Крылов"
     };
-    private static String[] names = new String[]{
+
+    private static String[] names = new String[] {
             "Александр",
             "Сергей",
             "Андрей",
@@ -125,10 +128,13 @@ public class DatabaseFillController {
             "Даниил",
             "Тимур"
     };
+
     private static Random rand = new Random();
+
     @Autowired
     StudentsDao dao;
-    private String[] patronymics = new String[]{
+
+    private String[] patronymics = new String[] {
 
             "Аланович", "Альбертович", "Анатольевич", "Арнольдович", "Аронович", "Артурович", "Валерьевич", "Вениаминович", "Владленович", "Германович", "Денисович", "Дмитриевич", "Елизарович", "Игоревич", "Иосифович", "Леонидович", "Львович", "Маркович", "Наумович", "Николаевич", "Олегович", "Рудольфович", "Станиславович", "Степанович", "Феликсович", "Эммануилович",
             "Александрович", "Вадимович", "Григорьевич", "Ефимович", "Максимович", "Натанович", "Павлович", "Ростиславович", "Федорович", "Эдуардович",
@@ -154,15 +160,15 @@ public class DatabaseFillController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String getPage() {
-        /*for(int i=0;i<200;++i){
-            Student employee = new Student(0,
+        for (int i = 0; i < 200; ++i) {
+            Student employee = new Student(
+                    null,
                     names[rand.nextInt(names.length)],
                     surnames[rand.nextInt(surnames.length)],
                     patronymics[rand.nextInt(patronymics.length)],
-                    getRandomDate(),
-                    new Position(1+rand.nextInt(18)));
-            dao.addEmployee(employee);
-        }*/
+                    getRandomDate());
+            dao.save(employee);
+        }
         return "main.jsp";
     }
 }
