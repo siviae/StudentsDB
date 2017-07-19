@@ -20,9 +20,9 @@
 </head>
 <body ng-controller="employeeAppController">
 
-<%@include file="editModal.jsp" %>
-<%@include file="addModal.jsp" %>
-<%@include file="deleteModal.jsp" %>
+<jsp:include page="editModal.jsp"/>
+<jsp:include page="addModal.jsp"/>
+<jsp:include page="deleteModal.jsp"/>
 
 <div class="container" ng-controller="tableDateController">
     <div ng-controller="AlertController" style="margin-top: 10px">
@@ -62,12 +62,12 @@
                 </span>
             </th>
             <th>Отчество
-                    <span style="color: grey"
-                          ng-click="changeSorting('patronymic')"
-                          class="glyphicon glyphicon-sort pull-right"
-                          ng-class="{'glyphicon-sort-by-alphabet' : pageSort.by == 'patronymic' && pageSort.order == 'asc',
+                <span style="color: grey"
+                      ng-click="changeSorting('patronymic')"
+                      class="glyphicon glyphicon-sort pull-right"
+                      ng-class="{'glyphicon-sort-by-alphabet' : pageSort.by == 'patronymic' && pageSort.order == 'asc',
                                      'glyphicon-sort-by-alphabet-alt' : pageSort.by == 'patronymic' && pageSort.order == 'desc'}"
-                          aria-hidden="true">
+                      aria-hidden="true">
                     </span>
             </th>
             <th style="width: 20%">Дата рождения
@@ -123,7 +123,8 @@
                 </button>
             </td>
         </tr>
-        <tr class="editableRow" ng-repeat="student in students  track by student.employeeID" ng-click="editEmployee(student)">
+        <tr class="editableRow" ng-repeat="student in students  track by student.employeeID"
+            ng-click="editEmployee(student)">
             <td class="employeeID">{{student.employeeID}}</td>
             <td class="position">{{student.position.title}}</td>
             <td class="surname">{{student.surname}}</td>
