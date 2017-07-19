@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,5 +88,21 @@ public class StudentsDao {
         }
         entityManager.remove(id);
         return true;
+    }
+
+    public List<Student> findAll() {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Student> cq = cb.createQuery(Student.class);
+        cq.from(Student.class);
+        return entityManager.createQuery(cq)
+                .getResultList();
+    }
+
+    public Student findById(Long id) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public void remove(Student student) {
+        throw new UnsupportedOperationException("Not implemented");
     }
 }

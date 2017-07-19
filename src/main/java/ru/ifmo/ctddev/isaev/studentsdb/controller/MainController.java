@@ -2,7 +2,6 @@ package ru.ifmo.ctddev.isaev.studentsdb.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Controller
+//@Controller
 public class MainController {
     private final StudentsDao dao;
 

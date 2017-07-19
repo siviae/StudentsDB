@@ -1,7 +1,6 @@
 package ru.ifmo.ctddev.isaev.studentsdb.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
@@ -13,8 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 
-@Controller
-@RequestMapping("/dbFill")
+//@Controller
 public class DatabaseFillController {
     private static String[] surnames = new String[] {
             "Иванов",
@@ -158,7 +156,7 @@ public class DatabaseFillController {
     }
 
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/dbFill", method = RequestMethod.GET)
     public String getPage() {
         for (int i = 0; i < 200; ++i) {
             Student employee = new Student(
