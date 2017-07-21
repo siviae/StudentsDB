@@ -11,18 +11,18 @@ import java.util.Objects;
 public class Student {
     private Long id;
 
-    private String name;
+    private String firstName;
 
-    private String surname;
+    private String lastName;
 
     private String patronymic;
 
     private Date dateOfBirth;
 
-    public Student(Long id, String name, String surname, String patronymic, Date dateOfBirth) {
+    public Student(Long id, String firstName, String lastName, String patronymic, Date dateOfBirth) {
         this.id = id;
-        this.name = name;
-        this.surname = surname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.patronymic = patronymic;
         this.dateOfBirth = dateOfBirth;
     }
@@ -40,14 +40,14 @@ public class Student {
 
     @Basic
     @Column(name = "name")
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
     @Basic
     @Column(name = "surname")
-    public String getSurname() {
-        return surname;
+    public String getLastName() {
+        return lastName;
     }
 
     @Basic
@@ -66,12 +66,12 @@ public class Student {
         this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setPatronymic(String patronymic) {

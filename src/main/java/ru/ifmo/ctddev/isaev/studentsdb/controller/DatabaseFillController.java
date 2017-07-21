@@ -1,6 +1,7 @@
 package ru.ifmo.ctddev.isaev.studentsdb.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
@@ -12,7 +13,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 
 
-//@Controller
+@Controller
 public class DatabaseFillController {
     private static String[] surnames = new String[] {
             "Иванов",

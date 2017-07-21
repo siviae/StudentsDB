@@ -1,6 +1,5 @@
-package ru.ifmo.ctddev.isaev.studentsdb.gui;
+package ru.ifmo.ctddev.isaev.studentsdb.sample;
 
-import com.vaadin.annotations.Theme;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -13,8 +12,8 @@ import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
 
 @SpringUI
-@Theme("valo")
-public class MyUI extends UI {
+public class VaadinUI extends UI {
+
     private final StudentsDao repo;
 
     private final CustomerEditor editor;
@@ -26,10 +25,10 @@ public class MyUI extends UI {
     private final Button addNewBtn;
 
     @Autowired
-    public MyUI(StudentsDao repo, CustomerEditor editor) {
+    public VaadinUI(StudentsDao repo, CustomerEditor editor) {
         this.repo = repo;
         this.editor = editor;
-        this.grid = new Grid<>();
+        this.grid = new Grid<>(Student.class);
         this.filter = new TextField();
         this.addNewBtn = new Button("New customer", FontAwesome.PLUS);
     }
@@ -42,7 +41,7 @@ public class MyUI extends UI {
         setContent(mainLayout);
 
         grid.setHeight(300, Unit.PIXELS);
-        grid.setColumns("id", "name", "surname");
+        grid.setColumns("id", "firstName", "lastName");
 
         filter.setPlaceholder("Filter by last name");
 
@@ -70,9 +69,14 @@ public class MyUI extends UI {
         listCustomers(null);
     }
 
-    private void listCustomers(String filterText) {
+    // tag::listCustomers[]
+    void listCustomers(String filterText) {
         if (StringUtils.isEmpty(filterText)) {
             grid.setItems(repo.findAll());
+        } else {
+            grid.setItems(repo.find(null, null, filterText, null, null, null, null, null));
         }
     }
+    // end::listCustomers[]
+
 }

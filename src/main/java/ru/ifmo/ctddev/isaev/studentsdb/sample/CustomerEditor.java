@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.isaev.studentsdb.gui;
+package ru.ifmo.ctddev.isaev.studentsdb.sample;
 
 import com.vaadin.data.Binder;
 import com.vaadin.event.ShortcutAction;
@@ -31,31 +31,31 @@ public class CustomerEditor extends VerticalLayout {
     private final StudentsDao repository;
 
     /**
-     * The currently edited student
+     * The currently edited customer
      */
-    private Student student;
+    private Student customer;
 
     /* Fields to edit properties in Customer entity */
-    private TextField name = new TextField("First name");
+    TextField firstName = new TextField("First name");
 
-    private TextField surname = new TextField("Last name");
+    TextField lastName = new TextField("Last name");
 
     /* Action buttons */
-    private Button save = new Button("Save", FontAwesome.SAVE);
+    Button save = new Button("Save", FontAwesome.SAVE);
 
-    private Button cancel = new Button("Cancel");
+    Button cancel = new Button("Cancel");
 
-    private Button delete = new Button("Delete", FontAwesome.TRASH_O);
+    Button delete = new Button("Delete", FontAwesome.TRASH_O);
 
-    private CssLayout actions = new CssLayout(save, cancel, delete);
+    CssLayout actions = new CssLayout(save, cancel, delete);
 
-    private Binder<Student> binder = new Binder<>(Student.class);
+    Binder<Student> binder = new Binder<>(Student.class);
 
     @Autowired
     public CustomerEditor(StudentsDao repository) {
         this.repository = repository;
 
-        addComponents(name, surname, actions);
+        addComponents(firstName, lastName, actions);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
@@ -67,9 +67,9 @@ public class CustomerEditor extends VerticalLayout {
         save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
         // wire action buttons to save, delete and reset
-        save.addClickListener(e -> repository.save(student));
-        delete.addClickListener(e -> repository.remove(student));
-        cancel.addClickListener(e -> editCustomer(student));
+        save.addClickListener(e -> repository.save(customer));
+        delete.addClickListener(e -> repository.remove(customer));
+        cancel.addClickListener(e -> editCustomer(customer));
         setVisible(false);
     }
 
@@ -86,23 +86,23 @@ public class CustomerEditor extends VerticalLayout {
         final boolean persisted = c.getId() != null;
         if (persisted) {
             // Find fresh entity for editing
-            student = repository.findById(c.getId());
+            customer = repository.findById(c.getId());
         } else {
-            student = c;
+            customer = c;
         }
         cancel.setVisible(persisted);
 
-        // Bind student properties to similarly named fields
+        // Bind customer properties to similarly named fields
         // Could also use annotation or "manual binding" or programmatically
         // moving values from fields to entities before saving
-        binder.setBean(student);
+        binder.setBean(customer);
 
         setVisible(true);
 
         // A hack to ensure the whole form is visible
         save.focus();
         // Select all text in firstName field automatically
-        name.selectAll();
+        firstName.selectAll();
     }
 
     public void setChangeHandler(ChangeHandler h) {

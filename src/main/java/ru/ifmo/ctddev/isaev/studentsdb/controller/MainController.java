@@ -93,8 +93,8 @@ public class MainController {
         dao.save(student);
         return getResponseObject(true,
                 String.format("Добавлен новый сотрудник: %s %s %s",
-                        student.getSurname(),
-                        student.getName(),
+                        student.getLastName(),
+                        student.getFirstName(),
                         student.getPatronymic()),
                 "Не удалось добавить сотрудника");
     }
