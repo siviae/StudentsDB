@@ -16,7 +16,7 @@ public class VaadinUI extends UI {
 
     private final StudentsDao repo;
 
-    private final CustomerEditor editor;
+    private final StudentEditor editor;
 
     final Grid<Student> grid;
 
@@ -25,12 +25,12 @@ public class VaadinUI extends UI {
     private final Button addNewBtn;
 
     @Autowired
-    public VaadinUI(StudentsDao repo, CustomerEditor editor) {
+    public VaadinUI(StudentsDao repo, StudentEditor editor) {
         this.repo = repo;
         this.editor = editor;
         this.grid = new Grid<>(Student.class);
         this.filter = new TextField();
-        this.addNewBtn = new Button("New customer", FontAwesome.PLUS);
+        this.addNewBtn = new Button("Добавить студента", FontAwesome.PLUS);
     }
 
     @Override
@@ -40,10 +40,10 @@ public class VaadinUI extends UI {
         VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
         setContent(mainLayout);
 
-        grid.setHeight(300, Unit.PIXELS);
-        grid.setColumns("id", "firstName", "lastName");
+        grid.setHeight(480, Unit.PIXELS);
+        grid.setColumns("id", "firstName", "lastName", "patronymic", "dateOfBirth", "dateOfGraduation", "educationForm", "graduationType");
 
-        filter.setPlaceholder("Filter by last name");
+        filter.setPlaceholder("Фильтр по фамилии");
 
         // Hook logic to components
 

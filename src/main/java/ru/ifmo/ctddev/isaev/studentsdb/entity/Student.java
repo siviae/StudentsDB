@@ -1,8 +1,11 @@
 package ru.ifmo.ctddev.isaev.studentsdb.entity;
 
 
+import ru.ifmo.ctddev.isaev.studentsdb.enums.EducationForm;
+import ru.ifmo.ctddev.isaev.studentsdb.enums.GraduationType;
+
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 
@@ -17,9 +20,15 @@ public class Student {
 
     private String patronymic;
 
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
-    public Student(Long id, String firstName, String lastName, String patronymic, Date dateOfBirth) {
+    private LocalDate dateOfGraduation;
+
+    private EducationForm educationForm;
+
+    private GraduationType graduationType;
+
+    public Student(Long id, String firstName, String lastName, String patronymic, LocalDate dateOfBirth) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -39,13 +48,13 @@ public class Student {
     }
 
     @Basic
-    @Column(name = "name")
+    @Column(name = "first_name")
     public String getFirstName() {
         return firstName;
     }
 
     @Basic
-    @Column(name = "surname")
+    @Column(name = "last_name")
     public String getLastName() {
         return lastName;
     }
@@ -58,8 +67,40 @@ public class Student {
 
     @Basic
     @Column(name = "date_of_birth")
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
+    }
+
+    @Basic
+    @Column(name = "date_of_graduation")
+    public LocalDate getDateOfGraduation() {
+        return dateOfGraduation;
+    }
+
+    public void setDateOfGraduation(LocalDate dateOfGraduation) {
+        this.dateOfGraduation = dateOfGraduation;
+    }
+
+    @Basic
+    @Column(name = "education_form")
+    @Convert(converter = EducationForm.Converter.class)
+    public EducationForm getEducationForm() {
+        return educationForm;
+    }
+
+    @Basic
+    @Column(name = "education_type")
+    @Convert(converter = GraduationType.Converter.class)
+    public GraduationType getGraduationType() {
+        return graduationType;
+    }
+
+    public void setGraduationType(GraduationType graduationType) {
+        this.graduationType = graduationType;
+    }
+
+    public void setEducationForm(EducationForm educationForm) {
+        this.educationForm = educationForm;
     }
 
     public void setId(Long id) {
@@ -78,7 +119,7 @@ public class Student {
         this.patronymic = patronymic;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

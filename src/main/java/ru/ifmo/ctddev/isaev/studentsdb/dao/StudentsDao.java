@@ -73,7 +73,7 @@ public class StudentsDao {
                 rs.getString("name"),
                 rs.getString("surname"),
                 rs.getString("patronymic"),
-                rs.getDate("date_of_birth")
+                rs.getDate("date_of_birth").toLocalDate()
         ));
     }
 
@@ -99,10 +99,10 @@ public class StudentsDao {
     }
 
     public Student findById(Long id) {
-        throw new UnsupportedOperationException("Not implemented");
+        return entityManager.find(Student.class, id);
     }
 
     public void remove(Student student) {
-        throw new UnsupportedOperationException("Not implemented");
+        entityManager.remove(student);
     }
 }

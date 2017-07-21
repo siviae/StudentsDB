@@ -5,14 +5,15 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
+import ru.ifmo.ctddev.isaev.studentsdb.enums.EducationForm;
+import ru.ifmo.ctddev.isaev.studentsdb.enums.GraduationType;
+
+import java.util.Arrays;
 
 
 /**
@@ -26,7 +27,7 @@ import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
  */
 @SpringComponent
 @UIScope
-public class CustomerEditor extends VerticalLayout {
+public class StudentEditor extends VerticalLayout {
 
     private final StudentsDao repository;
 
@@ -35,30 +36,40 @@ public class CustomerEditor extends VerticalLayout {
      */
     private Student customer;
 
-    /* Fields to edit properties in Customer entity */
-    TextField firstName = new TextField("First name");
+    private TextField firstName = new TextField("Имя");
 
-    TextField lastName = new TextField("Last name");
+    private TextField lastName = new TextField("Фамилия");
+
+    private TextField patronymic = new TextField("Отчество");
+
+    private DateField dateOfBirth = new DateField("Дата рождения");
+
+    private DateField dateOfGraduation = new DateField("Дата выпуска");
+
+    private ComboBox<EducationForm> educationForm = new ComboBox<>("Форма обучения", Arrays.asList(EducationForm.values()));
+
+    private ComboBox<GraduationType> graduationType = new ComboBox<>("Образование", Arrays.asList(GraduationType.values()));
 
     /* Action buttons */
-    Button save = new Button("Save", FontAwesome.SAVE);
+    private Button save = new Button("Сохранить", FontAwesome.SAVE);
 
-    Button cancel = new Button("Cancel");
+    private Button cancel = new Button("Отмена");
 
-    Button delete = new Button("Delete", FontAwesome.TRASH_O);
+    private Button delete = new Button("Удалить", FontAwesome.TRASH_O);
 
-    CssLayout actions = new CssLayout(save, cancel, delete);
+    private CssLayout actions = new CssLayout(save, cancel, delete);
 
     Binder<Student> binder = new Binder<>(Student.class);
 
     @Autowired
-    public CustomerEditor(StudentsDao repository) {
+    public StudentEditor(StudentsDao repository) {
         this.repository = repository;
 
-        addComponents(firstName, lastName, actions);
+        addComponents(firstName, lastName, patronymic, dateOfBirth, dateOfGraduation, educationForm, graduationType, actions);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
+        bindEntityFields();
 
         // Configure and style components
         setSpacing(true);
@@ -73,8 +84,12 @@ public class CustomerEditor extends VerticalLayout {
         setVisible(false);
     }
 
-    public interface ChangeHandler {
+    private void bindEntityFields() {
+        educationForm.setItemCaptionGenerator(EducationForm::getName);
+        graduationType.setItemCaptionGenerator(GraduationType::getName);
+    }
 
+    public interface ChangeHandler {
         void onChange();
     }
 

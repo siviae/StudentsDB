@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.sql.Timestamp;
 import java.util.Random;
 
 
@@ -142,21 +140,6 @@ public class DatabaseFillController {
             "Антонович", "Богданович", "Богуславович", "Владиславович", "Вячеславович", "Геннадьевич", "Георгиевич", "Глебович", "Давидович", "Данилович", "Егорович", "Захарович", "Кириллович", "Константинович", "Макарович", "Миронович", "Никанорович", "Робертович", "Русланович", "Семенович", "Янович"
     };
 
-    private static int randBetween(int start, int end) {
-        return start + rand.nextInt(end - start);
-    }
-
-    private static Date getRandomDate() {
-        GregorianCalendar gc = new GregorianCalendar();
-        int year = randBetween(1950, 1995);
-        gc.set(Calendar.YEAR, year);
-        int dayOfYear = randBetween(1, gc.getActualMaximum(Calendar.DAY_OF_YEAR));
-        gc.set(Calendar.DAY_OF_YEAR, dayOfYear);
-        return gc.getTime();
-
-    }
-
-
     @RequestMapping(value = "/dbFill", method = RequestMethod.GET)
     public String getPage() {
         for (int i = 0; i < 200; ++i) {
@@ -165,7 +148,7 @@ public class DatabaseFillController {
                     names[rand.nextInt(names.length)],
                     surnames[rand.nextInt(surnames.length)],
                     patronymics[rand.nextInt(patronymics.length)],
-                    getRandomDate());
+                    new Timestamp(rand.nextLong()).toLocalDateTime().toLocalDate());
             dao.save(employee);
         }
         return "main.jsp";
