@@ -4,10 +4,10 @@ CREATE TABLE IF NOT EXISTS student (
   last_name          VARCHAR(256) NOT NULL,
   first_name         VARCHAR(256) NOT NULL,
   patronymic         VARCHAR(256) NOT NULL,
-  date_of_birth      TIMESTAMP,
+  date_of_birth      TIMESTAMP    NOT NULL,
   date_of_graduation TIMESTAMP,
   education_form     VARCHAR(1),
-  graduation_type     VARCHAR(1),
+  graduation_type    VARCHAR(1),
   additional_info    TEXT
 );
 

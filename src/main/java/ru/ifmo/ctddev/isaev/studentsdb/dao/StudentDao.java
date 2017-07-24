@@ -16,14 +16,14 @@ import java.util.List;
 
 
 @Repository
-public class StudentsDao {
+public class StudentDao {
 
     private final EntityManager entityManager;
 
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public StudentsDao(EntityManager entityManager, JdbcTemplate jdbcTemplate) {
+    public StudentDao(EntityManager entityManager, JdbcTemplate jdbcTemplate) {
         this.entityManager = entityManager;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -77,9 +77,9 @@ public class StudentsDao {
         ));
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void save(Student student) {
-        entityManager.merge(student);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Student save(Student student) {
+        return entityManager.merge(student);
     }
 
     public boolean deleteEmployee(int id) {

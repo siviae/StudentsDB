@@ -3,7 +3,7 @@ package ru.ifmo.ctddev.isaev.studentsdb.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
 import java.text.ParseException;
@@ -16,10 +16,10 @@ import java.util.Map;
 
 //@Controller
 public class MainController {
-    private final StudentsDao dao;
+    private final StudentDao dao;
 
     @Autowired
-    public MainController(StudentsDao dao) {
+    public MainController(StudentDao dao) {
         this.dao = dao;
     }
 

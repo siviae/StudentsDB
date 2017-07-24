@@ -7,14 +7,15 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
+import ru.ifmo.ctddev.isaev.studentsdb.controller.DemoDbPopulator;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
 
 @SpringUI
 public class VaadinUI extends UI {
 
-    private final StudentsDao repo;
+    private final StudentDao repo;
 
     private final StudentEditor editor;
 
@@ -25,12 +26,13 @@ public class VaadinUI extends UI {
     private final Button addNewBtn;
 
     @Autowired
-    public VaadinUI(StudentsDao repo, StudentEditor editor) {
+    public VaadinUI(DemoDbPopulator populator, StudentDao repo, StudentEditor editor) {
         this.repo = repo;
         this.editor = editor;
         this.grid = new Grid<>(Student.class);
         this.filter = new TextField();
         this.addNewBtn = new Button("Добавить студента", FontAwesome.PLUS);
+        populator.populate(50);
     }
 
     @Override

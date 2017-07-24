@@ -8,7 +8,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.EducationForm;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.GraduationType;
@@ -29,7 +29,7 @@ import java.util.Arrays;
 @UIScope
 public class StudentEditor extends VerticalLayout {
 
-    private final StudentsDao repository;
+    private final StudentDao repository;
 
     /**
      * The currently edited customer
@@ -62,7 +62,7 @@ public class StudentEditor extends VerticalLayout {
     Binder<Student> binder = new Binder<>(Student.class);
 
     @Autowired
-    public StudentEditor(StudentsDao repository) {
+    public StudentEditor(StudentDao repository) {
         this.repository = repository;
 
         addComponents(firstName, lastName, patronymic, dateOfBirth, dateOfGraduation, educationForm, graduationType, actions);
@@ -78,7 +78,9 @@ public class StudentEditor extends VerticalLayout {
         save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
         // wire action buttons to save, delete and reset
-        save.addClickListener(e -> repository.save(customer));
+        save.addClickListener(e -> {
+            binder.setBean(repository.save(customer));
+        });
         delete.addClickListener(e -> repository.remove(customer));
         cancel.addClickListener(e -> editCustomer(customer));
         setVisible(false);

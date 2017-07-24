@@ -1,6 +1,7 @@
 package ru.ifmo.ctddev.isaev.studentsdb.entity;
 
 
+import ru.ifmo.ctddev.isaev.studentsdb.converter.TimestampToLocalDateConverter;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.EducationForm;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.GraduationType;
 
@@ -67,6 +68,7 @@ public class Student {
 
     @Basic
     @Column(name = "date_of_birth")
+    @Convert(converter = TimestampToLocalDateConverter.class)
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
@@ -89,7 +91,7 @@ public class Student {
     }
 
     @Basic
-    @Column(name = "education_type")
+    @Column(name = "graduation_type")
     @Convert(converter = GraduationType.Converter.class)
     public GraduationType getGraduationType() {
         return graduationType;
@@ -132,7 +134,7 @@ public class Student {
             return false;
         }
         Student student = (Student) o;
-        return Objects.equals(id, student.id);
+        return id != null && student.id != null && Objects.equals(id, student.id);
     }
 
     @Override

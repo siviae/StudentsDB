@@ -1,18 +1,17 @@
 package ru.ifmo.ctddev.isaev.studentsdb.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentsDao;
+import org.springframework.stereotype.Service;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
-@Controller
-public class DatabaseFillController {
+@Service
+public class DemoDbPopulator {
     private static String[] surnames = new String[] {
             "Иванов",
             "Васильев",
@@ -129,7 +128,7 @@ public class DatabaseFillController {
     private static Random rand = new Random();
 
     @Autowired
-    StudentsDao dao;
+    StudentDao dao;
 
     private String[] patronymics = new String[] {
 
@@ -140,17 +139,22 @@ public class DatabaseFillController {
             "Антонович", "Богданович", "Богуславович", "Владиславович", "Вячеславович", "Геннадьевич", "Георгиевич", "Глебович", "Давидович", "Данилович", "Егорович", "Захарович", "Кириллович", "Константинович", "Макарович", "Миронович", "Никанорович", "Робертович", "Русланович", "Семенович", "Янович"
     };
 
-    @RequestMapping(value = "/dbFill", method = RequestMethod.GET)
-    public String getPage() {
-        for (int i = 0; i < 200; ++i) {
+    public void populate(int size) {
+        for (int i = 0; i < size; ++i) {
             Student employee = new Student(
                     null,
                     names[rand.nextInt(names.length)],
                     surnames[rand.nextInt(surnames.length)],
                     patronymics[rand.nextInt(patronymics.length)],
-                    new Timestamp(rand.nextLong()).toLocalDateTime().toLocalDate());
+                    randomDate());
             dao.save(employee);
         }
-        return "main.jsp";
+    }
+
+    public LocalDate randomDate() {
+        long minDay = LocalDate.of(1970, 1, 1).toEpochDay();
+        long maxDay = LocalDate.of(2015, 12, 31).toEpochDay();
+        long randomDay = Math.abs(ThreadLocalRandom.current().nextLong(minDay, maxDay));
+        return LocalDate.ofEpochDay(randomDay);
     }
 }

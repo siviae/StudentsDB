@@ -13,14 +13,16 @@ import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,7 +41,8 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     public DataSource dataSource() throws IOException {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
         dataSource.setDriverClass(Driver.class);
-        dataSource.setUrl("jdbc:h2:~/students;AUTO_RECONNECT=TRUE");
+        dataSource.setUrl("jdbc:h2:file:~/students" +
+                "IFEXISTS=TRUE;AUTO_RECONNECT=TRUE;MV_STORE=FALSE;MVCC=FALSE");
         ResourceDatabasePopulator dbPopulator = new ResourceDatabasePopulator();
         dbPopulator.setContinueOnError(true);
         Files.list(Paths.get("src/main/resources/sql"))
@@ -48,12 +51,6 @@ public class AppConfig extends WebMvcConfigurerAdapter {
                 .forEach(dbPopulator::addScript);
         DatabasePopulatorUtils.execute(dbPopulator, dataSource);
         return dataSource;
-    }
-
-    @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/res/**")
-                .addResourceLocations("res/");
     }
 
     @Bean
@@ -72,30 +69,28 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory() throws IOException {
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("ru.ifmo.ctddev.isaev.studentsdb.entity");
-        sessionFactory.setHibernateProperties(hibernateProperties());
-        return sessionFactory;
+    @Autowired
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(dataSource);
+        em.setPackagesToScan("ru.ifmo.ctddev.isaev.studentsdb.entity");
+        em.setJpaVendorAdapter(jpaVendorAdapter);
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        em.setJpaProperties(properties);
+        return em;
     }
 
     @Bean
     @Autowired
-    public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
-        HibernateTransactionManager txManager = new HibernateTransactionManager();
-        txManager.setSessionFactory(sessionFactory);
+    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        txManager.setEntityManagerFactory(entityManagerFactory);
         return txManager;
     }
 
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
-    }
-
-    private Properties hibernateProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        return properties;
     }
 }
