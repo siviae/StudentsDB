@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
+import ru.ifmo.ctddev.isaev.studentsdb.enums.EducationForm;
+import ru.ifmo.ctddev.isaev.studentsdb.enums.GraduationType;
 
 import java.time.LocalDate;
 import java.util.Random;
@@ -146,7 +148,11 @@ public class DemoDbPopulator {
                     names[rand.nextInt(names.length)],
                     surnames[rand.nextInt(surnames.length)],
                     patronymics[rand.nextInt(patronymics.length)],
-                    randomDate());
+                    randomDate(),
+                    ThreadLocalRandom.current().nextInt(1950, 2017),
+                    EducationForm.values()[rand.nextInt(3)],
+                    GraduationType.values()[rand.nextInt(3)]
+            );
             dao.save(employee);
         }
     }

@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * @author iisaev
  */
-public enum EducationForm {
+public enum EducationForm implements MyEnum {
     FULL_TIME("Очная", "F"),
     PART_TIME("Заочная", "P"),
     LATE_TIME("Вечерняя", "L");
@@ -21,6 +21,7 @@ public enum EducationForm {
         this.dbKey = dbKey;
     }
 
+    @Override
     public String getName() {
         return name;
     }

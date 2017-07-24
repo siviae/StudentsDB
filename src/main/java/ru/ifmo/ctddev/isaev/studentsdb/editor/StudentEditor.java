@@ -1,6 +1,7 @@
-package ru.ifmo.ctddev.isaev.studentsdb.sample;
+package ru.ifmo.ctddev.isaev.studentsdb.editor;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -36,54 +37,68 @@ public class StudentEditor extends VerticalLayout {
      */
     private Student customer;
 
-    private TextField firstName = new TextField("Имя");
+    private final TextField firstName = new TextField("Имя");
 
-    private TextField lastName = new TextField("Фамилия");
+    private final TextField lastName = new TextField("Фамилия");
 
-    private TextField patronymic = new TextField("Отчество");
+    private final TextField patronymic = new TextField("Отчество");
 
-    private DateField dateOfBirth = new DateField("Дата рождения");
+    private final DateField dateOfBirth = new DateField("Дата рождения");
 
-    private DateField dateOfGraduation = new DateField("Дата выпуска");
+    private final TextField graduationYear = new TextField("Дата выпуска");
 
-    private ComboBox<EducationForm> educationForm = new ComboBox<>("Форма обучения", Arrays.asList(EducationForm.values()));
+    private final ComboBox<EducationForm> educationForm = new ComboBox<>("Форма обучения", Arrays.asList(EducationForm.values()));
 
-    private ComboBox<GraduationType> graduationType = new ComboBox<>("Образование", Arrays.asList(GraduationType.values()));
+    private final ComboBox<GraduationType> graduationType = new ComboBox<>("Образование", Arrays.asList(GraduationType.values()));
 
-    /* Action buttons */
-    private Button save = new Button("Сохранить", FontAwesome.SAVE);
+    private final Button saveButton = new Button("Сохранить", FontAwesome.SAVE);
 
-    private Button cancel = new Button("Отмена");
+    private final Button delete = new Button("Удалить", FontAwesome.TRASH_O);
 
-    private Button delete = new Button("Удалить", FontAwesome.TRASH_O);
+    private final Image photo = new Image("Фотография");
 
-    private CssLayout actions = new CssLayout(save, cancel, delete);
+    private CssLayout actions = new CssLayout(saveButton, delete);
 
     Binder<Student> binder = new Binder<>(Student.class);
 
     @Autowired
     public StudentEditor(StudentDao repository) {
         this.repository = repository;
+        ImageUploader receiver = new ImageUploader(photo);
 
-        addComponents(firstName, lastName, patronymic, dateOfBirth, dateOfGraduation, educationForm, graduationType, actions);
+        Upload upload = new Upload("Загрузить фотографию", receiver);
+        upload.addSucceededListener(receiver);
+        VerticalLayout editorPanel = new VerticalLayout(
+                firstName, lastName, patronymic, dateOfBirth, graduationYear, educationForm, graduationType, upload, actions
+        );
+        VerticalLayout photoPanel = new VerticalLayout(photo);
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout(
+                editorPanel,
+                photoPanel
+        );
+        addComponent(horizontalLayout);
 
         // bind using naming convention
+        binder.forField(graduationYear)
+                .withNullRepresentation("")
+                .withConverter(
+                        new StringToIntegerConverter(0, "Год"))
+                .bind(Student::getGraduationYear, Student::setGraduationYear);
         binder.bindInstanceFields(this);
         bindEntityFields();
 
         // Configure and style components
         setSpacing(true);
         actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-        save.setStyleName(ValoTheme.BUTTON_PRIMARY);
-        save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+        saveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
+        saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
-        // wire action buttons to save, delete and reset
-        save.addClickListener(e -> {
+        // wire action buttons to saveButton, delete and reset
+        saveButton.addClickListener(e -> {
             binder.setBean(repository.save(customer));
         });
         delete.addClickListener(e -> repository.remove(customer));
-        cancel.addClickListener(e -> editCustomer(customer));
-        setVisible(false);
     }
 
     private void bindEntityFields() {
@@ -107,7 +122,6 @@ public class StudentEditor extends VerticalLayout {
         } else {
             customer = c;
         }
-        cancel.setVisible(persisted);
 
         // Bind customer properties to similarly named fields
         // Could also use annotation or "manual binding" or programmatically
@@ -117,16 +131,19 @@ public class StudentEditor extends VerticalLayout {
         setVisible(true);
 
         // A hack to ensure the whole form is visible
-        save.focus();
+        saveButton.focus();
         // Select all text in firstName field automatically
         firstName.selectAll();
     }
 
     public void setChangeHandler(ChangeHandler h) {
-        // ChangeHandler is notified when either save or delete
+        // ChangeHandler is notified when either saveButton or delete
         // is clicked
-        save.addClickListener(e -> h.onChange());
+        saveButton.addClickListener(e -> h.onChange());
         delete.addClickListener(e -> h.onChange());
     }
 
+    public Button getSaveButton() {
+        return saveButton;
+    }
 }

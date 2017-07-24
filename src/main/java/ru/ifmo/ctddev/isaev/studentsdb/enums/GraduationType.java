@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * @author iisaev
  */
-public enum GraduationType {
+public enum GraduationType implements MyEnum{
     HIGH("Высшее", "H"),
     UNFINISHED_HIGH("Незаконченное высшее", "U"),
     MID("Среднее", "M");
@@ -21,6 +21,7 @@ public enum GraduationType {
         this.dbKey = dbKey;
     }
 
+    @Override
     public String getName() {
         return name;
     }

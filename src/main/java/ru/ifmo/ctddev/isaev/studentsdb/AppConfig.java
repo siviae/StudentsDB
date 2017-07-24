@@ -1,7 +1,6 @@
 package ru.ifmo.ctddev.isaev.studentsdb;
 
 import org.h2.Driver;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,8 +10,6 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -41,8 +38,8 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     public DataSource dataSource() throws IOException {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
         dataSource.setDriverClass(Driver.class);
-        dataSource.setUrl("jdbc:h2:file:~/students" +
-                "IFEXISTS=TRUE;AUTO_RECONNECT=TRUE;MV_STORE=FALSE;MVCC=FALSE");
+        dataSource.setUrl("jdbc:h2:file:~/students;" +
+                "AUTO_RECONNECT=TRUE;MV_STORE=FALSE;MVCC=FALSE");
         ResourceDatabasePopulator dbPopulator = new ResourceDatabasePopulator();
         dbPopulator.setContinueOnError(true);
         Files.list(Paths.get("src/main/resources/sql"))

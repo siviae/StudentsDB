@@ -23,18 +23,29 @@ public class Student {
 
     private LocalDate dateOfBirth;
 
-    private LocalDate dateOfGraduation;
+    private Integer graduationYear;
 
     private EducationForm educationForm;
 
     private GraduationType graduationType;
 
-    public Student(Long id, String firstName, String lastName, String patronymic, LocalDate dateOfBirth) {
+    public Student(Long id,
+                   String firstName,
+                   String lastName,
+                   String patronymic,
+                   LocalDate dateOfBirth,
+                   Integer graduationYear,
+                   EducationForm educationForm,
+                   GraduationType graduationType
+    ) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.patronymic = patronymic;
         this.dateOfBirth = dateOfBirth;
+        this.graduationYear = graduationYear;
+        this.educationForm = educationForm;
+        this.graduationType = graduationType;
     }
 
     public Student() {//do not remove, used for deserializing
@@ -75,12 +86,12 @@ public class Student {
 
     @Basic
     @Column(name = "date_of_graduation")
-    public LocalDate getDateOfGraduation() {
-        return dateOfGraduation;
+    public Integer getGraduationYear() {
+        return graduationYear;
     }
 
-    public void setDateOfGraduation(LocalDate dateOfGraduation) {
-        this.dateOfGraduation = dateOfGraduation;
+    public void setGraduationYear(Integer graduationYear) {
+        this.graduationYear = graduationYear;
     }
 
     @Basic
