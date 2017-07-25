@@ -15,6 +15,7 @@ import ru.ifmo.ctddev.isaev.studentsdb.enums.EducationForm;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.GraduationType;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -28,9 +29,11 @@ import java.util.Arrays;
  */
 @SpringComponent
 @UIScope
-public class StudentEditor extends VerticalLayout {
+public class StudentEditor extends Window {
 
     private final StudentDao repository;
+
+    private final AtomicBoolean isVisible = new AtomicBoolean(false);
 
     /**
      * The currently edited customer
@@ -45,7 +48,7 @@ public class StudentEditor extends VerticalLayout {
 
     private final DateField dateOfBirth = new DateField("Дата рождения");
 
-    private final TextField graduationYear = new TextField("Дата выпуска");
+    private final TextField graduationYear = new TextField("Год выпуска");
 
     private final ComboBox<EducationForm> educationForm = new ComboBox<>("Форма обучения", Arrays.asList(EducationForm.values()));
 
@@ -63,8 +66,10 @@ public class StudentEditor extends VerticalLayout {
 
     @Autowired
     public StudentEditor(StudentDao repository) {
+        super("Добавить студента");
         this.repository = repository;
         ImageUploader receiver = new ImageUploader(photo);
+        center();
 
         Upload upload = new Upload("Загрузить фотографию", receiver);
         upload.addSucceededListener(receiver);
@@ -77,7 +82,9 @@ public class StudentEditor extends VerticalLayout {
                 editorPanel,
                 photoPanel
         );
-        addComponent(horizontalLayout);
+        VerticalLayout mainLayout = new VerticalLayout(horizontalLayout);
+        mainLayout.setSpacing(true);
+        setContent(mainLayout);
 
         // bind using naming convention
         binder.forField(graduationYear)
@@ -89,7 +96,6 @@ public class StudentEditor extends VerticalLayout {
         bindEntityFields();
 
         // Configure and style components
-        setSpacing(true);
         actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
         saveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
         saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
@@ -99,6 +105,8 @@ public class StudentEditor extends VerticalLayout {
             binder.setBean(repository.save(customer));
         });
         delete.addClickListener(e -> repository.remove(customer));
+        addCloseListener((CloseListener) closeEvent -> hide());
+        saveButton.addClickListener((Button.ClickListener) clickEvent -> hide());
     }
 
     private void bindEntityFields() {
@@ -143,7 +151,15 @@ public class StudentEditor extends VerticalLayout {
         delete.addClickListener(e -> h.onChange());
     }
 
-    public Button getSaveButton() {
-        return saveButton;
+    public void makeVisible() {
+        if (isVisible.compareAndSet(false, true)) {
+            UI.getCurrent().addWindow(this);
+        }
+    }
+
+    private void hide() {
+        if (isVisible.compareAndSet(true, false)) {
+            UI.getCurrent().removeWindow(this);
+        }
     }
 }

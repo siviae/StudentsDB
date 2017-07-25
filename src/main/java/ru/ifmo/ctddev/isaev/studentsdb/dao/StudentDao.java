@@ -103,6 +103,10 @@ public class StudentDao {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void remove(Student student) {
-        entityManager.remove(student);
+        if (student.getId() != null) {
+            entityManager.createQuery("delete from Student s where s.id = :id")
+                    .setParameter("id", student.getId())
+                    .executeUpdate();
+        }
     }
 }

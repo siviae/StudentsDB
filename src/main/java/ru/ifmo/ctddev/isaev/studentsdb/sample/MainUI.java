@@ -62,10 +62,8 @@ public class MainUI extends UI {
         headerRow.getCell(idColumn).setComponent(addNewBtn);
         // Instantiate and edit new Customer the new button is clicked
         addNewBtn.addClickListener(e -> {
-            ModalUI modal = new ModalUI(editor, isModalOpened);
-            // Add it to the root component
-            UI.getCurrent().addWindow(modal);
             editor.editCustomer(new Student(null, "", "", "", null, null, null, null));
+            editor.makeVisible();
         });
 
 
@@ -83,12 +81,8 @@ public class MainUI extends UI {
 
         // Connect selected Customer to editor or hide if none is selected
         grid.asSingleSelect().addValueChangeListener(e -> {
-            if (isModalOpened.compareAndSet(false, true)) {
-                ModalUI modal = new ModalUI(editor, isModalOpened);
-                // Add it to the root component
-                UI.getCurrent().addWindow(modal);
-                editor.editCustomer(e.getValue());
-            }
+            editor.editCustomer(e.getValue());
+            editor.makeVisible();
         });
 
 
