@@ -68,6 +68,7 @@ public class StudentEditor extends Window {
     public StudentEditor(StudentDao repository) {
         super("Добавить студента");
         this.repository = repository;
+        photo.setWidth("640px");
         ImageUploader receiver = new ImageUploader(photo);
         center();
 

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -66,14 +67,26 @@ public class StudentDao {
         }
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
-        return entityManager.createQuery(cq)
-                .setParameter("id", id)
-                .setParameter("firstName", "%" + firstName + "%")
-                .setParameter("lastName", "%" + lastName + "%")
-                .setParameter("patronymic", "%" + patronymic + "%")
-                .setParameter("dateOfBirth", dateOfBirth)
-                .setMaxResults(limit)
-                .getResultList();
+        TypedQuery<Student> query = entityManager.createQuery(cq);
+        if (id != null) {
+            query.setParameter("id", id);
+        }
+        if (firstName != null) {
+            query.setParameter("firstName", "%" + firstName + "%");
+        }
+        if (lastName != null) {
+            query.setParameter("lastName", "%" + lastName + "%");
+        }
+        if (patronymic != null) {
+            query.setParameter("patronymic", "%" + patronymic + "%");
+        }
+        if (dateOfBirth != null) {
+            query.setParameter("dateOfBirth", dateOfBirth);
+        }
+        if (limit != null) {
+            query.setMaxResults(limit);
+        }
+        return query.getResultList();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
