@@ -1,11 +1,13 @@
 package ru.ifmo.ctddev.isaev.studentsdb.sample;
 
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.HeaderRow;
+import com.vaadin.ui.renderers.ImageRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import ru.ifmo.ctddev.isaev.studentsdb.controller.DemoDbPopulator;
@@ -14,6 +16,8 @@ import ru.ifmo.ctddev.isaev.studentsdb.editor.StudentEditor;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static java.lang.String.format;
 
 
 @SpringUI
@@ -50,10 +54,16 @@ public class MainUI extends UI {
         mainLayout.setSizeFull();
         setContent(mainLayout);
 
-        Grid.Column idColumn = grid.addColumn(Student::getId).setCaption("ID");
-        Grid.Column lastNameColumn = grid.addColumn(Student::getLastName).setCaption("Фамилия");
-        grid.addColumn(Student::getFirstName).setCaption("Имя");
-        grid.addColumn(Student::getPatronymic).setCaption("Отчество");
+        //Grid.Column idColumn = grid.addColumn(Student::getId).setCaption("ID");
+        Grid.Column<Student, ExternalResource> photoColumn = grid.addColumn(
+                this::getGridPicture,
+                new ImageRenderer<>())
+                .setCaption("Фото");
+        photoColumn.setWidth(100.0);
+
+        Grid.Column lastNameColumn = grid.addColumn(st ->
+                format("%s\n%s\n%s", st.getLastName(), st.getFirstName(), st.getPatronymic())
+        ).setCaption("ФИО");
         grid.addColumn(Student::getDateOfBirth).setCaption("Дата рождения");
         grid.addColumn(Student::getGraduationYear).setCaption("Выпуск");
         grid.addColumn(student -> student.getEducationForm().getName())
@@ -63,7 +73,7 @@ public class MainUI extends UI {
 
         HeaderRow headerRow = grid.prependHeaderRow();
         Button addNewBtn = new Button(FontAwesome.PLUS);
-        headerRow.getCell(idColumn).setComponent(addNewBtn);
+        headerRow.getCell(photoColumn).setComponent(addNewBtn);
         // Instantiate and edit new Customer the new button is clicked
         addNewBtn.addClickListener(e -> {
             editor.editCustomer(new Student());
@@ -109,5 +119,9 @@ public class MainUI extends UI {
         }
     }
     // end::listCustomers[]
+
+    private ExternalResource getGridPicture(Student student) {
+        return new ExternalResource("https://vignette1.wikia.nocookie.net/cutemariobro/images/5/59/Person-placeholder.jpg/revision/latest?cb=20170131092134");
+    }
 
 }

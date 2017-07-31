@@ -256,6 +256,12 @@ public class StudentEditor extends Window {
     private void bindEntityFields() {
         educationForm.setItemCaptionGenerator(EducationForm::getName);
         graduationType.setItemCaptionGenerator(GraduationType::getName);
+        university.setItemCaptionGenerator(University::getTitle);
+        foreignLanguage.setItemCaptionGenerator(Language::getName);
+        nationality.setItemCaptionGenerator(Nationality::getName);
+        wifeNationality.setItemCaptionGenerator(Nationality::getName);
+        militaryRank.setItemCaptionGenerator(MilitaryRank::getName);
+        fleet.setItemCaptionGenerator(Fleet::getName);
     }
 
     public interface ChangeHandler {
