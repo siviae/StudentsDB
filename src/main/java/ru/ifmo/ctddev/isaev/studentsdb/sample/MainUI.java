@@ -38,13 +38,17 @@ public class MainUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
         // build layout
-        HorizontalLayout gridLayout = new HorizontalLayout(grid);
-        gridLayout.setSizeFull();
-        VerticalLayout mainLayout = new VerticalLayout(
-                new Label("Студенты"), gridLayout);
+        VerticalLayout gridLayout = new VerticalLayout(grid);
+        gridLayout.setWidth("100%");
+        grid.setWidth("100%");
+        grid.setHeightUndefined();
         grid.setSizeFull();
+        gridLayout.setHeightUndefined();
+        VerticalLayout mainLayout = new VerticalLayout(
+                new Label("Состав кафедры"), grid);
+        mainLayout.setExpandRatio(grid, 1.0f);
+        mainLayout.setSizeFull();
         setContent(mainLayout);
-        setSizeFull();
 
         Grid.Column idColumn = grid.addColumn(Student::getId).setCaption("ID");
         Grid.Column lastNameColumn = grid.addColumn(Student::getLastName).setCaption("Фамилия");
@@ -62,7 +66,7 @@ public class MainUI extends UI {
         headerRow.getCell(idColumn).setComponent(addNewBtn);
         // Instantiate and edit new Customer the new button is clicked
         addNewBtn.addClickListener(e -> {
-            editor.editCustomer(new Student(null, "", "", "", null, null, null, null));
+            editor.editCustomer(new Student());
             editor.makeVisible();
         });
 

@@ -1,7 +1,8 @@
-package ru.ifmo.ctddev.isaev.studentsdb.enums;
+package ru.ifmo.ctddev.isaev.studentsdb.converter;
 
 import com.vaadin.ui.renderers.AbstractRenderer;
 import elemental.json.JsonValue;
+import ru.ifmo.ctddev.isaev.studentsdb.enums.MyEnum;
 
 
 /**

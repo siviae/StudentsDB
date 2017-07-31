@@ -8,16 +8,15 @@ import javax.persistence.AttributeConverter;
 /**
  * @author iisaev
  */
-public enum EducationForm implements MyEnum {
-    FULL_TIME("Очная", "F"),
-    PART_TIME("Заочная", "P"),
-    LATE_TIME("Вечерняя", "L");
+public enum Language implements MyEnum {
+    ENG("Анг.", "ENG"),
+    GER("Нем.", "GER");
 
     private final String dbKey;
 
     private final String name;
 
-    EducationForm(String name, String dbKey) {
+    Language(String name, String dbKey) {
         this.name = name;
         this.dbKey = dbKey;
     }
@@ -31,15 +30,15 @@ public enum EducationForm implements MyEnum {
         return dbKey;
     }
 
-    public static class Converter implements AttributeConverter<EducationForm, String> {
+    public static class Converter implements AttributeConverter<Language, String> {
 
         @Override
-        public String convertToDatabaseColumn(EducationForm attribute) {
+        public String convertToDatabaseColumn(Language attribute) {
             return MyEnumDbConverterUtils.convertToDatabaseColumn(attribute);
         }
 
         @Override
-        public EducationForm convertToEntityAttribute(String dbData) {
+        public Language convertToEntityAttribute(String dbData) {
             return MyEnumDbConverterUtils.convertToEntityAttribute(dbData, values());
         }
     }

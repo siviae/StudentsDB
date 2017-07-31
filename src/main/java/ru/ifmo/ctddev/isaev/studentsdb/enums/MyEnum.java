@@ -5,4 +5,6 @@ package ru.ifmo.ctddev.isaev.studentsdb.enums;
  */
 public interface MyEnum {
     String getName();
+
+    String getDbKey();
 }

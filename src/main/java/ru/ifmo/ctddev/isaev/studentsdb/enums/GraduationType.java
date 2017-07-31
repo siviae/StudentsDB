@@ -1,13 +1,14 @@
 package ru.ifmo.ctddev.isaev.studentsdb.enums;
 
+import ru.ifmo.ctddev.isaev.studentsdb.converter.MyEnumDbConverterUtils;
+
 import javax.persistence.AttributeConverter;
-import java.util.Arrays;
 
 
 /**
  * @author iisaev
  */
-public enum GraduationType implements MyEnum{
+public enum GraduationType implements MyEnum {
     HIGH("Высшее", "H"),
     UNFINISHED_HIGH("Незаконченное высшее", "U"),
     MID("Среднее", "M");
@@ -26,6 +27,7 @@ public enum GraduationType implements MyEnum{
         return name;
     }
 
+    @Override
     public String getDbKey() {
         return dbKey;
     }
@@ -34,15 +36,12 @@ public enum GraduationType implements MyEnum{
 
         @Override
         public String convertToDatabaseColumn(GraduationType attribute) {
-            return attribute == null ? null : attribute.getDbKey();
+            return MyEnumDbConverterUtils.convertToDatabaseColumn(attribute);
         }
 
         @Override
         public GraduationType convertToEntityAttribute(String dbData) {
-            return Arrays.stream(GraduationType.values())
-                    .filter(enumValue -> enumValue.getDbKey().equals(dbData))
-                    .findFirst()
-                    .orElse(null);
+            return MyEnumDbConverterUtils.convertToEntityAttribute(dbData, values());
         }
     }
 }
