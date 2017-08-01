@@ -30,6 +30,11 @@ public enum Language implements MyEnum {
         return dbKey;
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
     public static class Converter implements AttributeConverter<Language, String> {
 
         @Override

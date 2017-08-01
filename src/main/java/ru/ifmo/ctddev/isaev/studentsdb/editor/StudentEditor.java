@@ -10,6 +10,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.dialogs.ConfirmDialog;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.UniversityDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
@@ -101,7 +102,7 @@ public class StudentEditor extends Window {
 
     private final TextField address;
 
-    private final TextField state_rewards;
+    private final TextField stateRewards;
 
     private final TextField diplomaTopic;
 
@@ -113,11 +114,9 @@ public class StudentEditor extends Window {
 
     private final Button saveButton;
 
-    private final Button delete;
+    private final Button removeButton;
 
     private final Image photo;
-
-    private CssLayout actions;
 
     Binder<Student> binder = new Binder<>(Student.class);
 
@@ -127,13 +126,21 @@ public class StudentEditor extends Window {
         this.repository = repository;
         this.universityDao = universityDao;
         this.photo = new Image("Фотография");
-        this.delete = new Button("Удалить", FontAwesome.TRASH_O);
+        this.removeButton = new Button("Удалить", FontAwesome.TRASH_O);
+        removeButton.setStyleName(ValoTheme.BUTTON_DANGER);
         this.saveButton = new Button("Сохранить", FontAwesome.SAVE);
+        saveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
         this.additionalInfo = new TextArea("Примечания");
+        binder.forField(additionalInfo)
+                .withNullRepresentation("")
+                .bind(Student::getAdditionalInfo, Student::setAdditionalInfo);
         this.finalAllocation = new TextField("Окончательное распределение");
+        binder.forField(finalAllocation)
+                .withNullRepresentation("")
+                .bind(Student::getFinalAllocation, Student::setFinalAllocation);
         this.preliminaryAllocation = new TextField("Предварительное распределение");
         this.diplomaTopic = new TextField("Направление дипломной работы");
-        this.state_rewards = new TextField("Гос. награды");
+        this.stateRewards = new TextField("Гос. награды");
         this.address = new TextField("Адрес");
         this.wifeNationality = new ComboBox<>("Гражданство жены", Arrays.asList(Nationality.values()));
         this.familyInfo = new TextArea("Информация о семье");
@@ -171,8 +178,9 @@ public class StudentEditor extends Window {
                         new StringToIntegerConverter(0, "Год"))
                 .bind(Student::getGraduationYear, Student::setGraduationYear);
         this.militaryRank = new ComboBox<>("Воинское звание", Arrays.asList(MilitaryRank.values()));
+        binder.forField(militaryRank)
+                .bind(Student::getMilitaryRank, Student::setMilitaryRank);
         this.militaryRankAwardDate = new DateField("Дата присвоения");
-        this.actions = new CssLayout(saveButton, delete);
 
         init();
     }
@@ -183,7 +191,7 @@ public class StudentEditor extends Window {
         ImageUploader receiver = new ImageUploader(photo);
         Upload upload = new Upload("Загрузить фотографию", receiver);
         upload.addSucceededListener(receiver);
-        VerticalLayout photoLayout = new VerticalLayout(photo, upload);
+        VerticalLayout photoLayout = new VerticalLayout(photo, upload, saveButton, removeButton);
 
         center();
 
@@ -229,7 +237,7 @@ public class StudentEditor extends Window {
         VerticalLayout editorPanel = new VerticalLayout(
                 basicInfo, militaryInfo, accessPanel,
                 educationInfo, passport, internationalPassport,
-                familyInfoPanel, allocationPanel, additionalInfo, actions
+                familyInfoPanel, allocationPanel, additionalInfo
         );
         HorizontalLayout horizontalLayout = new HorizontalLayout(
                 photoLayout,
@@ -244,15 +252,12 @@ public class StudentEditor extends Window {
         bindEntityFields();
 
         // Configure and style components
-        actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-        saveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
         saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
-        // wire action buttons to saveButton, delete and reset
+        // wire action buttons to saveButton, removeButton and reset
         saveButton.addClickListener(e -> {
             binder.setBean(repository.save(customer));
         });
-        delete.addClickListener(e -> repository.remove(customer));
         addCloseListener((CloseListener) closeEvent -> hide());
         saveButton.addClickListener((Button.ClickListener) clickEvent -> hide());
     }
@@ -300,10 +305,20 @@ public class StudentEditor extends Window {
     }
 
     public void setChangeHandler(ChangeHandler h) {
-        // ChangeHandler is notified when either saveButton or delete
+        // ChangeHandler is notified when either saveButton or removeButton
         // is clicked
         saveButton.addClickListener(e -> h.onChange());
-        delete.addClickListener(e -> h.onChange());
+        removeButton.addClickListener(e -> {
+            Student currentStudent = binder.getBean();
+            String fio = String.format("%s %s %s", currentStudent.getLastName(), currentStudent.getFirstName(), currentStudent.getPatronymic());
+            ConfirmDialog.show(this.getUI(), String.format("Удалить \"%s\"", fio), "Вы уверены?",
+                    "Удалить", "Отмена", (ConfirmDialog.Listener) dialog -> {
+                        if (dialog.isConfirmed()) {
+                            repository.remove(customer);
+                        }
+                        h.onChange();
+                    });
+        });
     }
 
     public void makeVisible() {

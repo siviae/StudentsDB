@@ -22,6 +22,7 @@ public enum EducationForm implements MyEnum {
         this.dbKey = dbKey;
     }
 
+
     @Override
     public String getName() {
         return name;
@@ -29,6 +30,11 @@ public enum EducationForm implements MyEnum {
 
     public String getDbKey() {
         return dbKey;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public static class Converter implements AttributeConverter<EducationForm, String> {

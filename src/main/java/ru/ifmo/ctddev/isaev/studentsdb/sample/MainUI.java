@@ -151,11 +151,15 @@ public class MainUI extends UI {
     }
 
     private String formatMilitaryRankAssignment(Student student) {
-        return student.getMilitaryRankAwardDate().toString() + "\n" + student.getMilitaryRankAwardDate();
+        String militaryRankAwardDate = student.getMilitaryRankAwardDate() == null ? "" : student.getMilitaryRankAwardDate().toString();
+        String militaryRankOrderName = student.getMilitaryRankOrderName() == null ? "" : student.getMilitaryRankOrderName();
+        return militaryRankAwardDate + "\n" + militaryRankOrderName;
     }
 
     private String formatUniversity(Student student) {
-        return format("%s в %s г.", student.getUniversity().getTitle(), student.getGraduationYear());
+        String universityTitle = student.getUniversity() == null ? "" : student.getUniversity().getTitle();
+        String graduationYear = student.getGraduationYear() == null ? "" : String.valueOf(student.getGraduationYear());
+        return format("%s в %s г.", universityTitle, graduationYear);
     }
 
     // tag::listCustomers[]

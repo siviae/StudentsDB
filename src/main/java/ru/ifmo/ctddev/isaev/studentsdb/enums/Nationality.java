@@ -19,6 +19,7 @@ public enum Nationality implements MyEnum {
 
     private final String name;
 
+
     Nationality(String name, String dbKey) {
         this.name = name;
         this.dbKey = dbKey;
@@ -31,6 +32,11 @@ public enum Nationality implements MyEnum {
 
     public String getDbKey() {
         return dbKey;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public static class Converter implements AttributeConverter<Nationality, String> {
