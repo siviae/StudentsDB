@@ -62,15 +62,33 @@ public class MainUI extends UI {
                 .setCaption("Фото");
         photoColumn.setWidth(100.0);
 
-        Column lastNameColumn = grid.addColumn(st ->
-                format("%s\n%s\n%s", st.getLastName(), st.getFirstName(), st.getPatronymic())
-        ).setCaption("ФИО");
-        grid.addColumn(Student::getDateOfBirth).setCaption("Дата рождения");
+        Column lastNameColumn = grid.addColumn(this::formatFIO).setCaption("ФИО");
         grid.addColumn(Student::getGraduationYear).setCaption("Выпуск");
-        grid.addColumn(student -> student.getEducationForm().getName())
-                .setCaption("Форма обучения");
-        grid.addColumn(student -> student.getGraduationType().getName())
-                .setCaption("Образование");
+        grid.addColumn(this::formatMilitaryRank).setCaption("В/зв.");
+        grid.addColumn(this::formatMilitaryRankAssignment).setCaption("Присв.зв");
+        grid.addColumn(Student::getDateOfBirth).setCaption("Дата рождения");
+        grid.addColumn(Student::getNationality).setCaption("Нац.");
+        grid.addColumn(Student::getFleet).setCaption("Флот");
+        grid.addColumn(Student::getAchievementList).setCaption("Послужной список");
+        grid.addColumn(Student::getPosition).setCaption("Должность");
+        grid.addColumn(this::formatUniversity).setCaption("Окончил ВУЗ");
+        grid.addColumn(Student::getAveragePoints).setCaption("Ср. балл атт.");
+        grid.addColumn(Student::getForeignLanguage).setCaption("Ин. яз.");
+        grid.addColumn(Student::getIdentificationSeriesNumber).setCaption("Серия и номер удост. Личн.");
+        grid.addColumn(Student::getPersonalNumber).setCaption("Личный номер");
+        grid.addColumn(this::formatAdmission).setCaption("Форма допуска");
+        grid.addColumn(Student::getPassportNumber).setCaption("Паспорт допуска");
+        grid.addColumn(this::formatPassportIssue).setCaption("Выдан");
+        grid.addColumn(Student::getInternationalPassportNumber).setCaption("Загранпаспорт");
+        grid.addColumn(Student::getFamilyInfo).setCaption("Ф.И.О чл. семьи (№свид. о браке и рожд., кем, когда выд.)");
+        grid.addColumn(Student::getWifeNationality).setCaption("Гр. жены");
+        grid.addColumn(Student::getAddress).setCaption("Адрес");
+        grid.addColumn(Student::getStateRewards).setCaption("Гос. нагр.");
+        grid.addColumn(Student::getDiplomaTopic).setCaption("Направление дипл. работы");
+        grid.addColumn(Student::getPreliminaryAllocation).setCaption("Предв. распред.");
+        grid.addColumn(Student::getFinalAllocation).setCaption("Оконч. распред.");
+        grid.addColumn(Student::getAdditionalInfo).setCaption("Примечания");
+
 
         HeaderRow headerRow = grid.prependHeaderRow();
         Button addNewBtn = new Button(FontAwesome.PLUS);
@@ -109,6 +127,35 @@ public class MainUI extends UI {
 
         // Initialize listing
         listCustomers(null);
+    }
+
+    private String formatFIO(Student st) {
+        return format("%s\n%s\n%s", st.getLastName(), st.getFirstName(), st.getPatronymic());
+    }
+
+    private String formatPassportIssue(Student student) {
+        String passportIssuer = student.getPassportIssuer() == null ? "" : student.getPassportIssuer();
+        String passportIssueDate = student.getPassportIssueDate() == null ? "" : student.getPassportIssueDate().toString();
+        return passportIssuer + "\n" + passportIssueDate;
+    }
+
+    private String formatAdmission(Student student) {
+        String admissionForm = student.getAdmissionForm() == null ? "" : student.getAdmissionForm();
+        String admissionDate = student.getAdmissionDate() == null ? "" : student.getAdmissionDate().toString();
+        return admissionForm + "\n" + admissionDate;
+    }
+
+    private String formatMilitaryRank(Student student) {
+        String rankName = student.getMilitaryRank() == null ? "" : student.getMilitaryRank().getName();
+        return rankName;
+    }
+
+    private String formatMilitaryRankAssignment(Student student) {
+        return student.getMilitaryRankAwardDate().toString() + "\n" + student.getMilitaryRankAwardDate();
+    }
+
+    private String formatUniversity(Student student) {
+        return format("%s в %s г.", student.getUniversity().getTitle(), student.getGraduationYear());
     }
 
     // tag::listCustomers[]
