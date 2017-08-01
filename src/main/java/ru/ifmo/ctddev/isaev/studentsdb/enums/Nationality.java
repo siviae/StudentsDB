@@ -1,5 +1,10 @@
 package ru.ifmo.ctddev.isaev.studentsdb.enums;
 
+import ru.ifmo.ctddev.isaev.studentsdb.converter.MyEnumDbConverterUtils;
+
+import javax.persistence.AttributeConverter;
+
+
 /**
  * @author iisaev
  */
@@ -26,5 +31,18 @@ public enum Nationality implements MyEnum {
 
     public String getDbKey() {
         return dbKey;
+    }
+
+    public static class Converter implements AttributeConverter<Nationality, String> {
+
+        @Override
+        public String convertToDatabaseColumn(Nationality attribute) {
+            return MyEnumDbConverterUtils.convertToDatabaseColumn(attribute);
+        }
+
+        @Override
+        public Nationality convertToEntityAttribute(String dbData) {
+            return MyEnumDbConverterUtils.convertToEntityAttribute(dbData, values());
+        }
     }
 }

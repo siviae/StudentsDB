@@ -1,5 +1,10 @@
 package ru.ifmo.ctddev.isaev.studentsdb.enums;
 
+import ru.ifmo.ctddev.isaev.studentsdb.converter.MyEnumDbConverterUtils;
+
+import javax.persistence.AttributeConverter;
+
+
 /**
  * @author iisaev
  */
@@ -24,5 +29,18 @@ public enum MilitaryRank implements MyEnum {
 
     public String getDbKey() {
         return dbKey;
+    }
+
+    public static class Converter implements AttributeConverter<MilitaryRank, String> {
+
+        @Override
+        public String convertToDatabaseColumn(MilitaryRank attribute) {
+            return MyEnumDbConverterUtils.convertToDatabaseColumn(attribute);
+        }
+
+        @Override
+        public MilitaryRank convertToEntityAttribute(String dbData) {
+            return MyEnumDbConverterUtils.convertToEntityAttribute(dbData, values());
+        }
     }
 }

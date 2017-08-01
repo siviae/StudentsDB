@@ -146,6 +146,11 @@ public class StudentEditor extends Window {
         this.personalNumber = new TextField("Личный номер");
         this.identificationNumber = new TextField("Серия и номер уд. личности");
         this.averagePoints = new TextField("Средний балл аттестата");
+        binder.forField(averagePoints)
+                .withNullRepresentation("")
+                .withConverter(
+                        new StringToIntegerConverter(0, "Средний балл"))
+                .bind(Student::getGraduationYear, Student::setGraduationYear);
         this.university = new ComboBox<>("Окончил ВУЗ", universityDao.findAll());
         this.foreignLanguage = new ComboBox<>("Ин. яз.", Arrays.asList(Language.values()));
         this.position = new TextArea("Должность");
@@ -160,6 +165,11 @@ public class StudentEditor extends Window {
         this.patronymic = new TextField("Отчество");
         this.dateOfBirth = new DateField("Дата рождения");
         this.graduationYear = new TextField("Год выпуска");
+        binder.forField(graduationYear)
+                .withNullRepresentation("")
+                .withConverter(
+                        new StringToIntegerConverter(0, "Год"))
+                .bind(Student::getGraduationYear, Student::setGraduationYear);
         this.militaryRank = new ComboBox<>("Воинское звание", Arrays.asList(MilitaryRank.values()));
         this.militaryRankAwardDate = new DateField("Дата присвоения");
         this.actions = new CssLayout(saveButton, delete);
@@ -230,11 +240,6 @@ public class StudentEditor extends Window {
         setContent(mainLayout);
 
         // bind using naming convention
-        binder.forField(graduationYear)
-                .withNullRepresentation("")
-                .withConverter(
-                        new StringToIntegerConverter(0, "Год"))
-                .bind(Student::getGraduationYear, Student::setGraduationYear);
         binder.bindInstanceFields(this);
         bindEntityFields();
 

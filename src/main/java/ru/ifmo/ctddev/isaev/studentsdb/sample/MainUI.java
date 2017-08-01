@@ -6,6 +6,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.renderers.ImageRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,13 +56,13 @@ public class MainUI extends UI {
         setContent(mainLayout);
 
         //Grid.Column idColumn = grid.addColumn(Student::getId).setCaption("ID");
-        Grid.Column<Student, ExternalResource> photoColumn = grid.addColumn(
+        Column<Student, ExternalResource> photoColumn = grid.addColumn(
                 this::getGridPicture,
                 new ImageRenderer<>())
                 .setCaption("Фото");
         photoColumn.setWidth(100.0);
 
-        Grid.Column lastNameColumn = grid.addColumn(st ->
+        Column lastNameColumn = grid.addColumn(st ->
                 format("%s\n%s\n%s", st.getLastName(), st.getFirstName(), st.getPatronymic())
         ).setCaption("ФИО");
         grid.addColumn(Student::getDateOfBirth).setCaption("Дата рождения");

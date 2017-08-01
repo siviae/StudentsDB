@@ -1,5 +1,10 @@
 package ru.ifmo.ctddev.isaev.studentsdb.enums;
 
+import ru.ifmo.ctddev.isaev.studentsdb.converter.MyEnumDbConverterUtils;
+
+import javax.persistence.AttributeConverter;
+
+
 /**
  * @author iisaev
  */
@@ -24,5 +29,18 @@ public enum Fleet implements MyEnum {
 
     public String getDbKey() {
         return dbKey;
+    }
+
+    public static class Converter implements AttributeConverter<Fleet, String> {
+
+        @Override
+        public String convertToDatabaseColumn(Fleet attribute) {
+            return MyEnumDbConverterUtils.convertToDatabaseColumn(attribute);
+        }
+
+        @Override
+        public Fleet convertToEntityAttribute(String dbData) {
+            return MyEnumDbConverterUtils.convertToEntityAttribute(dbData, values());
+        }
     }
 }
