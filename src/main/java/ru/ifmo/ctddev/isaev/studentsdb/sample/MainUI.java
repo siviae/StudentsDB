@@ -1,5 +1,6 @@
 package ru.ifmo.ctddev.isaev.studentsdb.sample;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
@@ -22,6 +23,7 @@ import static java.lang.String.format;
 
 
 @SpringUI
+@Theme("myTheme")
 public class MainUI extends UI {
 
     private final StudentDao repo;
