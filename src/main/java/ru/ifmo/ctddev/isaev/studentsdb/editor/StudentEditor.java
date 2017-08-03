@@ -22,7 +22,9 @@ import ru.ifmo.ctddev.isaev.studentsdb.enums.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -78,7 +80,7 @@ public class StudentEditor extends Window {
 
     private final TextArea position;
 
-    private final ComboBox<University> university;
+    private final ComboBox<University> universityDropdown;
 
     private final TextField averagePoints;
 
@@ -122,6 +124,8 @@ public class StudentEditor extends Window {
 
     private final Image photo;
 
+    private final List<University> universities = new ArrayList<>();
+
     Binder<Student> binder = new Binder<>(Student.class);
 
     @Autowired
@@ -162,7 +166,7 @@ public class StudentEditor extends Window {
                 .withConverter(
                         new StringToIntegerConverter(0, "Средний балл"))
                 .bind(Student::getGraduationYear, Student::setGraduationYear);
-        this.university = new ComboBox<>("Окончил ВУЗ", universityDao.findAll());
+        this.universityDropdown = new ComboBox<>("Окончил ВУЗ", universities);
         this.foreignLanguage = new ComboBox<>("Ин. яз.", Arrays.asList(Language.values()));
         this.position = new TextArea("Должность");
         this.achievementList = new TextArea("Послужной список");
@@ -190,11 +194,12 @@ public class StudentEditor extends Window {
     }
 
     private void init() {
-        photo.setWidth("100px");
+        photo.setWidth("200px");
         ImageUploader receiver = new ImageUploader(binder, photo);
         Upload upload = new Upload("Загрузить фотографию", receiver);
         upload.addSucceededListener(receiver);
         VerticalLayout photoLayout = new VerticalLayout(photo, upload, saveButton, removeButton);
+        photoLayout.setWidth("250px");
 
         center();
 
@@ -203,19 +208,24 @@ public class StudentEditor extends Window {
         );
 
 
+        HorizontalLayout achievementPos = new HorizontalLayout(achievementList, position);
+        achievementPos.setWidthUndefined();
+        achievementList.setWidth("70%");
+        achievementList.setHeight("100px");
         Panel militaryInfo = new Panel("Должность",
                 new VerticalLayout(
                         new HorizontalLayout(militaryRank, militaryRankAwardDate, militaryRankOrderName, fleet),
-                        new HorizontalLayout(achievementList, position)
+                        achievementPos
                 )
         );
+
 
         Panel accessPanel = new Panel("Допуск",
                 new HorizontalLayout(identificationNumber, admissionForm, admissionDate)
         );
 
         Panel educationInfo = new Panel("Образование",
-                new HorizontalLayout(university, averagePoints, foreignLanguage, diplomaTopic)
+                new HorizontalLayout(universityDropdown, averagePoints, foreignLanguage, diplomaTopic)
         );
 
         Panel passport = new Panel("Паспорт",
@@ -242,6 +252,7 @@ public class StudentEditor extends Window {
                 educationInfo, passport, internationalPassport,
                 familyInfoPanel, allocationPanel, additionalInfo
         );
+        editorPanel.setExpandRatio(militaryInfo, 1.0f);
         HorizontalLayout horizontalLayout = new HorizontalLayout(
                 photoLayout,
                 editorPanel
@@ -259,17 +270,25 @@ public class StudentEditor extends Window {
 
         // wire action buttons to saveButton, removeButton and reset
         saveButton.addClickListener(e -> {
-            binder.setBean(repository.save(customer));
+            repository.save(customer);
+            binder.removeBean();
+            hide();
         });
         addCloseListener((CloseListener) closeEvent -> hide());
-        saveButton.addClickListener((Button.ClickListener) clickEvent -> hide());
     }
 
 
     private void bindEntityFields() {
         educationForm.setItemCaptionGenerator(EducationForm::getName);
         graduationType.setItemCaptionGenerator(GraduationType::getName);
-        university.setItemCaptionGenerator(University::getTitle);
+        universityDropdown.setItemCaptionGenerator(University::getTitle);
+        universityDropdown.setNewItemHandler((ComboBox.NewItemHandler) s -> {
+            University university = new University();
+            university.setTitle(s);
+            University savedUniversity = universityDao.save(university);
+            universities.add(savedUniversity);
+            binder.getBean().setUniversity(savedUniversity);
+        });
         foreignLanguage.setItemCaptionGenerator(Language::getName);
         nationality.setItemCaptionGenerator(Nationality::getName);
         wifeNationality.setItemCaptionGenerator(Nationality::getName);
@@ -281,22 +300,20 @@ public class StudentEditor extends Window {
         void onChange();
     }
 
-    public final void editCustomer(Student c) {
+    public final void editStudent(Student c) {
         if (c == null) {
             setVisible(false);
             return;
         }
-        final boolean persisted = c.getId() != null;
-        if (persisted) {
-            // Find fresh entity for editing
+        if (c.getId() != null) {
             customer = repository.findById(c.getId());
         } else {
             customer = c;
         }
+        universities.clear();
+        universities.addAll(universityDao.findAll());
+        universityDropdown.clear();
 
-        // Bind customer properties to similarly named fields
-        // Could also use annotation or "manual binding" or programmatically
-        // moving values from fields to entities before saving
         binder.setBean(customer);
         if (customer.getPhotoBase64() == null) {
             photo.setSource(new FileResource(new File("src/main/resources/icons/photo_placeholder.jpg")));
@@ -312,16 +329,9 @@ public class StudentEditor extends Window {
         }
 
         setVisible(true);
-
-        // A hack to ensure the whole form is visible
-        saveButton.focus();
-        // Select all text in firstName field automatically
-        firstName.selectAll();
     }
 
     public void setChangeHandler(ChangeHandler h) {
-        // ChangeHandler is notified when either saveButton or removeButton
-        // is clicked
         saveButton.addClickListener(e -> h.onChange());
         removeButton.addClickListener(e -> {
             Student currentStudent = binder.getBean();

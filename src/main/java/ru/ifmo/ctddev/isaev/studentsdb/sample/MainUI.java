@@ -134,7 +134,7 @@ public class MainUI extends UI {
         headerRow.getCell(photoColumn).setComponent(addNewBtn);
         // Instantiate and edit new Customer the new button is clicked
         addNewBtn.addClickListener(e -> {
-            editor.editCustomer(new Student());
+            editor.editStudent(new Student());
             editor.makeVisible();
         });
 
@@ -153,7 +153,7 @@ public class MainUI extends UI {
 
         grid.addItemClickListener((ItemClickListener) itemClick -> {
             if (itemClick.getMouseEventDetails().isDoubleClick()) {
-                editor.editCustomer((Student) itemClick.getItem());
+                editor.editStudent((Student) itemClick.getItem());
                 editor.makeVisible();
             }
         });

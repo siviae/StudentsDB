@@ -9,17 +9,15 @@ import javax.persistence.AttributeConverter;
  * @author iisaev
  */
 public enum Fleet implements MyEnum {
-    BSF("ЧФ", "BSF"),
-    POF("ТОФ", "POF"),
-    CS("ЧЦП", "CS");
-
-    private final String dbKey;
+    BSF("ЧФ"),
+    POF("ТОФ"),
+    NF("СФ"),
+    CS("ЧЦП");
 
     private final String name;
 
-    Fleet(String name, String dbKey) {
+    Fleet(String name) {
         this.name = name;
-        this.dbKey = dbKey;
     }
 
     @Override
@@ -28,7 +26,7 @@ public enum Fleet implements MyEnum {
     }
 
     public String getDbKey() {
-        return dbKey;
+        return name();
     }
 
     @Override
