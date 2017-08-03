@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS student (
   additional_info               TEXT,
   education_form                VARCHAR(256),
   graduation_type               VARCHAR(256),
+  photo                         TEXT
 );
 
 CREATE SEQUENCE seq_student START WITH 1;

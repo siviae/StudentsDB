@@ -79,6 +79,8 @@ public class Student {
     private String finalAllocation;
 
     private String additionalInfo;
+    
+    private String photoBase64;
 
     public Student(Long id,
                    String firstName,
@@ -455,7 +457,16 @@ public class Student {
     public void setAdditionalInfo(String additionalInfo) {
         this.additionalInfo = additionalInfo;
     }
+    
+    @Basic
+    @Column(name = "photo_base64")
+    public String getPhotoBase64() {
+        return photoBase64;
+    }
 
+    public void setPhotoBase64(String photoBase64) {
+        this.photoBase64 = photoBase64;
+    }
 
     @Override
     public boolean equals(Object o) {

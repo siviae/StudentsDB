@@ -1,10 +1,13 @@
 package ru.ifmo.ctddev.isaev.studentsdb.editor;
 
+import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
@@ -17,6 +20,7 @@ import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.University;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -187,8 +191,7 @@ public class StudentEditor extends Window {
 
     private void init() {
         photo.setWidth("100px");
-        photo.setSource(new FileResource(new File("src/main/resources/icons/photo_placeholder.jpg")));
-        ImageUploader receiver = new ImageUploader(photo);
+        ImageUploader receiver = new ImageUploader(binder, photo);
         Upload upload = new Upload("Загрузить фотографию", receiver);
         upload.addSucceededListener(receiver);
         VerticalLayout photoLayout = new VerticalLayout(photo, upload, saveButton, removeButton);
@@ -295,6 +298,18 @@ public class StudentEditor extends Window {
         // Could also use annotation or "manual binding" or programmatically
         // moving values from fields to entities before saving
         binder.setBean(customer);
+        if (customer.getPhotoBase64() == null) {
+            photo.setSource(new FileResource(new File("src/main/resources/icons/photo_placeholder.jpg")));
+        } else {
+            byte[] imageBytes;
+            try {
+                imageBytes = Base64.decode(customer.getPhotoBase64());
+            } catch (Base64DecodingException e) {
+                imageBytes = new byte[0];
+            }
+            byte[] finalImageBytes = imageBytes;
+            photo.setSource(new StreamResource(() -> new ByteArrayInputStream(finalImageBytes), ""));
+        }
 
         setVisible(true);
 
