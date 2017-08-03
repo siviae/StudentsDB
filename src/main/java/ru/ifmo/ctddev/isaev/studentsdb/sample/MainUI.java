@@ -7,6 +7,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.components.grid.HeaderRow;
+import com.vaadin.ui.components.grid.ItemClickListener;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -150,10 +151,11 @@ public class MainUI extends UI {
         filter.setValueChangeMode(ValueChangeMode.LAZY);
         filter.addValueChangeListener(e -> listCustomers(e.getValue()));
 
-        // Connect selected Customer to editor or hide if none is selected
-        grid.asSingleSelect().addValueChangeListener(e -> {
-            editor.editCustomer(e.getValue());
-            editor.makeVisible();
+        grid.addItemClickListener((ItemClickListener) itemClick -> {
+            if (itemClick.getMouseEventDetails().isDoubleClick()) {
+                editor.editCustomer((Student) itemClick.getItem());
+                editor.makeVisible();
+            }
         });
 
 
