@@ -28,84 +28,16 @@ public class StudentDao {
         this.entityManager = entityManager;
     }
 
-    public List<Student> find(Long id,
-                              String firstName,
-                              String lastName,
-                              String patronymic,
-                              Date dateOfBirth,
-                              String sort,
-                              String sortOrder, Integer limit) {
-
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Student> cq = cb.createQuery(Student.class);
-        Root<Student> root = cq.from(Student.class);
-        List<Predicate> predicates = new ArrayList<>();
-        if (id != null) {
-            predicates.add(
-                    cb.equal(root.get("id"), cb.parameter(Long.class, "id"))
-            );
-        }
-        if (firstName != null) {
-            predicates.add(
-                    cb.like(root.get("firstName"), cb.parameter(String.class, "firstName"))
-            );
-        }
-        if (lastName != null) {
-            predicates.add(
-                    cb.like(root.get("lastName"), cb.parameter(String.class, "lastName"))
-            );
-        }
-        if (patronymic != null) {
-            predicates.add(
-                    cb.like(root.get("patronymic"), cb.parameter(String.class, "patronymic"))
-            );
-        }
-        if (dateOfBirth != null) {
-            predicates.add(
-                    cb.equal(root.get("dateOfBirth"), cb.parameter(LocalDate.class, "dateOfBirth"))
-            );
-        }
-        cq.where(cb.and(predicates.toArray(new Predicate[0])));
-
-        TypedQuery<Student> query = entityManager.createQuery(cq);
-        if (id != null) {
-            query.setParameter("id", id);
-        }
-        if (firstName != null) {
-            query.setParameter("firstName", "%" + firstName + "%");
-        }
-        if (lastName != null) {
-            query.setParameter("lastName", "%" + lastName + "%");
-        }
-        if (patronymic != null) {
-            query.setParameter("patronymic", "%" + patronymic + "%");
-        }
-        if (dateOfBirth != null) {
-            query.setParameter("dateOfBirth", dateOfBirth);
-        }
-        if (limit != null) {
-            query.setMaxResults(limit);
-        }
-        return query.getResultList();
-    }
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Student save(Student student) {
         return entityManager.merge(student);
     }
 
-    public boolean deleteEmployee(int id) {
-        if (id == 0) {
-            return false;
-        }
-        entityManager.remove(id);
-        return true;
-    }
-
     public List<Student> findAll() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Student> cq = cb.createQuery(Student.class);
-        cq.from(Student.class);
+        Root<Student> root = cq.from(Student.class);
+        cq.orderBy(cb.asc(root.get("lastName")));
         return entityManager.createQuery(cq)
                 .getResultList();
     }

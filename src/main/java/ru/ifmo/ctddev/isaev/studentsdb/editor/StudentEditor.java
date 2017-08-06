@@ -23,9 +23,11 @@ import ru.ifmo.ctddev.isaev.studentsdb.enums.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static java.util.Arrays.asList;
 
 
 /**
@@ -112,9 +114,9 @@ public class StudentEditor extends Window {
 
     private final TextField diplomaTopic;
 
-    private final TextField preliminaryAllocation;
+    private final TextArea preliminaryAllocation;
 
-    private final TextField finalAllocation;
+    private final TextArea finalAllocation;
 
     private final TextArea additionalInfo;
 
@@ -124,7 +126,7 @@ public class StudentEditor extends Window {
 
     private final Image photo;
 
-    private final List<University> universities = new ArrayList<>();
+    private final AtomicReference<List<University>> universities = new AtomicReference<>(new ArrayList<>());
 
     Binder<Student> binder = new Binder<>(Student.class);
 
@@ -142,15 +144,16 @@ public class StudentEditor extends Window {
         binder.forField(additionalInfo)
                 .withNullRepresentation("")
                 .bind(Student::getAdditionalInfo, Student::setAdditionalInfo);
-        this.finalAllocation = new TextField("Окончательное распределение");
+        this.finalAllocation = new TextArea("Окончательное распределение");
         binder.forField(finalAllocation)
                 .withNullRepresentation("")
                 .bind(Student::getFinalAllocation, Student::setFinalAllocation);
-        this.preliminaryAllocation = new TextField("Предварительное распределение");
+        this.preliminaryAllocation = new TextArea("Предварительное распределение");
         this.diplomaTopic = new TextField("Направление дипломной работы");
         this.stateRewards = new TextField("Гос. награды");
         this.address = new TextField("Адрес");
-        this.wifeNationality = new ComboBox<>("Гражданство жены", Arrays.asList(Nationality.values()));
+        this.wifeNationality = new ComboBox<>("Гражданство жены", asList(Nationality.values()));
+        this.wifeNationality.setWidth("100px");
         this.familyInfo = new TextArea("Информация о семье");
         this.internationalPassportNumber = new TextField("Номер");
         this.passportIssueDate = new DateField("Дата выдачи");
@@ -166,15 +169,16 @@ public class StudentEditor extends Window {
                 .withConverter(
                         new StringToIntegerConverter(0, "Введите число"))
                 .bind(Student::getAveragePoints, Student::setAveragePoints);
-        this.universityDropdown = new ComboBox<>("Окончил ВУЗ", universities);
-        this.foreignLanguage = new ComboBox<>("Ин. яз.", Arrays.asList(Language.values()));
+        this.universityDropdown = new ComboBox<>("Окончил ВУЗ", universities.get());
+        this.foreignLanguage = new ComboBox<>("Ин. яз.", asList(Language.values()));
         this.position = new TextArea("Должность");
         this.achievementList = new TextArea("Послужной список");
-        this.graduationType = new ComboBox<>("Образование", Arrays.asList(GraduationType.values()));
-        this.fleet = new ComboBox<>("Флот", Arrays.asList(Fleet.values()));
-        this.nationality = new ComboBox<>("Национальность", Arrays.asList(Nationality.values()));
+        this.graduationType = new ComboBox<>("Образование", asList(GraduationType.values()));
+        this.fleet = new ComboBox<>("Флот", asList(Fleet.values()));
+        this.nationality = new ComboBox<>("Национальность", asList(Nationality.values()));
+        nationality.setWidth("100px");
         this.militaryRankOrderName = new TextField("Приказ");
-        this.educationForm = new ComboBox<>("Форма обучения", Arrays.asList(EducationForm.values()));
+        this.educationForm = new ComboBox<>("Форма обучения", asList(EducationForm.values()));
         this.firstName = new TextField("Имя");
         this.lastName = new TextField("Фамилия");
         this.patronymic = new TextField("Отчество");
@@ -185,12 +189,14 @@ public class StudentEditor extends Window {
                 .withConverter(
                         new StringToIntegerConverter(0, "Год"))
                 .bind(Student::getGraduationYear, Student::setGraduationYear);
-        this.militaryRank = new ComboBox<>("Воинское звание", Arrays.asList(MilitaryRank.values()));
+        this.militaryRank = new ComboBox<>("Воинское звание", asList(MilitaryRank.values()));
         binder.forField(militaryRank)
                 .bind(Student::getMilitaryRank, Student::setMilitaryRank);
         this.militaryRankAwardDate = new DateField("Дата присвоения");
 
         init();
+        setResizable(false);
+        setSizeFull();
     }
 
     private void init() {
@@ -204,14 +210,20 @@ public class StudentEditor extends Window {
         center();
 
         Panel basicInfo = new Panel("Основная информация",
-                new HorizontalLayout(lastName, firstName, patronymic, dateOfBirth, nationality)
+                new VerticalLayout(
+                        new HorizontalLayout(lastName, firstName, patronymic, dateOfBirth, nationality)
+                )
         );
-
-
+        basicInfo.setWidth("100%");
         HorizontalLayout achievementPos = new HorizontalLayout(achievementList, position);
-        achievementPos.setWidthUndefined();
-        achievementList.setWidth("70%");
-        achievementList.setHeight("100px");
+        achievementPos.setWidth("100%");
+        achievementPos.setHeight("200px");
+        achievementPos.setExpandRatio(achievementList, 0.5f);
+        achievementList.setSizeFull();
+        achievementList.setWordWrap(true);
+        achievementPos.setExpandRatio(position, 0.5f);
+        position.setSizeFull();
+        position.setWordWrap(true);
         Panel militaryInfo = new Panel("Должность",
                 new VerticalLayout(
                         new HorizontalLayout(militaryRank, militaryRankAwardDate, militaryRankOrderName, fleet),
@@ -221,44 +233,76 @@ public class StudentEditor extends Window {
 
 
         Panel accessPanel = new Panel("Допуск",
-                new HorizontalLayout(identificationNumber, admissionForm, admissionDate)
+                new VerticalLayout(
+                        new HorizontalLayout(identificationNumber, admissionForm, admissionDate)
+                )
         );
 
         Panel educationInfo = new Panel("Образование",
-                new HorizontalLayout(universityDropdown, averagePoints, foreignLanguage, diplomaTopic)
+                new VerticalLayout(
+                        new HorizontalLayout(universityDropdown, averagePoints, foreignLanguage),
+                        diplomaTopic
+                )
         );
+        diplomaTopic.setWidth("100%");
 
         Panel passport = new Panel("Паспорт",
-                new HorizontalLayout(passportNumber, passportIssuer, passportIssueDate)
+                new VerticalLayout(
+                        new HorizontalLayout(passportNumber, passportIssuer, passportIssueDate)
+                )
         );
 
         Panel internationalPassport = new Panel("Загран. паспорт",
-                new HorizontalLayout(internationalPassportNumber)
+                new VerticalLayout(
+                        new HorizontalLayout(internationalPassportNumber)
+                )
         );
+
+        HorizontalLayout wifeNationalityAddress = new HorizontalLayout(wifeNationality, address);
+        wifeNationalityAddress.setWidth("100%");
+        address.setSizeFull();
+        wifeNationalityAddress.setExpandRatio(address, 1.0f);
 
         Panel familyInfoPanel = new Panel("Семья",
                 new VerticalLayout(
                         familyInfo,
-                        new HorizontalLayout(wifeNationality, address)
+                        wifeNationalityAddress
+                )
+        );
+        familyInfo.setWordWrap(true);
+        familyInfo.setWidth("100%");
+
+        HorizontalLayout allocations = new HorizontalLayout(preliminaryAllocation, finalAllocation);
+        allocations.setHeight("200px");
+        allocations.setWidth("100%");
+        preliminaryAllocation.setSizeFull();
+        preliminaryAllocation.setWordWrap(true);
+        allocations.setExpandRatio(preliminaryAllocation, 0.5f);
+        finalAllocation.setSizeFull();
+        finalAllocation.setWordWrap(true);
+        allocations.setExpandRatio(finalAllocation, 0.5f);
+        Panel allocationPanel = new Panel("Распределение",
+                new VerticalLayout(
+                        allocations
                 )
         );
 
-        Panel allocationPanel = new Panel("Распределение",
-                new HorizontalLayout(preliminaryAllocation, finalAllocation)
-        );
-
+        additionalInfo.setWidth("100%");
+        additionalInfo.setHeight("300px");
         VerticalLayout editorPanel = new VerticalLayout(
                 basicInfo, militaryInfo, accessPanel,
                 educationInfo, passport, internationalPassport,
-                familyInfoPanel, allocationPanel, additionalInfo
+                familyInfoPanel, allocationPanel,
+                additionalInfo
         );
-        editorPanel.setExpandRatio(militaryInfo, 1.0f);
+        editorPanel.setWidth("1000px");
         HorizontalLayout horizontalLayout = new HorizontalLayout(
                 photoLayout,
                 editorPanel
         );
         VerticalLayout mainLayout = new VerticalLayout(horizontalLayout);
         mainLayout.setSpacing(true);
+        mainLayout.setWidthUndefined();
         setContent(mainLayout);
 
         // bind using naming convention
@@ -286,7 +330,10 @@ public class StudentEditor extends Window {
             University university = new University();
             university.setTitle(s);
             University savedUniversity = universityDao.save(university);
-            universities.add(savedUniversity);
+            universities.getAndUpdate(list -> {
+                list.add(savedUniversity);
+                return list;
+            });
             binder.getBean().setUniversity(savedUniversity);
         });
         foreignLanguage.setItemCaptionGenerator(Language::getName);
@@ -301,18 +348,14 @@ public class StudentEditor extends Window {
     }
 
     public final void editStudent(Student c) {
-        if (c == null) {
-            setVisible(false);
-            return;
-        }
         if (c.getId() != null) {
             customer = repository.findById(c.getId());
         } else {
             customer = c;
         }
-        universities.clear();
-        universities.addAll(universityDao.findAll());
         universityDropdown.clear();
+        universities.set(universityDao.findAll());
+        universityDropdown.setItems(universities.get());
 
         binder.setBean(customer);
         if (customer.getPhotoBase64() == null) {

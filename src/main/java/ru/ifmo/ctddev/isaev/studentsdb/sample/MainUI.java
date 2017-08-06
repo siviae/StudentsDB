@@ -68,7 +68,7 @@ public class MainUI extends UI {
         rankFilter = new ComboBox<>("Воинское звание", asList(MilitaryRank.values()));
         graduationYearFilter = new TextField("Выпуск");
         fleetFilter = new ComboBox<>("Флот", asList(Fleet.values()));
-        //populator.populate(200);
+        //populator.populate(5000);
     }
 
     @Override
@@ -252,10 +252,10 @@ public class MainUI extends UI {
     private void updateGrid() {
         String lastNameFilterValue = lastNameFilter.getValue() == null ? "" : lastNameFilter.getValue().toLowerCase();
         grid.setItems(allStudents.stream()
-                .filter(person -> (
-                        person.getLastName().toLowerCase().contains(lastNameFilterValue) ||
-                                person.getFirstName().toLowerCase().contains(lastNameFilterValue) ||
-                                person.getPatronymic().toLowerCase().contains(lastNameFilterValue))
+                .filter(person -> {
+                            String onDisplay = String.format("%s %s", person.getLastName(), person.getFirstName());
+                            return onDisplay.toLowerCase().contains(lastNameFilterValue);
+                        }
                 )
                 .filter(person -> rankFilter.getValue() == null || Objects.equals(person.getMilitaryRank(), rankFilter.getValue()))
                 .filter(person -> fleetFilter.getValue() == null || Objects.equals(person.getFleet(), fleetFilter.getValue()))
