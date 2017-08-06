@@ -2,6 +2,7 @@ package ru.ifmo.ctddev.isaev.studentsdb;
 
 import org.h2.Driver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,11 +35,15 @@ import java.util.Properties;
 @EnableWebMvc
 @ComponentScan("ru.ifmo.ctddev.isaev.studentsdb")
 public class AppConfig extends WebMvcConfigurerAdapter {
+
+    @Value("${dbPath}")
+    private String dbPath;
+
     @Bean
     public DataSource dataSource() throws IOException {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
         dataSource.setDriverClass(Driver.class);
-        dataSource.setUrl("jdbc:h2:file:~/students;" +
+        dataSource.setUrl("jdbc:h2:file:" + dbPath + ";" +
                 "AUTO_RECONNECT=TRUE;MV_STORE=FALSE;MVCC=FALSE");
         ResourceDatabasePopulator dbPopulator = new ResourceDatabasePopulator();
         dbPopulator.setContinueOnError(true);
