@@ -164,8 +164,8 @@ public class StudentEditor extends Window {
         binder.forField(averagePoints)
                 .withNullRepresentation("")
                 .withConverter(
-                        new StringToIntegerConverter(0, "Средний балл"))
-                .bind(Student::getGraduationYear, Student::setGraduationYear);
+                        new StringToIntegerConverter(0, "Введите число"))
+                .bind(Student::getAveragePoints, Student::setAveragePoints);
         this.universityDropdown = new ComboBox<>("Окончил ВУЗ", universities);
         this.foreignLanguage = new ComboBox<>("Ин. яз.", Arrays.asList(Language.values()));
         this.position = new TextArea("Должность");
