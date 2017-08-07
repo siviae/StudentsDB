@@ -1,7 +1,5 @@
 package ru.ifmo.ctddev.isaev.studentsdb.editor;
 
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.event.ShortcutAction;
@@ -12,6 +10,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.dialogs.ConfirmDialog;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
@@ -362,11 +361,7 @@ public class StudentEditor extends Window {
             photo.setSource(new FileResource(new File("src/main/resources/icons/photo_placeholder.jpg")));
         } else {
             byte[] imageBytes;
-            try {
-                imageBytes = Base64.decode(customer.getPhotoBase64());
-            } catch (Base64DecodingException e) {
-                imageBytes = new byte[0];
-            }
+            imageBytes = Base64.decodeBase64(customer.getPhotoBase64());
             byte[] finalImageBytes = imageBytes;
             photo.setSource(new StreamResource(() -> new ByteArrayInputStream(finalImageBytes), ""));
         }
