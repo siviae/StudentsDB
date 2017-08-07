@@ -6,6 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import java.awt.*;
+import java.net.URI;
+
 
 /**
  * @author iisaev
@@ -20,6 +23,9 @@ public class Main {
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
         return args -> {
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().browse(new URI("http://localhost:8080"));
+            }
         };
     }
 
