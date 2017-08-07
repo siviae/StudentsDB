@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.isaev.studentsdb.editor;
+package ru.ifmo.ctddev.isaev.studentsdb.ui;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.dialogs.ConfirmDialog;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.UniversityDao;
+import ru.ifmo.ctddev.isaev.studentsdb.editor.ImageUploader;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.University;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.*;
@@ -131,7 +132,7 @@ public class StudentEditor extends Window {
 
     @Autowired
     public StudentEditor(StudentDao repository, UniversityDao universityDao) {
-        super("Добавить сотрудника/студента");
+        super("Добавить/редактировать военнослужащего");
         this.repository = repository;
         this.universityDao = universityDao;
         this.photo = new Image("Фотография");
@@ -179,9 +180,21 @@ public class StudentEditor extends Window {
         this.militaryRankOrderName = new TextField("Приказ");
         this.educationForm = new ComboBox<>("Форма обучения", asList(EducationForm.values()));
         this.firstName = new TextField("Имя");
+        binder.forField(firstName)
+                .asRequired("Необходимо заполнить")
+                .bind(Student::getFirstName, Student::setFirstName);
         this.lastName = new TextField("Фамилия");
+        binder.forField(lastName)
+                .asRequired("Необходимо заполнить")
+                .bind(Student::getLastName, Student::setLastName);
         this.patronymic = new TextField("Отчество");
+        binder.forField(patronymic)
+                .asRequired("Необходимо заполнить")
+                .bind(Student::getPatronymic, Student::setPatronymic);
         this.dateOfBirth = new DateField("Дата рождения");
+        binder.forField(dateOfBirth)
+                .asRequired("Необходимо заполнить")
+                .bind(Student::getDateOfBirth, Student::setDateOfBirth);
         this.graduationYear = new TextField("Год выпуска");
         binder.forField(graduationYear)
                 .withNullRepresentation("")

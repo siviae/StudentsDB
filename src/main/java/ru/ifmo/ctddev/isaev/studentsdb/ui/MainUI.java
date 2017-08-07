@@ -1,4 +1,4 @@
-package ru.ifmo.ctddev.isaev.studentsdb.sample;
+package ru.ifmo.ctddev.isaev.studentsdb.ui;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.server.FontAwesome;
@@ -12,7 +12,6 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ifmo.ctddev.isaev.studentsdb.controller.DemoDbPopulator;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
-import ru.ifmo.ctddev.isaev.studentsdb.editor.StudentEditor;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.Fleet;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.MilitaryRank;
