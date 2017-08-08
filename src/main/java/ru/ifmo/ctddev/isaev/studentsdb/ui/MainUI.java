@@ -107,13 +107,21 @@ public class MainUI extends UI {
         logos.setComponentAlignment(headerLabel, Alignment.MIDDLE_CENTER);
         logos.addComponent(logo1, 2, 0);
         logos.setComponentAlignment(logo1, Alignment.TOP_RIGHT);
-        HorizontalLayout header = new HorizontalLayout(
-                lastNameFilter,
-                graduationYearFilter,
-                rankFilter,
-                fleetFilter,
-                addNewButton
-        );
+        
+        GridLayout header = new GridLayout(5, 1);
+        header.setWidth("100%");
+        header.addComponent(lastNameFilter, 0, 0);
+        header.setComponentAlignment(lastNameFilter, Alignment.TOP_LEFT);
+        header.addComponent(graduationYearFilter, 1, 0);
+        header.setComponentAlignment(graduationYearFilter, Alignment.TOP_LEFT);
+        header.addComponent(rankFilter, 2, 0);
+        header.setComponentAlignment(rankFilter, Alignment.TOP_LEFT);
+        header.addComponent(fleetFilter, 3, 0);
+        header.setComponentAlignment(fleetFilter, Alignment.TOP_LEFT);
+        header.addComponent(addNewButton, 4, 0);
+        header.setComponentAlignment(addNewButton, Alignment.BOTTOM_RIGHT);
+
+
         VerticalLayout mainLayout = new VerticalLayout(logos, header, grid);
         mainLayout.setExpandRatio(grid, 1.0f);
         mainLayout.setSizeFull();
