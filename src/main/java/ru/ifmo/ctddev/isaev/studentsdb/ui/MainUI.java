@@ -1,8 +1,9 @@
 package ru.ifmo.ctddev.isaev.studentsdb.ui;
 
 import com.vaadin.data.HasValue;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -16,6 +17,7 @@ import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.Fleet;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.MilitaryRank;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -45,6 +47,14 @@ public class MainUI extends UI {
 
     private final TextField graduationYearFilter;
 
+    private final Image logo1 = new Image("", new FileResource(new File(
+            "src/main/resources/icons/logo1.png"
+    )));
+
+    private final Image logo2 = new Image("", new FileResource(new File(
+            "src/main/resources/icons/logo2.png"
+    )));
+
     private final ComboBox<Fleet> fleetFilter;
 
     final Grid<Student> grid;
@@ -54,6 +64,8 @@ public class MainUI extends UI {
     private String placeHolderImagebase64;
 
     private volatile List<Student> allStudents;
+
+    private final Button addNewButton = new Button("Добавить в/сл");
 
     @Autowired
     public MainUI(DemoDbPopulator populator, StudentDao repo, StudentEditor editor) throws IOException {
@@ -68,11 +80,12 @@ public class MainUI extends UI {
         graduationYearFilter = new TextField("Выпуск");
         fleetFilter = new ComboBox<>("Флот", asList(Fleet.values()));
         //populator.populate(5000);
+        logo1.setWidth("100px");
+        logo2.setWidth("100px");
     }
 
     @Override
     protected void init(VaadinRequest request) {
-        Button addNewBtn = new Button(FontAwesome.PLUS);
         // build layout
         VerticalLayout gridLayout = new VerticalLayout(grid);
         gridLayout.setWidth("100%");
@@ -81,15 +94,27 @@ public class MainUI extends UI {
         grid.setSizeFull();
         grid.setRowHeight(75.0);
         gridLayout.setHeightUndefined();
+        GridLayout logos = new GridLayout(3, 1);
+        logos.setWidth("100%");
+        Label headerLabel = new Label(
+                "<h3><center>Военно-морской институт<br>" +
+                        "«Военный учебно-научный центр Военно-Морского Флота»<br>" +
+                        "«Военно-морская академия имени Адмирала Флота Советского Союза Н.Г.Кузнецова»</center></h3>",
+                ContentMode.HTML);
+        logos.addComponent(logo2, 0, 0);
+        logos.setComponentAlignment(logo2, Alignment.TOP_LEFT);
+        logos.addComponent(headerLabel, 1, 0);
+        logos.setComponentAlignment(headerLabel, Alignment.MIDDLE_CENTER);
+        logos.addComponent(logo1, 2, 0);
+        logos.setComponentAlignment(logo1, Alignment.TOP_RIGHT);
         HorizontalLayout header = new HorizontalLayout(
-                new Label("Состав кафедры"),
-                addNewBtn,
                 lastNameFilter,
                 graduationYearFilter,
                 rankFilter,
-                fleetFilter
+                fleetFilter,
+                addNewButton
         );
-        VerticalLayout mainLayout = new VerticalLayout(header, grid);
+        VerticalLayout mainLayout = new VerticalLayout(logos, header, grid);
         mainLayout.setExpandRatio(grid, 1.0f);
         mainLayout.setSizeFull();
         setContent(mainLayout);
@@ -213,7 +238,7 @@ public class MainUI extends UI {
 
 
         // Instantiate and edit new Customer the new button is clicked
-        addNewBtn.addClickListener(e -> {
+        addNewButton.addClickListener(e -> {
             editor.editStudent(new Student());
             editor.makeVisible();
         });
