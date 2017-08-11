@@ -13,6 +13,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ifmo.ctddev.isaev.studentsdb.controller.DemoDbPopulator;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
+import ru.ifmo.ctddev.isaev.studentsdb.dao.UniversityDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.Fleet;
 import ru.ifmo.ctddev.isaev.studentsdb.enums.MilitaryRank;
@@ -35,9 +36,11 @@ import static java.util.Arrays.asList;
 @SpringUI
 public class MainUI extends UI {
 
-    private final StudentDao repo;
+    private final StudentDao studentDao;
 
-    private final StudentEditor editor;
+    private final UniversityDao universityDao;
+
+    private StudentEditor editor;
 
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -68,9 +71,9 @@ public class MainUI extends UI {
     private final Button addNewButton = new Button("Добавить в/сл");
 
     @Autowired
-    public MainUI(DemoDbPopulator populator, StudentDao repo, StudentEditor editor) throws IOException {
-        this.repo = repo;
-        this.editor = editor;
+    public MainUI(DemoDbPopulator populator, StudentDao studentDao, UniversityDao universityDao) throws IOException {
+        this.studentDao = studentDao;
+        this.universityDao = universityDao;
         this.grid = new Grid<>();
         this.placeHolderImagebase64 = Base64.getEncoder().encodeToString(
                 Files.readAllBytes(Paths.get("src/main/resources/icons/photo_placeholder.jpg"))
@@ -107,7 +110,7 @@ public class MainUI extends UI {
         logos.setComponentAlignment(headerLabel, Alignment.MIDDLE_CENTER);
         logos.addComponent(logo1, 2, 0);
         logos.setComponentAlignment(logo1, Alignment.TOP_RIGHT);
-        
+
         GridLayout header = new GridLayout(5, 1);
         header.setWidth("100%");
         header.addComponent(lastNameFilter, 0, 0);
@@ -122,7 +125,9 @@ public class MainUI extends UI {
         header.setComponentAlignment(addNewButton, Alignment.BOTTOM_RIGHT);
 
 
-        VerticalLayout mainLayout = new VerticalLayout(logos, header, grid);
+        this.editor = new StudentEditor(this, studentDao, universityDao);
+        editor.hide();
+        VerticalLayout mainLayout = new VerticalLayout(editor, logos, header, grid);
         mainLayout.setExpandRatio(grid, 1.0f);
         mainLayout.setSizeFull();
         setContent(mainLayout);
@@ -245,12 +250,6 @@ public class MainUI extends UI {
         grid.setFrozenColumnCount(2);
 
 
-        // Instantiate and edit new Customer the new button is clicked
-        addNewButton.addClickListener(e -> {
-            editor.editStudent(new Student());
-            editor.makeVisible();
-        });
-
         final HasValue.ValueChangeListener updateGrid = valueChangeEvent -> updateGrid();
 
         // Replace listing with filtered content when user changes lastNameFilter
@@ -268,10 +267,14 @@ public class MainUI extends UI {
             }
         });
 
-
+        // Instantiate and edit new Customer the new button is clicked
+        addNewButton.addClickListener(e -> {
+            editor.editStudent(new Student());
+            editor.makeVisible();
+        });
         // Listen changes made by the editor, refresh data from backend
         editor.setChangeHandler(() -> {
-            editor.setVisible(false);
+            editor.hide();
             loadAll();
             updateGrid();
         });
@@ -334,7 +337,7 @@ public class MainUI extends UI {
 
 
     void loadAll() {
-        allStudents = repo.findAll();
+        allStudents = studentDao.findAll();
     }
 
     private String getGridPicture(Student student) {

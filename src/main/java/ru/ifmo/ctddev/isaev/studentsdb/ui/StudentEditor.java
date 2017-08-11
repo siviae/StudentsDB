@@ -6,12 +6,9 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.dialogs.ConfirmDialog;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.UniversityDao;
@@ -30,18 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static java.util.Arrays.asList;
 
 
-/**
- * A simple example to introduce building forms. As your real application is probably much
- * more complicated than this example, you could re-use this form in multiple places. This
- * example component is only used in VaadinUI.
- * <p>
- * In a real world application you'll most likely using a common super class for all your
- * forms - less code, better UX. See e.g. AbstractForm in Viritin
- * (https://vaadin.com/addon/viritin).
- */
-@SpringComponent
-@UIScope
-public class StudentEditor extends Window {
+public class StudentEditor extends Panel {
 
     private final StudentDao repository;
 
@@ -128,11 +114,13 @@ public class StudentEditor extends Window {
 
     private final AtomicReference<List<University>> universities = new AtomicReference<>(new ArrayList<>());
 
-    Binder<Student> binder = new Binder<>(Student.class);
+    private final Binder<Student> binder = new Binder<>(Student.class);
 
-    @Autowired
-    public StudentEditor(StudentDao repository, UniversityDao universityDao) {
-        super("Добавить/редактировать военнослужащего");
+    private final MainUI mainUI;
+
+    public StudentEditor(MainUI mainUI, StudentDao repository, UniversityDao universityDao) {
+        this.mainUI = mainUI;
+        //super("Добавить/редактировать военнослужащего");
         this.repository = repository;
         this.universityDao = universityDao;
         this.photo = new Image("Фотография");
@@ -206,20 +194,12 @@ public class StudentEditor extends Window {
                 .bind(Student::getMilitaryRank, Student::setMilitaryRank);
         this.militaryRankAwardDate = new DateField("Дата присвоения");
 
-        init();
-        setResizable(false);
-        setSizeFull();
-    }
-
-    private void init() {
         photo.setWidth("200px");
         ImageUploader receiver = new ImageUploader(binder, photo);
         Upload upload = new Upload("Загрузить фотографию", receiver);
         upload.addSucceededListener(receiver);
         VerticalLayout photoLayout = new VerticalLayout(photo, upload, saveButton, removeButton);
         photoLayout.setWidth("250px");
-
-        center();
 
         Panel basicInfo = new Panel("Основная информация",
                 new VerticalLayout(
@@ -314,8 +294,8 @@ public class StudentEditor extends Window {
         );
         VerticalLayout mainLayout = new VerticalLayout(horizontalLayout);
         mainLayout.setSpacing(true);
-        mainLayout.setWidthUndefined();
-        setContent(mainLayout);
+        setWidthUndefined();
+        //setContent(mainLayout);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
@@ -326,11 +306,11 @@ public class StudentEditor extends Window {
 
         // wire action buttons to saveButton, removeButton and reset
         saveButton.addClickListener(e -> {
-            repository.save(customer);
+            this.repository.save(customer);
             binder.removeBean();
             hide();
         });
-        addCloseListener((CloseListener) closeEvent -> hide());
+        //addCloseListener((CloseListener) closeEvent -> hide());
     }
 
 
@@ -379,7 +359,7 @@ public class StudentEditor extends Window {
             photo.setSource(new StreamResource(() -> new ByteArrayInputStream(finalImageBytes), ""));
         }
 
-        setVisible(true);
+        //setVisible(true);
     }
 
     public void setChangeHandler(ChangeHandler h) {
@@ -387,7 +367,7 @@ public class StudentEditor extends Window {
         removeButton.addClickListener(e -> {
             Student currentStudent = binder.getBean();
             String fio = String.format("%s %s %s", currentStudent.getLastName(), currentStudent.getFirstName(), currentStudent.getPatronymic());
-            ConfirmDialog.show(this.getUI(), String.format("Удалить \"%s\"", fio), "Вы уверены?",
+            ConfirmDialog.show(mainUI, String.format("Удалить \"%s\"", fio), "Вы уверены?",
                     "Удалить", "Отмена", (ConfirmDialog.Listener) dialog -> {
                         if (dialog.isConfirmed()) {
                             repository.remove(customer);
@@ -398,14 +378,10 @@ public class StudentEditor extends Window {
     }
 
     public void makeVisible() {
-        if (isVisible.compareAndSet(false, true)) {
-            UI.getCurrent().addWindow(this);
-        }
+        setVisible(true);
     }
 
-    private void hide() {
-        if (isVisible.compareAndSet(true, false)) {
-            UI.getCurrent().removeWindow(this);
-        }
+    public void hide() {
+        setVisible(false);
     }
 }
