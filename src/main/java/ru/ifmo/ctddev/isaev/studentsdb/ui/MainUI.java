@@ -11,6 +11,7 @@ import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.components.grid.DescriptionGenerator;
 import com.vaadin.ui.components.grid.ItemClickListener;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,6 +174,7 @@ public class MainUI extends UI {
                 .setResizable(false);
         grid.addColumn(Student::getNationality)
                 .setCaption("Нац.")
+                .setWidth(100.0)
                 .setResizable(false);
         grid.addColumn(Student::getFleet)
                 .setCaption("Флот")
@@ -186,12 +188,16 @@ public class MainUI extends UI {
         grid.addColumn(Student::getPosition)
                 .setCaption("Должность")
                 .setResizable(false)
+                .setWidth(300.0)
                 .setSortable(false);
         grid.addColumn(this::formatUniversity)
                 .setResizable(false)
-                .setCaption("Окончил ВУЗ");
+                .setWidth(300.0)
+                .setCaption("Окончил ВУЗ")
+                .setDescriptionGenerator((DescriptionGenerator<Student>) this::formatUniversity);
         grid.addColumn(Student::getAveragePoints)
                 .setResizable(false)
+                .setWidth(100.0)
                 .setCaption("Ср. балл атт.");
         grid.addColumn(Student::getForeignLanguage)
                 .setCaption("Ин. яз.")
@@ -200,25 +206,31 @@ public class MainUI extends UI {
         grid.addColumn(Student::getIdentificationSeriesNumber)
                 .setCaption("Серия и номер удост. личн.")
                 .setResizable(false)
+                .setWidth(200.0)
                 .setSortable(false);
         grid.addColumn(Student::getPersonalNumber)
                 .setCaption("Личный номер")
                 .setResizable(false)
+                .setWidth(200.0)
                 .setSortable(false);
         grid.addColumn(this::formatAdmission)
                 .setResizable(false)
+                .setWidth(100.0)
                 .setCaption("Форма допуска");
         grid.addColumn(Student::getPassportNumber)
                 .setCaption("Паспорт допуска")
                 .setResizable(false)
+                .setWidth(100.0)
                 .setSortable(false);
         grid.addColumn(this::formatPassportIssue)
                 .setCaption("Выдан")
+                .setWidth(300.0)
                 .setResizable(false)
                 .setSortable(false);
         grid.addColumn(student -> student.getInternationalPassport() ? "+" : "")
                 .setCaption("Загранпаспорт")
                 .setResizable(false)
+                .setWidth(50.0)
                 .setSortable(false);
         grid.addColumn(Student::getFamilyInfo)
                 .setCaption("Ф.И.О чл. семьи (№свид. о браке и рожд., кем, когда выд.)")
@@ -227,6 +239,7 @@ public class MainUI extends UI {
                 .setSortable(false);
         grid.addColumn(Student::getWifeNationality)
                 .setResizable(false)
+                .setWidth(100.0)
                 .setCaption("Гр. жены");
         grid.addColumn(Student::getAddress)
                 .setCaption("Адрес")
@@ -236,10 +249,12 @@ public class MainUI extends UI {
         grid.addColumn(Student::getStateRewards)
                 .setCaption("Гос. нагр.")
                 .setResizable(false)
+                .setWidth(100.0)
                 .setSortable(false);
         grid.addColumn(Student::getDiplomaTopic)
                 .setCaption("Направление дипл. работы")
                 .setResizable(false)
+                .setWidth(100.0)
                 .setSortable(false);
         grid.addColumn(Student::getAllocation)
                 .setCaption("Распределение")
