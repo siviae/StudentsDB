@@ -48,13 +48,13 @@ public class StudentEditor {
 
     private final ComboBox<String> fleet;
 
-    private final ComboBox<String> graduationType;
+    private final TextField graduationYear = new TextField("Год выпуска");
 
     private final TextArea achievementList;
 
     private final TextArea position;
 
-    private final ComboBox<String> universityDropdown;
+    private final ComboBox<String> university;
 
     private final TextField averagePoints;
 
@@ -80,7 +80,7 @@ public class StudentEditor {
 
     private final ComboBox<String> wifeNationality;
 
-    private final TextField address;
+    private final TextField address = new TextField("Адрес места жительства");
 
     private final TextField stateRewards;
 
@@ -120,7 +120,6 @@ public class StudentEditor {
                 .bind(Student::getAllocation, Student::setAllocation);
         this.diplomaTopic = new TextField("Направление дипломной работы");
         this.stateRewards = new TextField("Гос. награды");
-        this.address = new TextField("Адрес");
         this.wifeNationality = new ComboBox<>("Гражданство жены");
         this.wifeNationality.setWidth("100px");
         this.familyInfo = new TextArea("Информация о семье");
@@ -135,11 +134,10 @@ public class StudentEditor {
                 .withConverter(
                         new StringToIntegerConverter(0, "Введите число"))
                 .bind(Student::getAveragePoints, Student::setAveragePoints);
-        this.universityDropdown = new ComboBox<>("Окончил ВУЗ");
+        this.university = new ComboBox<>("Окончил ВУЗ");
         this.foreignLanguage = new ComboBox<>("Ин. яз.");
         this.position = new TextArea("Должность");
         this.achievementList = new TextArea("Послужной список");
-        this.graduationType = new ComboBox<>("Образование");
         this.fleet = new ComboBox<>("Флот");
         this.nationality = new ComboBox<>("Национальность");
         nationality.setWidth("100px");
@@ -203,7 +201,7 @@ public class StudentEditor {
 
         Panel educationInfo = new Panel("Образование",
                 new VerticalLayout(
-                        new HorizontalLayout(universityDropdown, averagePoints, foreignLanguage),
+                        new HorizontalLayout(university, graduationYear, averagePoints, foreignLanguage),
                         diplomaTopic
                 )
         );
@@ -245,7 +243,7 @@ public class StudentEditor {
         additionalInfo.setHeight("300px");
         VerticalLayout editorPanel = new VerticalLayout(
                 basicInfo, militaryInfo, accessPanel,
-                educationInfo, passport, internationalPassport,
+                educationInfo, passport,
                 familyInfoPanel, allocationPanel,
                 additionalInfo
         );
@@ -270,7 +268,7 @@ public class StudentEditor {
 
 
     private void bindEntityFields() {
-        universityDropdown.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setUniversity(string));
+        university.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setUniversity(string));
         foreignLanguage.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setForeignLanguage(string));
         nationality.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setNationality(string));
         wifeNationality.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setWifeNationality(string));
@@ -294,8 +292,16 @@ public class StudentEditor {
             byte[] finalImageBytes = imageBytes;
             photo.setSource(new StreamResource(() -> new ByteArrayInputStream(finalImageBytes), ""));
         }
+        setDropdownItems();
+    }
 
-        //setVisible(true);
+    private void setDropdownItems() {
+        university.setItems(mainUI.getComboBoxAggregator().getUniversities());
+        foreignLanguage.setItems(mainUI.getComboBoxAggregator().getForeignLanguages());
+        nationality.setItems(mainUI.getComboBoxAggregator().getNationalities());
+        wifeNationality.setItems(mainUI.getComboBoxAggregator().getWifeNationalities());
+        militaryRank.setItems(mainUI.getComboBoxAggregator().getMilitaryRanks());
+        fleet.setItems(mainUI.getComboBoxAggregator().getFleets());
     }
 
     private void init() {
@@ -313,7 +319,7 @@ public class StudentEditor {
 
         closeButton.addClickListener(e -> {
             binder.removeBean();
-            mainUI.makeVisible();
+            mainUI.openGrid();
         });
         closeButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
 

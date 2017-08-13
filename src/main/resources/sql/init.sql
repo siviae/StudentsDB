@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS student (
   address                      VARCHAR(256),
   state_rewards                VARCHAR(256),
   diploma_topic                VARCHAR(256),
-  allocation                   VARCHAR(256)
-  additional_info TEXT,
+  allocation                   VARCHAR(256),
+  additional_info              TEXT,
   education_form               VARCHAR(256),
   graduation_type              VARCHAR(256),
   photo_base64                 TEXT

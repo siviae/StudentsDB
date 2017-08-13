@@ -147,7 +147,7 @@ public class DemoDbPopulator {
                     surnames[rand.nextInt(surnames.length)],
                     patronymics[rand.nextInt(patronymics.length)],
                     randomDate(),
-                    ThreadLocalRandom.current().nextInt(1950, 2017)
+                    String.valueOf(ThreadLocalRandom.current().nextInt(1950, 2017))
             );
             dao.save(employee);
         }

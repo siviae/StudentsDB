@@ -1,6 +1,7 @@
 package ru.ifmo.ctddev.isaev.studentsdb.entity;
 
 
+import ru.ifmo.ctddev.isaev.studentsdb.converter.StringToIntegerConverter;
 import ru.ifmo.ctddev.isaev.studentsdb.converter.TimestampToLocalDateConverter;
 
 import javax.persistence.*;
@@ -21,7 +22,7 @@ public class Student {
 
     private LocalDate dateOfBirth;
 
-    private Integer graduationYear;
+    private String graduationYear;
 
     private String militaryRank;
 
@@ -80,7 +81,7 @@ public class Student {
                    String lastName,
                    String patronymic,
                    LocalDate dateOfBirth,
-                   Integer graduationYear
+                   String graduationYear
     ) {
         this.id = id;
         this.firstName = firstName;
@@ -128,11 +129,12 @@ public class Student {
 
     @Basic
     @Column(name = "graduation_year")
-    public Integer getGraduationYear() {
+    @Convert(converter = StringToIntegerConverter.class)
+    public String getGraduationYear() {
         return graduationYear;
     }
 
-    public void setGraduationYear(Integer graduationYear) {
+    public void setGraduationYear(String graduationYear) {
         this.graduationYear = graduationYear;
     }
 

@@ -40,11 +40,13 @@ public class MainUI extends UI {
 
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    private final TextField lastNameFilter;
+    private final TextField lastNameFilter = new TextField("ФИО");
 
-    private final ComboBox<String> rankFilter;
+    private final ComboBox<String> militaryRankFilter = new ComboBox<>("Воинское звание");
 
-    private final TextField graduationYearFilter;
+    private final ComboBox<String> militaryUnitFilter = new ComboBox<>("В/ч");
+
+    private final TextField graduationYearFilter = new TextField("Выпуск");
 
     private final Image logo1 = new Image("", new FileResource(new File(
             "src/main/resources/icons/logo1.png"
@@ -54,7 +56,7 @@ public class MainUI extends UI {
             "src/main/resources/icons/logo2.png"
     )));
 
-    private final ComboBox<String> fleetFilter;
+    private final ComboBox<String> fleetFilter = new ComboBox<>("Флот");
 
     final Grid<Student> grid;
 
@@ -80,13 +82,13 @@ public class MainUI extends UI {
         this.placeHolderImagebase64 = Base64.getEncoder().encodeToString(
                 Files.readAllBytes(Paths.get("src/main/resources/icons/photo_placeholder.jpg"))
         );
-        lastNameFilter = new TextField("ФИО");
-        rankFilter = new ComboBox<String>("Воинское звание");
-        graduationYearFilter = new TextField("Выпуск");
-        fleetFilter = new ComboBox<String>("Флот");
-        //populator.populate(5000);
+        //populator.populate(500);
         logo1.setHeight("77px");
         logo2.setHeight("77px");
+    }
+
+    public ComboBoxAggregator getComboBoxAggregator() {
+        return comboBoxAggregator;
     }
 
     @Override
@@ -109,17 +111,19 @@ public class MainUI extends UI {
         logos.addComponent(logo1, 2, 0);
         logos.setComponentAlignment(logo1, Alignment.TOP_RIGHT);
 
-        GridLayout header = new GridLayout(5, 1);
+        GridLayout header = new GridLayout(6, 1);
         header.setWidth("100%");
         header.addComponent(lastNameFilter, 0, 0);
         header.setComponentAlignment(lastNameFilter, Alignment.TOP_LEFT);
         header.addComponent(graduationYearFilter, 1, 0);
         header.setComponentAlignment(graduationYearFilter, Alignment.TOP_LEFT);
-        header.addComponent(rankFilter, 2, 0);
-        header.setComponentAlignment(rankFilter, Alignment.TOP_LEFT);
-        header.addComponent(fleetFilter, 3, 0);
+        header.addComponent(militaryUnitFilter, 2, 0);
+        header.setComponentAlignment(militaryUnitFilter, Alignment.TOP_LEFT);
+        header.addComponent(militaryRankFilter, 3, 0);
+        header.setComponentAlignment(militaryRankFilter, Alignment.TOP_LEFT);
+        header.addComponent(fleetFilter, 4, 0);
         header.setComponentAlignment(fleetFilter, Alignment.TOP_LEFT);
-        header.addComponent(addNewButton, 4, 0);
+        header.addComponent(addNewButton, 5, 0);
         header.setComponentAlignment(addNewButton, Alignment.BOTTOM_RIGHT);
 
 
@@ -232,11 +236,6 @@ public class MainUI extends UI {
                 .setCaption("Направление дипл. работы")
                 .setResizable(false)
                 .setSortable(false);
-        grid.addColumn(Student::getPreliminaryAllocation)
-                .setCaption("Предв. распред.")
-                .setResizable(false)
-                .setWidth(300.0)
-                .setSortable(false);
         grid.addColumn(Student::getAllocation)
                 .setCaption("Оконч. распред.")
                 .setResizable(false)
@@ -254,46 +253,44 @@ public class MainUI extends UI {
         // Replace listing with filtered content when user changes lastNameFilter
         lastNameFilter.setValueChangeMode(ValueChangeMode.LAZY);
         lastNameFilter.addValueChangeListener(updateGrid);
-        rankFilter.addValueChangeListener(updateGrid);
+        militaryRankFilter.addValueChangeListener(updateGrid);
         fleetFilter.addValueChangeListener(updateGrid);
         graduationYearFilter.addValueChangeListener(updateGrid);
-
 
         grid.addItemClickListener((ItemClickListener) itemClick -> {
             if (itemClick.getMouseEventDetails().isDoubleClick()) {
                 editor.editStudent((Student) itemClick.getItem());
-                editor.makeVisible();
+                openEditor();
             }
         });
 
         // Instantiate and edit new Customer the new button is clicked
         addNewButton.addClickListener(e -> {
             editor.editStudent(new Student());
-            editor.makeVisible();
-            hide();
+            openEditor();
         });
 
         // Initialize listing
-       reloadUpdateAndShow();
+        reloadUpdateAndShow();
     }
 
     public void reloadUpdateAndShow() {
         loadAll();
         updateGrid();
-        makeVisible();
+        openGrid();
     }
 
     public void updateAndShow() {
         updateGrid();
-        makeVisible();
+        openGrid();
     }
 
-    public void makeVisible() {
+    public void openGrid() {
         mainUILayout.setVisible(true);
         editor.hide();
     }
 
-    public void hide() {
+    public void openEditor() {
         mainUILayout.setVisible(false);
         editor.makeVisible();
     }
@@ -301,19 +298,22 @@ public class MainUI extends UI {
     private void updateGrid() {
         String lastNameFilterValue = lastNameFilter.getValue() == null ? "" : lastNameFilter.getValue().toLowerCase();
         grid.setItems(allStudents.stream()
+                .peek(comboBoxAggregator::refresh)
                 .filter(person -> {
                             String onDisplay = String.format("%s %s", person.getLastName(), person.getFirstName());
                             return onDisplay.toLowerCase().contains(lastNameFilterValue);
                         }
                 )
-                .filter(person -> rankFilter.getValue() == null || Objects.equals(person.getMilitaryRank(), rankFilter.getValue()))
+                .filter(person -> militaryRankFilter.getValue() == null || Objects.equals(person.getMilitaryRank(), militaryRankFilter.getValue()))
                 .filter(person -> fleetFilter.getValue() == null || Objects.equals(person.getFleet(), fleetFilter.getValue()))
                 .filter(person -> graduationYearFilter.getValue() == null ||
                         graduationYearFilter.getValue().isEmpty() ||
-                        String.valueOf(person.getGraduationYear()).startsWith(graduationYearFilter.getValue())
+                        person.getGraduationYear().startsWith(graduationYearFilter.getValue())
                 )
                 .collect(Collectors.toList())
         );
+        militaryRankFilter.setItems(comboBoxAggregator.getMilitaryRanks());
+        fleetFilter.setItems(comboBoxAggregator.getFleets());
     }
 
     private String formatFIO(Student st) {
