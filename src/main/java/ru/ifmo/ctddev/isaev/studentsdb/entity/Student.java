@@ -24,6 +24,8 @@ public class Student {
 
     private String graduationYear;
 
+    private String militaryUnit;
+
     private String militaryRank;
 
     private LocalDate militaryRankAwardDate;
@@ -238,6 +240,16 @@ public class Student {
 
     public void setUniversity(String university) {
         this.university = university;
+    }
+
+    @Basic
+    @Column(name = "military_unit")
+    public String getMilitaryUnit() {
+        return militaryUnit;
+    }
+
+    public void setMilitaryUnit(String militaryUnit) {
+        this.militaryUnit = militaryUnit;
     }
 
     @Basic

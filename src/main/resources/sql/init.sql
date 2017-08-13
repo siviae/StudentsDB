@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS student (
   patronymic                   VARCHAR(256) NOT NULL,
   date_of_birth                TIMESTAMP    NOT NULL,
   military_rank                VARCHAR(256),
+  military_unit                VARCHAR(256),
   military_rank_award_date     TIMESTAMP,
   military_rank_order_name     VARCHAR(256),
   nationality                  VARCHAR(256),

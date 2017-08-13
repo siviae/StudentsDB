@@ -37,15 +37,17 @@ public class StudentEditor {
 
     private final AtomicBoolean isVisible = new AtomicBoolean(false);
 
-    private final TextField firstName;
+    private final TextField firstName = new TextField("Имя");
 
-    private final TextField lastName;
+    private final TextField lastName = new TextField("Фамилия");
 
-    private final TextField patronymic;
+    private final TextField patronymic = new TextField("Отчество");
 
     private final DateField dateOfBirth = new DateField("Дата рождения");
 
-    private final ComboBox<String> militaryRank;
+    private final TextField militaryUnit = new TextField("Воинская часть");
+
+    private final ComboBox<String> militaryRank = new ComboBox<>("Воинское звание");
 
     private final DateField militaryRankAwardDate = new DateField("Дата присвоения");
 
@@ -122,11 +124,13 @@ public class StudentEditor {
         binder.forField(averagePoints)
                 .withNullRepresentation("")
                 .withConverter(
-                        new StringToIntegerConverter(0, "Введите число"))
+                        new StringToIntegerConverter(0, "Средний балл: введите число"))
                 .bind(Student::getAveragePoints, Student::setAveragePoints);
         binder.forField(graduationYear)
                 .withNullRepresentation("")
-                .withValidator((Validator<String>) (s, valueContext) -> YEAR_PATTERN.matcher(s == null ? "" : s).matches() ? ok() : error("Введите год"))
+                .withValidator((Validator<String>) (s, valueContext) ->
+                        YEAR_PATTERN.matcher(s == null ? "" : s).matches() ? ok() : error("Введите корректный год выпуска")
+                )
                 .bind(Student::getGraduationYear, Student::setGraduationYear);
         this.university = new ComboBox<>("Окончил ВУЗ");
         this.foreignLanguage = new ComboBox<>("Ин. яз.");
@@ -135,23 +139,19 @@ public class StudentEditor {
         this.fleet = new ComboBox<>("Флот");
         this.nationality = new ComboBox<>("Национальность");
         this.militaryRankOrderName = new TextField("Приказ");
-        this.firstName = new TextField("Имя");
         binder.forField(firstName)
-                .asRequired("Необходимо заполнить")
+                .asRequired("Необходимо заполнить имя")
                 .bind(Student::getFirstName, Student::setFirstName);
-        this.lastName = new TextField("Фамилия");
         binder.forField(lastName)
-                .asRequired("Необходимо заполнить")
+                .asRequired("Необходимо заполнить фамилию")
                 .bind(Student::getLastName, Student::setLastName);
-        this.patronymic = new TextField("Отчество");
         binder.forField(patronymic)
-                .asRequired("Необходимо заполнить")
+                .asRequired("Необходимо заполнить отчество")
                 .bind(Student::getPatronymic, Student::setPatronymic);
         dateOfBirth.setDateFormat(DATE_FORMAT);
         binder.forField(dateOfBirth)
-                .asRequired("Необходимо заполнить")
+                .asRequired("Необходимо заполнить дату рождения")
                 .bind(Student::getDateOfBirth, Student::setDateOfBirth);
-        this.militaryRank = new ComboBox<>("Воинское звание");
         binder.forField(militaryRank)
                 .bind(Student::getMilitaryRank, Student::setMilitaryRank);
         militaryRankAwardDate.setDateFormat(DATE_FORMAT);
@@ -164,7 +164,8 @@ public class StudentEditor {
 
         Panel basicInfo = new Panel("Основная информация",
                 new VerticalLayout(
-                        new HorizontalLayout(lastName, firstName, patronymic, dateOfBirth, nationality)
+                        new HorizontalLayout(lastName, firstName, patronymic),
+                        new HorizontalLayout(dateOfBirth, nationality)
                 )
         );
         basicInfo.setWidth("100%");
@@ -177,8 +178,12 @@ public class StudentEditor {
         achievementPos.setExpandRatio(position, 0.5f);
         position.setSizeFull();
         position.setWordWrap(true);
+        militaryUnit.setWidth("100%");
+        final HorizontalLayout militaryUnitLayout = new HorizontalLayout(militaryUnit);
+        militaryUnitLayout.setWidth("100%");
         Panel militaryInfo = new Panel("Должность",
                 new VerticalLayout(
+                        militaryUnitLayout,
                         new HorizontalLayout(militaryRank, militaryRankAwardDate, militaryRankOrderName, fleet),
                         achievementPos
                 )

@@ -29,7 +29,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.vaadin.shared.data.sort.SortDirection.ASCENDING;
@@ -51,7 +50,7 @@ public class MainUI extends UI {
 
     private final ComboBox<String> militaryRankFilter = new ComboBox<>("Воинское звание");
 
-    private final ComboBox<String> militaryUnitFilter = new ComboBox<>("В/ч");
+    private final TextField militaryUnitFilter = new TextField("Воинская часть");
 
     private final TextField graduationYearFilter = new TextField("Выпуск");
 
@@ -65,9 +64,7 @@ public class MainUI extends UI {
 
     private final ComboBox<String> fleetFilter = new ComboBox<>("Флот");
 
-    final Grid<Student> grid;
-
-    private AtomicBoolean isModalOpened = new AtomicBoolean(false);
+    private final Grid<Student> grid;
 
     private String placeHolderImagebase64;
 
@@ -155,23 +152,28 @@ public class MainUI extends UI {
                 .setCaption("ФИО")
                 .setWidth(300.0)
                 .setResizable(false);
+        grid.addColumn(student -> dateFormat.format(student.getDateOfBirth()))
+                .setCaption("Дата рождения")
+                .setWidth(140.0)
+                .setResizable(false);
+        grid.addColumn(this::formatMilitaryRank)
+                .setCaption("В/зв")
+                .setWidth(180.0)
+                .setResizable(false);
+        grid.addColumn(Student::getMilitaryUnit)
+                .setCaption("Воинская часть")
+                .setWidth(300.0)
+                .setDescriptionGenerator((DescriptionGenerator<Student>) Student::getMilitaryUnit)
+                .setResizable(false);
         grid.addColumn(Student::getGraduationYear)
                 .setCaption("Выпуск")
                 .setWidth(85.0)
-                .setResizable(false);
-        grid.addColumn(this::formatMilitaryRank)
-                .setCaption("В/зв.")
-                .setWidth(180.0)
                 .setResizable(false);
         grid.addColumn(this::formatMilitaryRankAssignment)
                 .setCaption("Присв. зв")
                 .setWidth(136.0)
                 .setResizable(false)
                 .setSortable(false);
-        grid.addColumn(student -> dateFormat.format(student.getDateOfBirth()))
-                .setCaption("Дата рождения")
-                .setWidth(140.0)
-                .setResizable(false);
         grid.addColumn(Student::getNationality)
                 .setCaption("Нац.")
                 .setWidth(100.0)
@@ -274,6 +276,8 @@ public class MainUI extends UI {
         // Replace listing with filtered content when user changes lastNameFilter
         lastNameFilter.setValueChangeMode(ValueChangeMode.LAZY);
         lastNameFilter.addValueChangeListener(updateGrid);
+        militaryUnitFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        militaryUnitFilter.addValueChangeListener(updateGrid);
         militaryRankFilter.addValueChangeListener(updateGrid);
         fleetFilter.addValueChangeListener(updateGrid);
         graduationYearFilter.addValueChangeListener(updateGrid);
@@ -317,12 +321,18 @@ public class MainUI extends UI {
     }
 
     private void updateGrid() {
-        String lastNameFilterValue = lastNameFilter.getValue() == null ? "" : lastNameFilter.getValue().toLowerCase();
+        final String lastNameFilterValue = lastNameFilter.getValue() == null ? "" : lastNameFilter.getValue().toLowerCase();
+        final String militaryUnitFilterValue = militaryUnitFilter.getValue() == null ? "" : militaryUnitFilter.getValue().toLowerCase();
         final List<Student> filteredItems = allStudents.stream()
                 .peek(comboBoxAggregator::refresh)
                 .filter(person -> {
                             String onDisplay = String.format("%s %s", person.getLastName(), person.getFirstName());
                             return onDisplay.toLowerCase().contains(lastNameFilterValue);
+                        }
+                )
+                .filter(person -> {
+                            final String fieldValue = person.getMilitaryUnit() != null ? person.getMilitaryUnit().toLowerCase() : "";
+                            return fieldValue.contains(militaryUnitFilterValue);
                         }
                 )
                 .filter(person -> militaryRankFilter.getValue() == null || Objects.equals(person.getMilitaryRank(), militaryRankFilter.getValue()))
