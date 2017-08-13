@@ -5,6 +5,9 @@
     <artifactId>students-db</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0-SNAPSHOT</version>
+    <properties>
+        <vaadin.version>8.1.1</vaadin.version>
+    </properties>
     <name>StudentsDB</name>
 
     <parent>
@@ -18,7 +21,7 @@
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
-                <version>8.1.1</version>
+                <version>${vaadin.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -100,6 +103,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
+            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -122,6 +126,12 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.8.9</version>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-sass-compiler</artifactId>
+            <version>0.9.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -146,6 +156,22 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>update-theme</goal>
+                            <goal>compile-theme</goal>
+                            <goal>clean</goal>
+                            <goal>resources</goal>
+                            <goal>update-widgetset</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

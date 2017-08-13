@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static java.util.Arrays.asList;
 
 
-public class StudentEditor extends Panel {
+public class StudentEditor {
 
     private final StudentDao repository;
 
@@ -106,9 +106,11 @@ public class StudentEditor extends Panel {
 
     private final TextArea additionalInfo;
 
-    private final Button saveButton;
+    private final Button saveButton = new Button("Сохранить", FontAwesome.SAVE);
 
-    private final Button removeButton;
+    private final Button removeButton = new Button("Удалить", FontAwesome.TRASH_O);
+
+    private final Button closeButton = new Button("Закрыть");
 
     private final Image photo;
 
@@ -116,17 +118,17 @@ public class StudentEditor extends Panel {
 
     private final Binder<Student> binder = new Binder<>(Student.class);
 
+    private final VerticalLayout mainLayout;
+
     private final MainUI mainUI;
 
-    public StudentEditor(MainUI mainUI, StudentDao repository, UniversityDao universityDao) {
-        this.mainUI = mainUI;
+    public StudentEditor(StudentDao repository, UniversityDao universityDao, MainUI mainUI) {
         //super("Добавить/редактировать военнослужащего");
         this.repository = repository;
         this.universityDao = universityDao;
+        this.mainUI = mainUI;
         this.photo = new Image("Фотография");
-        this.removeButton = new Button("Удалить", FontAwesome.TRASH_O);
         removeButton.setStyleName(ValoTheme.BUTTON_DANGER);
-        this.saveButton = new Button("Сохранить", FontAwesome.SAVE);
         saveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
         this.additionalInfo = new TextArea("Примечания");
         binder.forField(additionalInfo)
@@ -198,7 +200,7 @@ public class StudentEditor extends Panel {
         ImageUploader receiver = new ImageUploader(binder, photo);
         Upload upload = new Upload("Загрузить фотографию", receiver);
         upload.addSucceededListener(receiver);
-        VerticalLayout photoLayout = new VerticalLayout(photo, upload, saveButton, removeButton);
+        VerticalLayout photoLayout = new VerticalLayout(photo, upload, saveButton, removeButton, closeButton);
         photoLayout.setWidth("250px");
 
         Panel basicInfo = new Panel("Основная информация",
@@ -292,9 +294,8 @@ public class StudentEditor extends Panel {
                 photoLayout,
                 editorPanel
         );
-        VerticalLayout mainLayout = new VerticalLayout(horizontalLayout);
+        mainLayout = new VerticalLayout(horizontalLayout);
         mainLayout.setSpacing(true);
-        setWidthUndefined();
         //setContent(mainLayout);
 
         // bind using naming convention
@@ -310,7 +311,18 @@ public class StudentEditor extends Panel {
             binder.removeBean();
             hide();
         });
+
+        closeButton.addClickListener(e -> {
+            binder.removeBean();
+            hide();
+            mainUI.makeVisible();
+        });
+        closeButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
         //addCloseListener((CloseListener) closeEvent -> hide());
+    }
+
+    public VerticalLayout getMainLayout() {
+        return mainLayout;
     }
 
 
@@ -371,17 +383,17 @@ public class StudentEditor extends Panel {
                     "Удалить", "Отмена", (ConfirmDialog.Listener) dialog -> {
                         if (dialog.isConfirmed()) {
                             repository.remove(customer);
+                            h.onChange();
                         }
-                        h.onChange();
                     });
         });
     }
 
     public void makeVisible() {
-        setVisible(true);
+        mainLayout.setVisible(true);
     }
 
     public void hide() {
-        setVisible(false);
+        mainLayout.setVisible(false);
     }
 }

@@ -34,13 +34,14 @@ import static java.util.Arrays.asList;
 
 
 @SpringUI
+//@Theme("colored")
 public class MainUI extends UI {
 
     private final StudentDao studentDao;
 
     private final UniversityDao universityDao;
 
-    private StudentEditor editor;
+    private final StudentEditor editor;
 
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -70,10 +71,15 @@ public class MainUI extends UI {
 
     private final Button addNewButton = new Button("Добавить в/сл");
 
+    private VerticalLayout mainUILayout;
+
+    private VerticalLayout mainLayout;
+
     @Autowired
     public MainUI(DemoDbPopulator populator, StudentDao studentDao, UniversityDao universityDao) throws IOException {
         this.studentDao = studentDao;
         this.universityDao = universityDao;
+        this.editor = new StudentEditor(studentDao, universityDao, this);
         this.grid = new Grid<>();
         this.placeHolderImagebase64 = Base64.getEncoder().encodeToString(
                 Files.readAllBytes(Paths.get("src/main/resources/icons/photo_placeholder.jpg"))
@@ -83,20 +89,16 @@ public class MainUI extends UI {
         graduationYearFilter = new TextField("Выпуск");
         fleetFilter = new ComboBox<>("Флот", asList(Fleet.values()));
         //populator.populate(5000);
-        logo1.setWidth("100px");
-        logo2.setWidth("100px");
+        logo1.setHeight("77px");
+        logo2.setHeight("77px");
     }
 
     @Override
     protected void init(VaadinRequest request) {
         // build layout
-        VerticalLayout gridLayout = new VerticalLayout(grid);
-        gridLayout.setWidth("100%");
         grid.setWidth("100%");
-        grid.setHeightUndefined();
-        grid.setSizeFull();
+        grid.setHeight("500px");
         grid.setRowHeight(75.0);
-        gridLayout.setHeightUndefined();
         GridLayout logos = new GridLayout(3, 1);
         logos.setWidth("100%");
         Label headerLabel = new Label(
@@ -125,11 +127,13 @@ public class MainUI extends UI {
         header.setComponentAlignment(addNewButton, Alignment.BOTTOM_RIGHT);
 
 
-        this.editor = new StudentEditor(this, studentDao, universityDao);
         editor.hide();
-        VerticalLayout mainLayout = new VerticalLayout(editor, logos, header, grid);
-        mainLayout.setExpandRatio(grid, 1.0f);
-        mainLayout.setSizeFull();
+        this.mainUILayout = new VerticalLayout(logos, header, grid);
+        this.mainLayout = new VerticalLayout(editor.getMainLayout(), mainUILayout);
+        mainLayout.setMargin(false);
+        mainUILayout.setMargin(false);
+        mainUILayout.setExpandRatio(grid, 1.0f);
+        mainUILayout.setWidth("100%");
         setContent(mainLayout);
 
         //Grid.Column idColumn = grid.addColumn(Student::getId).setCaption("ID");
@@ -271,17 +275,27 @@ public class MainUI extends UI {
         addNewButton.addClickListener(e -> {
             editor.editStudent(new Student());
             editor.makeVisible();
+            hide();
         });
         // Listen changes made by the editor, refresh data from backend
         editor.setChangeHandler(() -> {
             editor.hide();
             loadAll();
             updateGrid();
+            makeVisible();
         });
 
         // Initialize listing
         loadAll();
         updateGrid();
+    }
+
+    public void makeVisible() {
+        mainUILayout.setVisible(true);
+    }
+
+    public void hide() {
+        mainUILayout.setVisible(false);
     }
 
     private void updateGrid() {
