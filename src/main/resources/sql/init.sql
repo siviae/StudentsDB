@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS student (
   fleet                         VARCHAR(256),
   achievement_list              TEXT,
   position                      VARCHAR(256),
-  university_id                 NUMERIC(18) REFERENCES university (id),
+  university                    VARCHAR(256),
   graduation_year               NUMERIC(10),
   average_points                NUMERIC(10),
   foreign_lang                  VARCHAR(256),
@@ -34,14 +34,7 @@ CREATE TABLE IF NOT EXISTS student (
   additional_info               TEXT,
   education_form                VARCHAR(256),
   graduation_type               VARCHAR(256),
-  photo_base64                         TEXT
+  photo_base64                  TEXT
 );
 
 CREATE SEQUENCE seq_student START WITH 1;
-
-CREATE TABLE IF NOT EXISTS university (
-  id    NUMERIC(18) PRIMARY KEY,
-  title VARCHAR(256) NOT NULL
-);
-
-CREATE SEQUENCE seq_university START WITH 1;

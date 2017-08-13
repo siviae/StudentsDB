@@ -2,7 +2,6 @@ package ru.ifmo.ctddev.isaev.studentsdb.entity;
 
 
 import ru.ifmo.ctddev.isaev.studentsdb.converter.TimestampToLocalDateConverter;
-import ru.ifmo.ctddev.isaev.studentsdb.enums.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -24,29 +23,25 @@ public class Student {
 
     private Integer graduationYear;
 
-    private EducationForm educationForm;
-
-    private GraduationType graduationType;
-
-    private MilitaryRank militaryRank;
+    private String militaryRank;
 
     private LocalDate militaryRankAwardDate;
 
     private String militaryRankOrderName;
 
-    private Nationality nationality;
+    private String nationality;
 
-    private Fleet fleet;
+    private String fleet;
 
     private String achievementList;
 
     private String position;
 
-    private University university;
+    private String university;
 
     private Integer averagePoints;
 
-    private Language foreignLanguage;
+    private String foreignLanguage;
 
     private String identificationSeriesNumber;
 
@@ -66,7 +61,7 @@ public class Student {
 
     private String familyInfo;
 
-    private Nationality wifeNationality;
+    private String wifeNationality;
 
     private String address;
 
@@ -79,7 +74,7 @@ public class Student {
     private String finalAllocation;
 
     private String additionalInfo;
-    
+
     private String photoBase64;
 
     public Student(Long id,
@@ -87,9 +82,7 @@ public class Student {
                    String lastName,
                    String patronymic,
                    LocalDate dateOfBirth,
-                   Integer graduationYear,
-                   EducationForm educationForm,
-                   GraduationType graduationType
+                   Integer graduationYear
     ) {
         this.id = id;
         this.firstName = firstName;
@@ -97,8 +90,6 @@ public class Student {
         this.patronymic = patronymic;
         this.dateOfBirth = dateOfBirth;
         this.graduationYear = graduationYear;
-        this.educationForm = educationForm;
-        this.graduationType = graduationType;
     }
 
     public Student() {//do not remove, used for deserializing
@@ -147,28 +138,6 @@ public class Student {
         this.graduationYear = graduationYear;
     }
 
-    @Basic
-    @Column(name = "education_form")
-    @Convert(converter = EducationForm.Converter.class)
-    public EducationForm getEducationForm() {
-        return educationForm;
-    }
-
-    @Basic
-    @Column(name = "graduation_type")
-    @Convert(converter = GraduationType.Converter.class)
-    public GraduationType getGraduationType() {
-        return graduationType;
-    }
-
-    public void setGraduationType(GraduationType graduationType) {
-        this.graduationType = graduationType;
-    }
-
-    public void setEducationForm(EducationForm educationForm) {
-        this.educationForm = educationForm;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -192,12 +161,11 @@ public class Student {
 
     @Basic
     @Column(name = "military_rank")
-    @Convert(converter = MilitaryRank.Converter.class)
-    public MilitaryRank getMilitaryRank() {
+    public String getMilitaryRank() {
         return militaryRank;
     }
 
-    public void setMilitaryRank(MilitaryRank militaryRank) {
+    public void setMilitaryRank(String militaryRank) {
         this.militaryRank = militaryRank;
     }
 
@@ -224,23 +192,21 @@ public class Student {
 
     @Basic
     @Column(name = "nationality")
-    @Convert(converter = Nationality.Converter.class)
-    public Nationality getNationality() {
+    public String getNationality() {
         return nationality;
     }
 
-    public void setNationality(Nationality nationality) {
+    public void setNationality(String nationality) {
         this.nationality = nationality;
     }
 
     @Basic
     @Column(name = "fleet")
-    @Convert(converter = Fleet.Converter.class)
-    public Fleet getFleet() {
+    public String getFleet() {
         return fleet;
     }
 
-    public void setFleet(Fleet fleet) {
+    public void setFleet(String fleet) {
         this.fleet = fleet;
     }
 
@@ -264,13 +230,13 @@ public class Student {
         this.position = position;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "university_id", referencedColumnName = "id")
-    public University getUniversity() {
+    @Basic
+    @Column(name = "university")
+    public String getUniversity() {
         return university;
     }
 
-    public void setUniversity(University university) {
+    public void setUniversity(String university) {
         this.university = university;
     }
 
@@ -286,12 +252,11 @@ public class Student {
 
     @Basic
     @Column(name = "foreign_lang")
-    @Convert(converter = Language.Converter.class)
-    public Language getForeignLanguage() {
+    public String getForeignLanguage() {
         return foreignLanguage;
     }
 
-    public void setForeignLanguage(Language foreignLanguage) {
+    public void setForeignLanguage(String foreignLanguage) {
         this.foreignLanguage = foreignLanguage;
     }
 
@@ -389,12 +354,11 @@ public class Student {
 
     @Basic
     @Column(name = "wife_nationality")
-    @Convert(converter = Nationality.Converter.class)
-    public Nationality getWifeNationality() {
+    public String getWifeNationality() {
         return wifeNationality;
     }
 
-    public void setWifeNationality(Nationality wifeNationality) {
+    public void setWifeNationality(String wifeNationality) {
         this.wifeNationality = wifeNationality;
     }
 
@@ -457,7 +421,7 @@ public class Student {
     public void setAdditionalInfo(String additionalInfo) {
         this.additionalInfo = additionalInfo;
     }
-    
+
     @Basic
     @Column(name = "photo_base64")
     public String getPhotoBase64() {

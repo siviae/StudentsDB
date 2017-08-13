@@ -11,12 +11,10 @@ import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.components.grid.ItemClickListener;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.ifmo.ctddev.isaev.studentsdb.ComboBoxAggregator;
 import ru.ifmo.ctddev.isaev.studentsdb.controller.DemoDbPopulator;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
-import ru.ifmo.ctddev.isaev.studentsdb.dao.UniversityDao;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
-import ru.ifmo.ctddev.isaev.studentsdb.enums.Fleet;
-import ru.ifmo.ctddev.isaev.studentsdb.enums.MilitaryRank;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 
 
 @SpringUI
@@ -39,15 +36,13 @@ public class MainUI extends UI {
 
     private final StudentDao studentDao;
 
-    private final UniversityDao universityDao;
-
     private final StudentEditor editor;
 
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private final TextField lastNameFilter;
 
-    private final ComboBox<MilitaryRank> rankFilter;
+    private final ComboBox<String> rankFilter;
 
     private final TextField graduationYearFilter;
 
@@ -59,7 +54,7 @@ public class MainUI extends UI {
             "src/main/resources/icons/logo2.png"
     )));
 
-    private final ComboBox<Fleet> fleetFilter;
+    private final ComboBox<String> fleetFilter;
 
     final Grid<Student> grid;
 
@@ -75,19 +70,20 @@ public class MainUI extends UI {
 
     private VerticalLayout mainLayout;
 
+    private final ComboBoxAggregator comboBoxAggregator = new ComboBoxAggregator();
+
     @Autowired
-    public MainUI(DemoDbPopulator populator, StudentDao studentDao, UniversityDao universityDao) throws IOException {
+    public MainUI(DemoDbPopulator populator, StudentDao studentDao) throws IOException {
         this.studentDao = studentDao;
-        this.universityDao = universityDao;
-        this.editor = new StudentEditor(studentDao, universityDao, this);
+        this.editor = new StudentEditor(studentDao, this);
         this.grid = new Grid<>();
         this.placeHolderImagebase64 = Base64.getEncoder().encodeToString(
                 Files.readAllBytes(Paths.get("src/main/resources/icons/photo_placeholder.jpg"))
         );
         lastNameFilter = new TextField("ФИО");
-        rankFilter = new ComboBox<>("Воинское звание", asList(MilitaryRank.values()));
+        rankFilter = new ComboBox<String>("Воинское звание");
         graduationYearFilter = new TextField("Выпуск");
-        fleetFilter = new ComboBox<>("Флот", asList(Fleet.values()));
+        fleetFilter = new ComboBox<String>("Флот");
         //populator.populate(5000);
         logo1.setHeight("77px");
         logo2.setHeight("77px");
@@ -127,7 +123,6 @@ public class MainUI extends UI {
         header.setComponentAlignment(addNewButton, Alignment.BOTTOM_RIGHT);
 
 
-        editor.hide();
         this.mainUILayout = new VerticalLayout(logos, header, grid);
         this.mainLayout = new VerticalLayout(editor.getMainLayout(), mainUILayout);
         mainLayout.setMargin(false);
@@ -277,25 +272,30 @@ public class MainUI extends UI {
             editor.makeVisible();
             hide();
         });
-        // Listen changes made by the editor, refresh data from backend
-        editor.setChangeHandler(() -> {
-            editor.hide();
-            loadAll();
-            updateGrid();
-            makeVisible();
-        });
 
         // Initialize listing
+       reloadUpdateAndShow();
+    }
+
+    public void reloadUpdateAndShow() {
         loadAll();
         updateGrid();
+        makeVisible();
+    }
+
+    public void updateAndShow() {
+        updateGrid();
+        makeVisible();
     }
 
     public void makeVisible() {
         mainUILayout.setVisible(true);
+        editor.hide();
     }
 
     public void hide() {
         mainUILayout.setVisible(false);
+        editor.makeVisible();
     }
 
     private void updateGrid() {
@@ -333,7 +333,7 @@ public class MainUI extends UI {
     }
 
     private String formatMilitaryRank(Student student) {
-        String rankName = student.getMilitaryRank() == null ? "" : student.getMilitaryRank().getName();
+        String rankName = student.getMilitaryRank() == null ? "" : student.getMilitaryRank();
         return rankName;
     }
 
@@ -344,7 +344,7 @@ public class MainUI extends UI {
     }
 
     private String formatUniversity(Student student) {
-        String universityTitle = student.getUniversity() == null ? "" : student.getUniversity().getTitle();
+        String universityTitle = student.getUniversity() == null ? "" : student.getUniversity();
         String graduationYear = student.getGraduationYear() == null ? "" : String.valueOf(student.getGraduationYear());
         return format("%s в %s г.", universityTitle, graduationYear);
     }

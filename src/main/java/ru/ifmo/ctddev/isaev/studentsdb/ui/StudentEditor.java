@@ -11,27 +11,17 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.codec.binary.Base64;
 import org.vaadin.dialogs.ConfirmDialog;
 import ru.ifmo.ctddev.isaev.studentsdb.dao.StudentDao;
-import ru.ifmo.ctddev.isaev.studentsdb.dao.UniversityDao;
 import ru.ifmo.ctddev.isaev.studentsdb.editor.ImageUploader;
 import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
-import ru.ifmo.ctddev.isaev.studentsdb.entity.University;
-import ru.ifmo.ctddev.isaev.studentsdb.enums.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static java.util.Arrays.asList;
 
 
 public class StudentEditor {
 
     private final StudentDao repository;
-
-    private final UniversityDao universityDao;
 
     private final AtomicBoolean isVisible = new AtomicBoolean(false);
 
@@ -50,29 +40,29 @@ public class StudentEditor {
 
     private final TextField graduationYear;
 
-    private final ComboBox<EducationForm> educationForm;
+    private final ComboBox<String> educationForm;
 
-    private final ComboBox<MilitaryRank> militaryRank;
+    private final ComboBox<String> militaryRank;
 
     private final DateField militaryRankAwardDate;
 
     private final TextField militaryRankOrderName;
 
-    private final ComboBox<Nationality> nationality;
+    private final ComboBox<String> nationality;
 
-    private final ComboBox<Fleet> fleet;
+    private final ComboBox<String> fleet;
 
-    private final ComboBox<GraduationType> graduationType;
+    private final ComboBox<String> graduationType;
 
     private final TextArea achievementList;
 
     private final TextArea position;
 
-    private final ComboBox<University> universityDropdown;
+    private final ComboBox<String> universityDropdown;
 
     private final TextField averagePoints;
 
-    private final ComboBox<Language> foreignLanguage;
+    private final ComboBox<String> foreignLanguage;
 
     private final TextField identificationNumber;
 
@@ -92,7 +82,7 @@ public class StudentEditor {
 
     private final TextArea familyInfo;
 
-    private final ComboBox<Nationality> wifeNationality;
+    private final ComboBox<String> wifeNationality;
 
     private final TextField address;
 
@@ -114,18 +104,15 @@ public class StudentEditor {
 
     private final Image photo;
 
-    private final AtomicReference<List<University>> universities = new AtomicReference<>(new ArrayList<>());
-
     private final Binder<Student> binder = new Binder<>(Student.class);
 
     private final VerticalLayout mainLayout;
 
     private final MainUI mainUI;
 
-    public StudentEditor(StudentDao repository, UniversityDao universityDao, MainUI mainUI) {
+    public StudentEditor(StudentDao repository, MainUI mainUI) {
         //super("Добавить/редактировать военнослужащего");
         this.repository = repository;
-        this.universityDao = universityDao;
         this.mainUI = mainUI;
         this.photo = new Image("Фотография");
         removeButton.setStyleName(ValoTheme.BUTTON_DANGER);
@@ -142,7 +129,7 @@ public class StudentEditor {
         this.diplomaTopic = new TextField("Направление дипломной работы");
         this.stateRewards = new TextField("Гос. награды");
         this.address = new TextField("Адрес");
-        this.wifeNationality = new ComboBox<>("Гражданство жены", asList(Nationality.values()));
+        this.wifeNationality = new ComboBox<>("Гражданство жены");
         this.wifeNationality.setWidth("100px");
         this.familyInfo = new TextArea("Информация о семье");
         this.internationalPassportNumber = new TextField("Номер");
@@ -159,16 +146,16 @@ public class StudentEditor {
                 .withConverter(
                         new StringToIntegerConverter(0, "Введите число"))
                 .bind(Student::getAveragePoints, Student::setAveragePoints);
-        this.universityDropdown = new ComboBox<>("Окончил ВУЗ", universities.get());
-        this.foreignLanguage = new ComboBox<>("Ин. яз.", asList(Language.values()));
+        this.universityDropdown = new ComboBox<>("Окончил ВУЗ");
+        this.foreignLanguage = new ComboBox<>("Ин. яз.");
         this.position = new TextArea("Должность");
         this.achievementList = new TextArea("Послужной список");
-        this.graduationType = new ComboBox<>("Образование", asList(GraduationType.values()));
-        this.fleet = new ComboBox<>("Флот", asList(Fleet.values()));
-        this.nationality = new ComboBox<>("Национальность", asList(Nationality.values()));
+        this.graduationType = new ComboBox<>("Образование");
+        this.fleet = new ComboBox<>("Флот");
+        this.nationality = new ComboBox<>("Национальность");
         nationality.setWidth("100px");
         this.militaryRankOrderName = new TextField("Приказ");
-        this.educationForm = new ComboBox<>("Форма обучения", asList(EducationForm.values()));
+        this.educationForm = new ComboBox<>("Форма обучения");
         this.firstName = new TextField("Имя");
         binder.forField(firstName)
                 .asRequired("Необходимо заполнить")
@@ -191,7 +178,7 @@ public class StudentEditor {
                 .withConverter(
                         new StringToIntegerConverter(0, "Год"))
                 .bind(Student::getGraduationYear, Student::setGraduationYear);
-        this.militaryRank = new ComboBox<>("Воинское звание", asList(MilitaryRank.values()));
+        this.militaryRank = new ComboBox<>("Воинское звание");
         binder.forField(militaryRank)
                 .bind(Student::getMilitaryRank, Student::setMilitaryRank);
         this.militaryRankAwardDate = new DateField("Дата присвоения");
@@ -301,24 +288,7 @@ public class StudentEditor {
         // bind using naming convention
         binder.bindInstanceFields(this);
         bindEntityFields();
-
-        // Configure and style components
-        saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-
-        // wire action buttons to saveButton, removeButton and reset
-        saveButton.addClickListener(e -> {
-            this.repository.save(customer);
-            binder.removeBean();
-            hide();
-        });
-
-        closeButton.addClickListener(e -> {
-            binder.removeBean();
-            hide();
-            mainUI.makeVisible();
-        });
-        closeButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
-        //addCloseListener((CloseListener) closeEvent -> hide());
+        init();
     }
 
     public VerticalLayout getMainLayout() {
@@ -327,28 +297,12 @@ public class StudentEditor {
 
 
     private void bindEntityFields() {
-        educationForm.setItemCaptionGenerator(EducationForm::getName);
-        graduationType.setItemCaptionGenerator(GraduationType::getName);
-        universityDropdown.setItemCaptionGenerator(University::getTitle);
-        universityDropdown.setNewItemHandler((ComboBox.NewItemHandler) s -> {
-            University university = new University();
-            university.setTitle(s);
-            University savedUniversity = universityDao.save(university);
-            universities.getAndUpdate(list -> {
-                list.add(savedUniversity);
-                return list;
-            });
-            binder.getBean().setUniversity(savedUniversity);
-        });
-        foreignLanguage.setItemCaptionGenerator(Language::getName);
-        nationality.setItemCaptionGenerator(Nationality::getName);
-        wifeNationality.setItemCaptionGenerator(Nationality::getName);
-        militaryRank.setItemCaptionGenerator(MilitaryRank::getName);
-        fleet.setItemCaptionGenerator(Fleet::getName);
-    }
-
-    public interface ChangeHandler {
-        void onChange();
+        universityDropdown.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setUniversity(string));
+        foreignLanguage.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setForeignLanguage(string));
+        nationality.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setNationality(string));
+        wifeNationality.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setWifeNationality(string));
+        militaryRank.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setMilitaryRank(string));
+        fleet.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setFleet(string));
     }
 
     public final void editStudent(Student c) {
@@ -357,9 +311,6 @@ public class StudentEditor {
         } else {
             customer = c;
         }
-        universityDropdown.clear();
-        universities.set(universityDao.findAll());
-        universityDropdown.setItems(universities.get());
 
         binder.setBean(customer);
         if (customer.getPhotoBase64() == null) {
@@ -374,8 +325,25 @@ public class StudentEditor {
         //setVisible(true);
     }
 
-    public void setChangeHandler(ChangeHandler h) {
-        saveButton.addClickListener(e -> h.onChange());
+    private void init() {
+        saveButton.addClickListener(e -> {
+            binder.removeBean();
+            this.repository.save(customer);
+            if (customer.getId() == null) {
+                mainUI.reloadUpdateAndShow();
+            } else {
+                mainUI.updateAndShow();
+            }
+        });
+        // Configure and style components
+        saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+
+        closeButton.addClickListener(e -> {
+            binder.removeBean();
+            mainUI.makeVisible();
+        });
+        closeButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
+
         removeButton.addClickListener(e -> {
             Student currentStudent = binder.getBean();
             String fio = String.format("%s %s %s", currentStudent.getLastName(), currentStudent.getFirstName(), currentStudent.getPatronymic());
@@ -383,7 +351,7 @@ public class StudentEditor {
                     "Удалить", "Отмена", (ConfirmDialog.Listener) dialog -> {
                         if (dialog.isConfirmed()) {
                             repository.remove(customer);
-                            h.onChange();
+                            mainUI.reloadUpdateAndShow();
                         }
                     });
         });
