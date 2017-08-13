@@ -1,7 +1,9 @@
 package ru.ifmo.ctddev.isaev.studentsdb.ui;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ContentMode;
@@ -23,17 +25,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static com.vaadin.shared.data.sort.SortDirection.ASCENDING;
 import static java.lang.String.format;
 
 
 @SpringUI
 @Title("Военно-морской институт")
-//@Theme("colored")
+@Theme("valo")
 public class MainUI extends UI {
 
     private final StudentDao studentDao;
@@ -146,7 +150,7 @@ public class MainUI extends UI {
                 .setSortable(false)
                 .setResizable(false);
 
-        grid.addColumn(this::formatFIO)
+        Column<Student, String> fioColumn = grid.addColumn(this::formatFIO)
                 .setCaption("ФИО")
                 .setWidth(300.0)
                 .setResizable(false);
@@ -239,7 +243,7 @@ public class MainUI extends UI {
                 .setResizable(false)
                 .setSortable(false);
         grid.addColumn(Student::getAllocation)
-                .setCaption("Оконч. распред.")
+                .setCaption("Распределение")
                 .setResizable(false)
                 .setWidth(300.0)
                 .setSortable(false);
@@ -248,6 +252,7 @@ public class MainUI extends UI {
                 .setWidth(300.0)
                 .setCaption("Примечания");
         grid.setFrozenColumnCount(2);
+        grid.setSortOrder(Collections.singletonList(new GridSortOrder<>(fioColumn, ASCENDING)));
 
 
         final HasValue.ValueChangeListener updateGrid = valueChangeEvent -> updateGrid();
@@ -299,7 +304,7 @@ public class MainUI extends UI {
 
     private void updateGrid() {
         String lastNameFilterValue = lastNameFilter.getValue() == null ? "" : lastNameFilter.getValue().toLowerCase();
-        grid.setItems(allStudents.stream()
+        final List<Student> filteredItems = allStudents.stream()
                 .peek(comboBoxAggregator::refresh)
                 .filter(person -> {
                             String onDisplay = String.format("%s %s", person.getLastName(), person.getFirstName());
@@ -312,8 +317,8 @@ public class MainUI extends UI {
                         graduationYearFilter.getValue().isEmpty() ||
                         person.getGraduationYear().startsWith(graduationYearFilter.getValue())
                 )
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList());
+        grid.setItems(filteredItems);
         militaryRankFilter.setItems(comboBoxAggregator.getMilitaryRanks());
         fleetFilter.setItems(comboBoxAggregator.getFleets());
     }

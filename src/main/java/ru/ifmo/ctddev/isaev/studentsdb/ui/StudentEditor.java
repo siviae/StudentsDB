@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StudentEditor {
 
+    public static final String DATE_FORMAT = "dd.MM.yyyy";
+
     private final StudentDao repository;
 
     private final AtomicBoolean isVisible = new AtomicBoolean(false);
@@ -36,11 +38,11 @@ public class StudentEditor {
 
     private final TextField patronymic;
 
-    private final DateField dateOfBirth;
+    private final DateField dateOfBirth = new DateField("Дата рождения");
 
     private final ComboBox<String> militaryRank;
 
-    private final DateField militaryRankAwardDate;
+    private final DateField militaryRankAwardDate = new DateField("Дата присвоения");
 
     private final TextField militaryRankOrderName;
 
@@ -66,13 +68,13 @@ public class StudentEditor {
 
     private final TextField admissionForm;
 
-    private final DateField admissionDate;
+    private final DateField admissionDate = new DateField("Дата получения");
 
     private final TextField passportNumber = new TextField("Серия и номер");
 
     private final TextField passportIssuer = new TextField("Выдан");
 
-    private final DateField passportIssueDate;
+    private final DateField passportIssueDate = new DateField("Дата выдачи");
 
     private final CheckBox internationalPassport = new CheckBox("Загран. паспорт");
 
@@ -105,7 +107,6 @@ public class StudentEditor {
     private final MainUI mainUI;
 
     public StudentEditor(StudentDao repository, MainUI mainUI) {
-        //super("Добавить/редактировать военнослужащего");
         this.repository = repository;
         this.mainUI = mainUI;
         this.photo = new Image("Фотография");
@@ -123,8 +124,8 @@ public class StudentEditor {
         this.wifeNationality = new ComboBox<>("Гражданство жены");
         this.wifeNationality.setWidth("100px");
         this.familyInfo = new TextArea("Информация о семье");
-        this.passportIssueDate = new DateField("Дата выдачи");
-        this.admissionDate = new DateField("Дата получения");
+        passportIssueDate.setDateFormat(DATE_FORMAT);
+        admissionDate.setDateFormat(DATE_FORMAT);
         this.admissionForm = new TextField("Форма допуска");
         this.personalNumber = new TextField("Личный номер");
         this.identificationNumber = new TextField("Серия и номер уд. личности");
@@ -154,15 +155,14 @@ public class StudentEditor {
         binder.forField(patronymic)
                 .asRequired("Необходимо заполнить")
                 .bind(Student::getPatronymic, Student::setPatronymic);
-        this.dateOfBirth = new DateField("Дата рождения");
+        dateOfBirth.setDateFormat(DATE_FORMAT);
         binder.forField(dateOfBirth)
                 .asRequired("Необходимо заполнить")
                 .bind(Student::getDateOfBirth, Student::setDateOfBirth);
         this.militaryRank = new ComboBox<>("Воинское звание");
         binder.forField(militaryRank)
                 .bind(Student::getMilitaryRank, Student::setMilitaryRank);
-        this.militaryRankAwardDate = new DateField("Дата присвоения");
-
+        militaryRankAwardDate.setDateFormat(DATE_FORMAT);
         photo.setWidth("200px");
         ImageUploader receiver = new ImageUploader(binder, photo);
         Upload upload = new Upload("Загрузить фотографию", receiver);
@@ -277,12 +277,7 @@ public class StudentEditor {
     }
 
     public final void editStudent(Student c) {
-        if (c.getId() != null) {
-            customer = repository.findById(c.getId());
-        } else {
-            customer = c;
-        }
-
+        customer = c;
         binder.setBean(customer);
         if (customer.getPhotoBase64() == null) {
             photo.setSource(new FileResource(new File("src/main/resources/icons/photo_placeholder.jpg")));
