@@ -1,5 +1,6 @@
 package ru.ifmo.ctddev.isaev.studentsdb.ui;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.data.HasValue;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinRequest;
@@ -31,6 +32,7 @@ import static java.lang.String.format;
 
 
 @SpringUI
+@Title("Военно-морской институт")
 //@Theme("colored")
 public class MainUI extends UI {
 
