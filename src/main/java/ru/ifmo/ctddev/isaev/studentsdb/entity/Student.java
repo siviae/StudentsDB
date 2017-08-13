@@ -57,7 +57,7 @@ public class Student {
 
     private String passportIssuer;
 
-    private String internationalPassportNumber;
+    private Boolean internationalPassport;
 
     private String familyInfo;
 
@@ -69,9 +69,7 @@ public class Student {
 
     private String diplomaTopic;
 
-    private String preliminaryAllocation;
-
-    private String finalAllocation;
+    private String allocation;
 
     private String additionalInfo;
 
@@ -333,13 +331,13 @@ public class Student {
     }
 
     @Basic
-    @Column(name = "international_passport_number")
-    public String getInternationalPassportNumber() {
-        return internationalPassportNumber;
+    @Column(name = "international_passport")
+    public Boolean getInternationalPassport() {
+        return internationalPassport;
     }
 
-    public void setInternationalPassportNumber(String internationalPassportNumber) {
-        this.internationalPassportNumber = internationalPassportNumber;
+    public void setInternationalPassport(Boolean internationalPassport) {
+        this.internationalPassport = internationalPassport;
     }
 
     @Basic
@@ -393,23 +391,13 @@ public class Student {
     }
 
     @Basic
-    @Column(name = "preliminary_allocation")
-    public String getPreliminaryAllocation() {
-        return preliminaryAllocation;
+    @Column(name = "allocation")
+    public String getAllocation() {
+        return allocation;
     }
 
-    public void setPreliminaryAllocation(String preliminaryAllocation) {
-        this.preliminaryAllocation = preliminaryAllocation;
-    }
-
-    @Basic
-    @Column(name = "final_allocation")
-    public String getFinalAllocation() {
-        return finalAllocation;
-    }
-
-    public void setFinalAllocation(String finalAllocation) {
-        this.finalAllocation = finalAllocation;
+    public void setAllocation(String allocation) {
+        this.allocation = allocation;
     }
 
     @Basic

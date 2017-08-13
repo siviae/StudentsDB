@@ -207,7 +207,7 @@ public class MainUI extends UI {
                 .setCaption("Выдан")
                 .setResizable(false)
                 .setSortable(false);
-        grid.addColumn(Student::getInternationalPassportNumber)
+        grid.addColumn(Student::getInternationalPassport)
                 .setCaption("Загранпаспорт")
                 .setResizable(false)
                 .setSortable(false);
@@ -237,7 +237,7 @@ public class MainUI extends UI {
                 .setResizable(false)
                 .setWidth(300.0)
                 .setSortable(false);
-        grid.addColumn(Student::getFinalAllocation)
+        grid.addColumn(Student::getAllocation)
                 .setCaption("Оконч. распред.")
                 .setResizable(false)
                 .setWidth(300.0)

@@ -38,10 +38,6 @@ public class StudentEditor {
 
     private final DateField dateOfBirth;
 
-    private final TextField graduationYear;
-
-    private final ComboBox<String> educationForm;
-
     private final ComboBox<String> militaryRank;
 
     private final DateField militaryRankAwardDate;
@@ -72,13 +68,13 @@ public class StudentEditor {
 
     private final DateField admissionDate;
 
-    private final TextField passportNumber;
+    private final TextField passportNumber = new TextField("Серия и номер");
 
-    private final TextField passportIssuer;
+    private final TextField passportIssuer = new TextField("Выдан");
 
     private final DateField passportIssueDate;
 
-    private final TextField internationalPassportNumber;
+    private final CheckBox internationalPassport = new CheckBox("Загран. паспорт");
 
     private final TextArea familyInfo;
 
@@ -90,9 +86,7 @@ public class StudentEditor {
 
     private final TextField diplomaTopic;
 
-    private final TextArea preliminaryAllocation;
-
-    private final TextArea finalAllocation;
+    private final TextArea allocation = new TextArea("Распределение");
 
     private final TextArea additionalInfo;
 
@@ -121,21 +115,16 @@ public class StudentEditor {
         binder.forField(additionalInfo)
                 .withNullRepresentation("")
                 .bind(Student::getAdditionalInfo, Student::setAdditionalInfo);
-        this.finalAllocation = new TextArea("Окончательное распределение");
-        binder.forField(finalAllocation)
+        binder.forField(allocation)
                 .withNullRepresentation("")
-                .bind(Student::getFinalAllocation, Student::setFinalAllocation);
-        this.preliminaryAllocation = new TextArea("Предварительное распределение");
+                .bind(Student::getAllocation, Student::setAllocation);
         this.diplomaTopic = new TextField("Направление дипломной работы");
         this.stateRewards = new TextField("Гос. награды");
         this.address = new TextField("Адрес");
         this.wifeNationality = new ComboBox<>("Гражданство жены");
         this.wifeNationality.setWidth("100px");
         this.familyInfo = new TextArea("Информация о семье");
-        this.internationalPassportNumber = new TextField("Номер");
         this.passportIssueDate = new DateField("Дата выдачи");
-        this.passportIssuer = new TextField("Выдан");
-        this.passportNumber = new TextField("Серия и номер");
         this.admissionDate = new DateField("Дата получения");
         this.admissionForm = new TextField("Форма допуска");
         this.personalNumber = new TextField("Личный номер");
@@ -155,7 +144,6 @@ public class StudentEditor {
         this.nationality = new ComboBox<>("Национальность");
         nationality.setWidth("100px");
         this.militaryRankOrderName = new TextField("Приказ");
-        this.educationForm = new ComboBox<>("Форма обучения");
         this.firstName = new TextField("Имя");
         binder.forField(firstName)
                 .asRequired("Необходимо заполнить")
@@ -172,12 +160,6 @@ public class StudentEditor {
         binder.forField(dateOfBirth)
                 .asRequired("Необходимо заполнить")
                 .bind(Student::getDateOfBirth, Student::setDateOfBirth);
-        this.graduationYear = new TextField("Год выпуска");
-        binder.forField(graduationYear)
-                .withNullRepresentation("")
-                .withConverter(
-                        new StringToIntegerConverter(0, "Год"))
-                .bind(Student::getGraduationYear, Student::setGraduationYear);
         this.militaryRank = new ComboBox<>("Воинское звание");
         binder.forField(militaryRank)
                 .bind(Student::getMilitaryRank, Student::setMilitaryRank);
@@ -229,13 +211,7 @@ public class StudentEditor {
 
         Panel passport = new Panel("Паспорт",
                 new VerticalLayout(
-                        new HorizontalLayout(passportNumber, passportIssuer, passportIssueDate)
-                )
-        );
-
-        Panel internationalPassport = new Panel("Загран. паспорт",
-                new VerticalLayout(
-                        new HorizontalLayout(internationalPassportNumber)
+                        new HorizontalLayout(passportNumber, passportIssuer, passportIssueDate, internationalPassport)
                 )
         );
 
@@ -253,15 +229,12 @@ public class StudentEditor {
         familyInfo.setWordWrap(true);
         familyInfo.setWidth("100%");
 
-        HorizontalLayout allocations = new HorizontalLayout(preliminaryAllocation, finalAllocation);
+        HorizontalLayout allocations = new HorizontalLayout(allocation);
         allocations.setHeight("200px");
         allocations.setWidth("100%");
-        preliminaryAllocation.setSizeFull();
-        preliminaryAllocation.setWordWrap(true);
-        allocations.setExpandRatio(preliminaryAllocation, 0.5f);
-        finalAllocation.setSizeFull();
-        finalAllocation.setWordWrap(true);
-        allocations.setExpandRatio(finalAllocation, 0.5f);
+        allocation.setSizeFull();
+        allocation.setWordWrap(true);
+        allocations.setExpandRatio(allocation, 0.5f);
         Panel allocationPanel = new Panel("Распределение",
                 new VerticalLayout(
                         allocations
