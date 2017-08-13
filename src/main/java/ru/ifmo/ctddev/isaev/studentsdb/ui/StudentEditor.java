@@ -1,6 +1,9 @@
 package ru.ifmo.ctddev.isaev.studentsdb.ui;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.BindingValidationStatus;
+import com.vaadin.data.Validator;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FileResource;
@@ -17,20 +20,22 @@ import ru.ifmo.ctddev.isaev.studentsdb.entity.Student;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
+
+import static com.vaadin.data.ValidationResult.error;
+import static com.vaadin.data.ValidationResult.ok;
+import static com.vaadin.ui.Notification.show;
 
 
 public class StudentEditor {
+
+    private static final Pattern YEAR_PATTERN = Pattern.compile("\\d{4}");
 
     public static final String DATE_FORMAT = "dd.MM.yyyy";
 
     private final StudentDao repository;
 
     private final AtomicBoolean isVisible = new AtomicBoolean(false);
-
-    /**
-     * The currently edited customer
-     */
-    private Student customer;
 
     private final TextField firstName;
 
@@ -58,15 +63,15 @@ public class StudentEditor {
 
     private final ComboBox<String> university;
 
-    private final TextField averagePoints;
+    private final TextField averagePoints = new TextField("Средний балл аттестата");
 
     private final ComboBox<String> foreignLanguage;
 
-    private final TextField identificationNumber;
+    private final TextField identificationNumber = new TextField("Серия и номер уд. личности");
 
-    private final TextField personalNumber;
+    private final TextField personalNumber = new TextField("Личный номер");
 
-    private final TextField admissionForm;
+    private final TextField admissionForm = new TextField("Форма допуска");
 
     private final DateField admissionDate = new DateField("Дата получения");
 
@@ -78,19 +83,19 @@ public class StudentEditor {
 
     private final CheckBox internationalPassport = new CheckBox("Загран. паспорт");
 
-    private final TextArea familyInfo;
+    private final TextArea familyInfo = new TextArea("Информация о семье");
 
-    private final ComboBox<String> wifeNationality;
+    private final ComboBox<String> wifeNationality = new ComboBox<>("Гражданство жены");
 
     private final TextField address = new TextField("Адрес места жительства");
 
-    private final TextField stateRewards;
+    private final TextField stateRewards = new TextField("Гос. награды");
 
-    private final TextField diplomaTopic;
+    private final TextField diplomaTopic = new TextField("Направление дипломной работы");
 
     private final TextArea allocation = new TextArea("Распределение");
 
-    private final TextArea additionalInfo;
+    private final TextArea additionalInfo = new TextArea("Примечания");
 
     private final Button saveButton = new Button("Сохранить", FontAwesome.SAVE);
 
@@ -112,36 +117,23 @@ public class StudentEditor {
         this.photo = new Image("Фотография");
         removeButton.setStyleName(ValoTheme.BUTTON_DANGER);
         saveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-        this.additionalInfo = new TextArea("Примечания");
-        binder.forField(additionalInfo)
-                .withNullRepresentation("")
-                .bind(Student::getAdditionalInfo, Student::setAdditionalInfo);
-        binder.forField(allocation)
-                .withNullRepresentation("")
-                .bind(Student::getAllocation, Student::setAllocation);
-        this.diplomaTopic = new TextField("Направление дипломной работы");
-        this.stateRewards = new TextField("Гос. награды");
-        this.wifeNationality = new ComboBox<>("Гражданство жены");
-        this.wifeNationality.setWidth("100px");
-        this.familyInfo = new TextArea("Информация о семье");
         passportIssueDate.setDateFormat(DATE_FORMAT);
         admissionDate.setDateFormat(DATE_FORMAT);
-        this.admissionForm = new TextField("Форма допуска");
-        this.personalNumber = new TextField("Личный номер");
-        this.identificationNumber = new TextField("Серия и номер уд. личности");
-        this.averagePoints = new TextField("Средний балл аттестата");
         binder.forField(averagePoints)
                 .withNullRepresentation("")
                 .withConverter(
                         new StringToIntegerConverter(0, "Введите число"))
                 .bind(Student::getAveragePoints, Student::setAveragePoints);
+        binder.forField(graduationYear)
+                .withNullRepresentation("")
+                .withValidator((Validator<String>) (s, valueContext) -> YEAR_PATTERN.matcher(s == null ? "" : s).matches() ? ok() : error("Введите год"))
+                .bind(Student::getGraduationYear, Student::setGraduationYear);
         this.university = new ComboBox<>("Окончил ВУЗ");
         this.foreignLanguage = new ComboBox<>("Ин. яз.");
         this.position = new TextArea("Должность");
         this.achievementList = new TextArea("Послужной список");
         this.fleet = new ComboBox<>("Флот");
         this.nationality = new ComboBox<>("Национальность");
-        nationality.setWidth("100px");
         this.militaryRankOrderName = new TextField("Приказ");
         this.firstName = new TextField("Имя");
         binder.forField(firstName)
@@ -270,20 +262,21 @@ public class StudentEditor {
     private void bindEntityFields() {
         university.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setUniversity(string));
         foreignLanguage.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setForeignLanguage(string));
-        nationality.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setNationality(string));
+        nationality.setNewItemHandler((ComboBox.NewItemHandler) string -> {
+            binder.getBean().setNationality(string);
+        });
         wifeNationality.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setWifeNationality(string));
         militaryRank.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setMilitaryRank(string));
         fleet.setNewItemHandler((ComboBox.NewItemHandler) string -> binder.getBean().setFleet(string));
     }
 
     public final void editStudent(Student c) {
-        customer = c;
-        binder.setBean(customer);
-        if (customer.getPhotoBase64() == null) {
+        binder.setBean(c);
+        if (c.getPhotoBase64() == null) {
             photo.setSource(new FileResource(new File("src/main/resources/icons/photo_placeholder.jpg")));
         } else {
             byte[] imageBytes;
-            imageBytes = Base64.decodeBase64(customer.getPhotoBase64());
+            imageBytes = Base64.decodeBase64(c.getPhotoBase64());
             byte[] finalImageBytes = imageBytes;
             photo.setSource(new StreamResource(() -> new ByteArrayInputStream(finalImageBytes), ""));
         }
@@ -301,12 +294,22 @@ public class StudentEditor {
 
     private void init() {
         saveButton.addClickListener(e -> {
-            binder.removeBean();
-            this.repository.save(customer);
-            if (customer.getId() == null) {
-                mainUI.reloadUpdateAndShow();
+            BinderValidationStatus<Student> validationResult = binder.validate();
+            if (!validationResult.isOk()) {
+                validationResult.getFieldValidationStatuses()
+                        .stream()
+                        .filter(BindingValidationStatus::isError)
+                        .findFirst()
+                        .flatMap(BindingValidationStatus::getResult)
+                        .ifPresent(res -> show("Ошибка введённых данных: " + res.getErrorMessage(), Notification.Type.ERROR_MESSAGE));
             } else {
-                mainUI.updateAndShow();
+                this.repository.save(binder.getBean());
+                if (binder.getBean().getId() == null) {
+                    mainUI.reloadUpdateAndShow();
+                } else {
+                    mainUI.updateAndShow();
+                }
+                binder.removeBean();
             }
         });
         // Configure and style components
@@ -324,7 +327,7 @@ public class StudentEditor {
             ConfirmDialog.show(mainUI, String.format("Удалить \"%s\"", fio), "Вы уверены?",
                     "Удалить", "Отмена", (ConfirmDialog.Listener) dialog -> {
                         if (dialog.isConfirmed()) {
-                            repository.remove(customer);
+                            repository.remove(binder.getBean());
                             mainUI.reloadUpdateAndShow();
                         }
                     });

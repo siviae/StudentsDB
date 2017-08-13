@@ -58,7 +58,7 @@ public class Student {
 
     private String passportIssuer;
 
-    private Boolean internationalPassport;
+    private boolean internationalPassport;
 
     private String familyInfo;
 
@@ -339,7 +339,7 @@ public class Student {
     }
 
     public void setInternationalPassport(Boolean internationalPassport) {
-        this.internationalPassport = internationalPassport;
+        this.internationalPassport = internationalPassport == null ? false : internationalPassport;
     }
 
     @Basic
