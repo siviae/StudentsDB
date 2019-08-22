@@ -1,3 +1,2 @@
-# Solanteq_test_task
-Spring web application
-AngularJS used for front-end
+# Students Database
+Spring Web Application with SQLite embedded database and Vaading for GUI
